@@ -1,0 +1,8 @@
+﻿<FluentLayoutItem Area="LayoutArea.Header" Style="margin-bottom:1px;">
+    @ChildContent
+</FluentLayoutItem>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

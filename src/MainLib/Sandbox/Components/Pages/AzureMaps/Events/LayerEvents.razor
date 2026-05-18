@@ -1,0 +1,171 @@
+﻿@page "/map-events-layers"
+@rendermode InteractiveServer
+@inject IAzureMapsCSDocReader MapDocs
+@inject IJSRuntime JSRuntime
+@inject ILogger<LayerEvents> Logger
+@inject IToastService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Layer Events">
+    <SummaryContent>
+        <MapPageSummary>
+            <FluentLabel>
+                Layer types that do not support events have been removed from the list.
+                <br />
+                Some events are applied only to the featues of the layer, i.e. for a symbol layer the click event is fired when a symbol is clicked, not when the map itself it clicked.
+                <br />
+                Select a layer from the list to display it on the map.
+            </FluentLabel>
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="8px" />
+            <FluentCheckbox Label="Show Value" @bind-Value="@showEventValue" />
+        </Toolbar>
+
+        <FluentStack Height="50%">
+            <FluentCard AreaRestricted="false" Width="20rem">
+
+                <FluentListbox Items="@items"
+                               TOption="IMapLayerViewModel"
+                               TValue="IMapLayerViewModel"
+                               OptionText="@(item => item?.Name)"
+                               ValueChanged="RowChanged">
+                </FluentListbox>
+            </FluentCard>
+
+            <MapControl MapId="@mapId" />
+        </FluentStack>
+
+        <EventsViewer Events="@eventArgsManager" Maps="@maps" Mulitline="true" @bind-ShowValue="@showEventValue" />
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEvent="@OnMapEvent"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private readonly string mapId = "mapLayerEvents";
+    private ICSDocument? document;
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private readonly MapEventArgsViewModelManager eventArgsManager = new();
+    private MapLayerViewModels viewModels = default!;
+    private List<IMapLayerViewModel> items = [];
+    private bool showEventValue;
+
+    override protected async Task OnInitializedAsync()
+    {
+        try
+        {
+            viewModels = await MapDataService.GetViewModels();
+            document = MapDocs.CreateDocument<LayerType>();
+            items = viewModels.GetModels();
+
+            //These layers do not support the events.
+            items.Remove(items.First(e => e.Source.Type == LayerType.HeatMap));
+            items.Remove(items.First(e => e.Source.Type == LayerType.Image));
+            items.Remove(items.First(e => e.Source.Type == LayerType.Tile));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RowChanged(IMapLayerViewModel value)
+    {
+        foreach (var item in items)
+            item.IsActiveRow = false;
+
+        value.IsActiveRow = true;
+        await ShowActiveLayer();
+    }
+
+    private async Task ShowActiveLayer()
+    {
+        try
+        {
+            foreach (var item in items.Where(i => i.IsLoaded && !i.IsActiveRow))
+                await maps!.ShowLayer(mapId, item, false);
+
+            eventArgsManager.Clear();
+
+            var activeRow = items.FirstOrDefault(i => i.IsActiveRow);
+            if (activeRow != null)
+            {
+                if (!activeRow.IsLoaded)
+                {
+                    var options = activeRow.Source.GetOptions();
+                    await maps!.AddBasicMapLayer(mapId, MapDataService, activeRow);
+                }
+
+                await maps!.ShowLayer(mapId, activeRow, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEvent(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        eventArgsManager.Add(args);
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        eventArgsManager.Add(args);
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        eventArgsManager.Add(args);
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            items.FirstOrDefault(e => e.IsActiveRow)?.IsActiveRow = false;
+            await ShowActiveLayer();
+            await maps!.ResetMap(mapId, Logger, ToastService);
+        }
+    }
+
+    #endregion
+}

@@ -1,0 +1,114 @@
+﻿@page "/map-custom-controls"
+@using Sandbox.Azure.Maps
+@rendermode InteractiveServer
+@inject SandboxMapsInterop SandboxMaps
+@inject IJSRuntime JSRuntime
+@inject ILogger<CustomControls> Logger
+@inject IToastService ToastService
+
+<MapPage Title="Custom Controls">
+    <SummaryContent>
+        <FluentLabel>
+            This page demonstrates a map intialized to a specific camera setting (location, zoom, style etc.) with no controls.
+            <br />
+            Controls are added/removed from the map using custom JS Interop.
+        </FluentLabel>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="8px" />
+            <FluentButton Disabled="@canNotAdd" IconStart="@(new Icons.Regular.Size20.Add())" Title="Add Controls" OnClick="@AddControls" />
+            <FluentButton Disabled="@canNotDelete" IconStart="@(new Icons.Regular.Size20.Delete())" Title="Remove Controls" OnClick="@RemoveControls" />
+        </Toolbar>
+
+        <MapControl MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapId = "mapBasic";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool canNotAdd => mapNotReady || SandboxMaps.ControlsWereLoaded;
+    private bool canNotDelete => mapNotReady || !SandboxMaps.ControlsWereLoaded;
+
+    private async Task AddControls()
+    {
+        try
+        {
+            var azmap = await GetMap();
+            await SandboxMaps.AddControls(azmap);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveControls()
+    {
+        try
+        {   
+            var azmap = await GetMap();
+            await SandboxMaps.RemoveControls(azmap);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task<IJSObjectReference> GetMap()
+    {
+        return (await maps!.GetMap(mapId)) ?? throw new InvalidOperationException("Map not found");
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, controls: new List<ControlBase>()); //Pass an empty list of controls to create a map without any controls
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+            await maps!.ResetMap(mapId, Logger, ToastService);
+    }
+
+    #endregion
+}

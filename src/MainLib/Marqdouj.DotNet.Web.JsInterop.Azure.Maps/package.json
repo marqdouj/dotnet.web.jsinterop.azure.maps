@@ -1,0 +1,16 @@
+{
+  "name": "marqdouj.dotnet.web.jsinterop.azure.maps",
+  "version": "11.0.0",
+  "description": ".NET library for use with Azure Maps SDK in JavaScript interop scenarios.",
+  "license": "MIT",
+  "author": "Doug Marquardt",
+  "scripts": {
+    "build:webpack": "webpack"
+  },
+  "devDependencies": {
+    "azure-maps-control": "4.0.0-preview.1",
+    "azure-maps-animations": "0.0.1",
+    "webpack": "5.106.2",
+    "webpack-cli": "7.0.2"
+  }
+}

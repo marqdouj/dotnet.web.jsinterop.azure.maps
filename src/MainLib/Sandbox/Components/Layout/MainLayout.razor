@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+@using Padding = Microsoft.FluentUI.AspNetCore.Components.Padding
+
+<FluentLayout Style="border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);">
+
+    <!-- Header -->
+    <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
+        <FluentLayoutHamburger />
+        Azure Maps Sandbox
+    </FluentLayoutItem>
+
+    <!-- Navigation -->
+    <FluentLayoutItem Area="@LayoutArea.Navigation" Sticky="true"
+                      Padding="@Padding.All2"
+                      Style="border-right: var(--strokeWidthThin) solid var(--colorNeutralStroke1);">
+        <NavMenu />
+    </FluentLayoutItem>
+
+    <!-- Content -->
+    <FluentLayoutItem Area="@LayoutArea.Content" Padding="@Padding.All3">
+        @Body
+    </FluentLayoutItem>
+
+    <!-- Footer -->
+    <FluentLayoutItem Area="@LayoutArea.Footer" Sticky="true">
+        <FluentStack>
+            <a href="https://www.fluentui-blazor.net" target="_blank">Documentation and demos</a>
+            <FluentSpacer />
+            <a href="https://github.com/marqdouj" target="_blank">&copy; Doug Marquardt @DateTime.Now.Year</a>
+            <FluentSpacer />
+            <a href="https://learn.microsoft.com/en-us/aspnet/core/blazor" target="_blank">About Blazor</a>
+        </FluentStack>
+    </FluentLayoutItem>
+
+    <FluentDialogProvider @rendermode="InteractiveServer" />
+    <FluentToastProvider @rendermode="InteractiveServer" />
+    <FluentTooltipProvider @rendermode="InteractiveServer" />
+</FluentLayout>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

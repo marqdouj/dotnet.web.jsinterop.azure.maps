@@ -1,0 +1,87 @@
+﻿@inject IJSRuntime JSRuntime
+@inject IToastService ToastService
+@inject ILogger<EventsViewer> Logger
+
+<div style="@style">
+    <FluentDataGrid Items="@Events.Items.AsQueryable()"
+                    TGridItem="MapEventArgsViewModel"
+                    GenerateHeader="@DataGridGeneratedHeaderType.Sticky"
+                    GridTemplateColumns="10rem 7rem 12rem 1fr 7rem"
+                    RowStyle="@rowStyle"
+                    MultiLine="@Mulitline"
+                    ResizableColumns="true">
+        <ChildContent>
+            <PropertyColumn Property="@(p => p.Args.Type)" />
+            <PropertyColumn Property="@(p => p.Args.Target)" />
+            <PropertyColumn Property="@(p => p.TimeStamp)" />
+            @if (ShowValue)
+            {
+                <PropertyColumn Property="@(p => p.Value)" />
+            }
+            @if (Maps is not null)
+            {
+                <TemplateColumn Title="Value">
+                    <FluentButton Appearance="ButtonAppearance.Primary" Title="Copy to clipboard" @onclick="@(() => CopyToClipboard(context))">Copy</FluentButton>
+                </TemplateColumn>
+            }
+        </ChildContent>
+        <EmptyContent />
+    </FluentDataGrid>
+</div>
+
+@code {
+    private string style => $"height:{Height ?? "200px"};width:{Width ?? "100%"};overflow:auto;border:groove;border-width:1";
+    private Func<MapEventArgsViewModel, string?> rowStyle = x => GetRowStyle(x);
+
+    [Parameter, EditorRequired]
+    public MapEventArgsViewModelManager Events { get; set; }
+
+    [Parameter, EditorRequired]
+    public IAzureMapsInterop? Maps { get; set; }
+
+    [Parameter]
+    public string? Height { get; set; }
+
+    [Parameter]
+    public bool Mulitline { get; set; }
+
+    [Parameter]
+    public bool ShowValue { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowValueChanged { get; set; }
+
+        [Parameter]
+    public string? Width { get; set; }
+
+    private static string? GetRowStyle(MapEventArgsViewModel item)
+    {
+        switch (item.Args.Type)
+        {
+            case MapEventType.Error:
+                return "background-color: palevioletred";
+            case MapEventType.Ready:
+                return "background-color: lightgreen";
+            default:
+                return null;
+        }
+    }
+
+    private async Task CopyToClipboard(MapEventArgsViewModel item)
+    {
+        try
+        {
+            if (Maps is null) return;
+
+            var result = await Maps.Common.CopyTextToClipboard(item.Value);
+
+            if (!string.IsNullOrWhiteSpace(result.Message))
+                await ToastService.ShowInfo(result.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+}

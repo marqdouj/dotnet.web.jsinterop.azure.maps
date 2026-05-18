@@ -1,0 +1,216 @@
+﻿@page "/map-other-geolocation"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<Geolocation> Logger
+@inject IToastService ToastService
+
+<MapPage Title="User Location">
+    <SummaryContent>
+        <MapPageSummary>
+            <FluentLabel>
+                A user's location can be queried directly, or watched.
+            </FluentLabel>
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@disabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="8" />
+            <FluentButton Disabled="@disabledGetLocation" IconStart="@(new Icons.Regular.Size20.GlobeSearch())" Title="Get Current Location" OnClick="@GetCurrentPosition" />
+            <FluentSpacer Width="3" />
+            <FluentButton Disabled="@disabledWatching" IconStart="@(new Icons.Regular.Size20.EyeTracking())" Title="Start Watch" OnClick="@(() => GeolocationWatch(true))" />
+            <FluentButton Disabled="@disabledNotWatching" IconStart="@(new Icons.Regular.Size20.EyeTrackingOff())" Title="Stop Watch" OnClick="@(() => GeolocationWatch(false))" />
+        </Toolbar>
+
+        <MapControl MapId="@mapId" />
+
+        <FluentOverlay @bind-Visible="@overlay"
+                       Transparent="false">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnGeolocationWatch="@OnGeolocationWatch"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapId = "mapGeolocation";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool disabled => overlay || mapNotReady;
+    private bool disabledReset => disabled || isWatching;
+    private bool isWatching;
+    private bool isNotWatching => !isWatching;
+    private bool disabledWatching => disabled || isWatching;
+    private bool disabledNotWatching => disabled || isNotWatching;
+    private bool disabledGetLocation => disabled || isWatching;
+    private readonly GeolocationLayers layers = new(mapId);
+
+    private async Task GetCurrentPosition()
+    {
+        try
+        {
+            if (maps is null) return;
+
+            overlay = true;
+            StateHasChanged();
+
+            var geolocation = await maps.Geolocations.GetLocation(new PositionOptions { EnableHighAccuracy = true });
+
+            if (geolocation != null)
+            {
+                if (geolocation.IsSuccess)
+                {
+                    await UpdateGeolocation(geolocation);
+                }
+                else
+                {
+                    var errMsg = $"Geolocation service failed. {geolocation.Error?.Message}";
+                    Logger?.LogError(errMsg);
+                    await ToastService.ShowError(errMsg);
+                }
+            }
+            else
+            {
+                var warnMsg = $"Geolocation service returned null.";
+                Logger?.LogWarning(warnMsg);
+                await ToastService.ShowWarning(warnMsg);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            overlay = false;
+            StateHasChanged();
+        }
+    }
+    private async Task GeolocationWatch(bool watch)
+    {
+        try
+        {
+            if (maps is null) return;
+            if (watch && isWatching) return;
+            if (!watch && isNotWatching) return;
+
+            if (watch)
+            {
+                await layers.Clear(maps);
+                await maps.Geolocations.WatchPosition();
+                isWatching = true;
+                await ToastService.ShowInfo("Waiting for first Geolocation Watch event...");
+            }
+            else
+            {
+                await RemoveWatch();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RemoveWatch()
+    {
+        try
+        {
+            if (maps is null) return;
+            if (isWatching)
+            {
+                await maps.Geolocations.ClearWatch();
+                isWatching = false;
+                await layers.Clear(maps);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    private async Task OnGeolocationWatch(GeolocationEventArgs e)
+    {
+        await ToastService.ShowInfo($"Geolocation Watch event received. Success:{e.IsSuccess}");
+        if (e.IsSuccess)
+        {
+            await UpdateGeolocation(e.Result!);
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task UpdateGeolocation(GeolocationResult geolocation)
+    {
+        if (maps == null) return;
+
+        var coordinates = geolocation.Position!.Coords!;
+        var geoPosition = new GeolocationPosition { Coords = coordinates };
+        var position = new Position(coordinates.Longitude, coordinates.Latitude);
+        if (!layers.LayersAdded)
+            await layers.AddLayers(maps);
+        await layers.Clear(maps);
+        await layers.AddPosition(maps, geoPosition);
+        await maps.Configuration.ZoomTo(mapId, position, 15);
+    }
+
+    private async Task Reset()
+    {
+        try
+        {
+            if (maps is null) return;
+
+            if (isWatching)
+                await RemoveWatch();
+
+            await layers.RemoveLayers(maps);
+            await maps.ResetMap(mapId, Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+}

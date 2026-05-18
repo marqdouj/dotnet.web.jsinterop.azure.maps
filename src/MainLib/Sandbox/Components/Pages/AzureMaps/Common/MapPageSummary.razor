@@ -1,0 +1,21 @@
+﻿<FluentLabel>
+    @text
+</FluentLabel>
+
+@if (ChildContent != null)
+{
+    <br />
+    @ChildContent
+}
+
+@code {
+    private string text => IsMultiple 
+    ? "Multiple maps are intialized to different camera settings (location, zoom, style, etc.) with default controls."
+    : "The map is intialized to a specific camera setting (location, zoom, style etc.) with default controls.";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool IsMultiple { get; set; }
+}

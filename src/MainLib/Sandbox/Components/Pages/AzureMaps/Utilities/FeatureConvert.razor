@@ -1,0 +1,194 @@
+﻿@page "/map-utils-feature-convert"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<FeatureConvert> Logger
+@inject IToastService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="Feature Conversions" Header="Feature Conversions">
+    <SummaryContent>
+        <MapPageSummary>
+            <FluentLabel>
+                This page shows Feature conversions between GeoJson.Interop/Interop.Azure.Maps features.
+            </FluentLabel>
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentCheckbox Label="Camel Case Serialization" @bind-Value="@useCamelCase" />
+        </Toolbar>
+
+        <FluentTabs Height="100%">
+            <FluentTab Header="Single Feature">
+                <FluentTabs>
+                    <FluentTab Header="FeatureDef To Feature">
+                        <Toolbar>
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetConvertToFeature" />
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ConvertRange())" Title="Convert" OnClick="@ConvertToFeature" />
+                        </Toolbar>
+                        <FluentStack>
+                            <FluentTextArea @bind-Value="@mapDefToFeatureJson" Label="Map Feature" Height="@textAreaHeight" Width="@textAreaWidth" />
+                            <FluentTextArea @bind-Value="@mapFeatureFromDefJson" Label="Feature" Height="@textAreaHeight" Width="@textAreaWidth" ReadOnly="true" />
+                        </FluentStack>
+                    </FluentTab>
+                    <FluentTab Header="Feature to FeatureDef">
+                        <Toolbar>
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetConvertToFeatureDef" />
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ConvertRange())" Title="Convert" OnClick="@ConvertToFeatureDef" />
+                        </Toolbar>
+                        <FluentStack>
+                            <FluentTextArea @bind-Value="@mapFeatureToDefJson" Label="Feature" Height="@textAreaHeight" Width="@textAreaWidth" />
+                            <FluentTextArea @bind-Value="@mapDefFromFeatureJson" Label="Map Feature" Height="@textAreaHeight" Width="@textAreaWidth" ReadOnly="true" />
+                        </FluentStack>
+                    </FluentTab>
+                </FluentTabs>
+            </FluentTab>
+            <FluentTab Header="Collection of Features">
+                <FluentTabs>
+                    <FluentTab Header="FeatureDefs To Features">
+                        <Toolbar>
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetConvertToFeatures" />
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ConvertRange())" Title="Convert" OnClick="@ConvertToFeatures" />
+                        </Toolbar>
+                        <FluentStack>
+                            <FluentTextArea @bind-Value="@mapDefsToFeaturesJson" Label="MapFeatures" Height="@textAreaHeight" Width="@textAreaWidth" />
+                            <FluentTextArea @bind-Value="@mapFeaturesFromDefsJson" Label="Features" Height="@textAreaHeight" Width="@textAreaWidth" ReadOnly="true" />
+                        </FluentStack>
+                    </FluentTab>
+                    <FluentTab Header="Features to FeatureDefs">
+                        <Toolbar>
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetConvertToFeatureDefs" />
+                            <FluentButton IconStart="@(new Icons.Regular.Size20.ConvertRange())" Title="Convert" OnClick="@ConvertToFeatureDefs" />
+                        </Toolbar>
+                        <FluentStack>
+                            <FluentTextArea @bind-Value="@mapFeaturesToDefsJson" Label="Features" Height="@textAreaHeight" Width="@textAreaWidth" />
+                            <FluentTextArea @bind-Value="@mapDefsFromFeaturesJson" Label="Map Features" Height="@textAreaHeight" Width="@textAreaWidth" ReadOnly="true" />
+                        </FluentStack>
+                    </FluentTab>
+                </FluentTabs>
+            </FluentTab>
+        </FluentTabs>
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string textAreaHeight = "400px";
+    private const string textAreaWidth = "400px";
+
+    private string? mapDefToFeatureJson;
+    private string? mapFeatureFromDefJson;
+    private string? mapFeatureToDefJson;
+    private string? mapDefFromFeatureJson;
+
+    private string? mapDefsToFeaturesJson;
+    private string? mapFeaturesFromDefsJson;
+    private string? mapFeaturesToDefsJson;
+    private string? mapDefsFromFeaturesJson;
+
+    private bool useCamelCase;
+    private MapFeature<LineString>? lineString;
+    private List<MapFeature<Point>>? symbols;
+    private Feature<LineString, Properties>? lineStringFeature;
+    private FeatureCollection<Point, Properties>? lineStringFeatures;
+    private JsonNamingPolicy? namingPolicy => useCamelCase ? JsonNamingPolicy.CamelCase : default;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await DataService.GetLineLayerData();
+        lineString = data.GetLineLayerFeatureDef();
+        lineString.Id = "ConvertToFeature";
+        symbols = data.GetDefaultSymbolLayerFeatures().Cast<MapFeature<Point>>().ToList();
+        lineStringFeature = lineString.ToFeature<LineString>();
+        lineStringFeatures = symbols.ToFeatureCollection();
+
+        ResetConvertToFeature();
+        ResetConvertToFeatures();
+        ResetConvertToFeatureDef();
+        ResetConvertToFeatureDefs();
+    }
+
+    private void ResetConvertToFeature()
+    {
+        mapDefToFeatureJson = lineString!.ToJson(namingPolicy);
+        mapFeatureFromDefJson = "";
+    }
+
+    private async Task ConvertToFeature()
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(mapDefToFeatureJson);
+            var featureDef = mapDefToFeatureJson.ToMapFeature<LineString>();
+            var feature = featureDef!.ToFeature<LineString>();
+            mapFeatureFromDefJson = feature.ToJson(namingPolicy);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private void ResetConvertToFeatureDef()
+    {
+        mapFeatureToDefJson = lineStringFeature!.ToJson(namingPolicy);
+        mapDefFromFeatureJson = "";
+    }
+
+    private async Task ConvertToFeatureDef()
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(mapFeatureToDefJson);
+            var feature = mapFeatureToDefJson.ToFeature<LineString>(namingPolicy);
+            mapDefFromFeatureJson = feature?.ToMapFeature<LineString>(lineString!.AsShape).ToJson(namingPolicy);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private void ResetConvertToFeatures()
+    {
+        mapDefsToFeaturesJson = symbols!.ToJson(namingPolicy);
+        mapFeaturesFromDefsJson = "";
+    }
+
+    private async Task ConvertToFeatures()
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(mapDefsToFeaturesJson);
+            var featureDefs = mapDefsToFeaturesJson.ToMapFeatures<Point>(namingPolicy);
+            mapFeaturesFromDefsJson = featureDefs!.ToFeatureCollection().ToJson(namingPolicy);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private void ResetConvertToFeatureDefs()
+    {
+        mapFeaturesToDefsJson = lineStringFeatures!.ToJson(namingPolicy);
+        mapDefsFromFeaturesJson = "";
+    }
+
+    private async Task ConvertToFeatureDefs()
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(mapFeaturesToDefsJson);
+            var features = mapFeaturesToDefsJson.ToFeatureCollection<Point>(namingPolicy);
+            mapDefsFromFeaturesJson = features.ToMapFeatures<Point>(false).ToJson(namingPolicy);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+}

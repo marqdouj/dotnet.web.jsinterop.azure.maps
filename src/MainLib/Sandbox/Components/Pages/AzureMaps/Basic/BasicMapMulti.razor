@@ -1,0 +1,98 @@
+﻿@page "/map-basic-multi"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<BasicMapMulti> Logger
+@inject IToastService ToastService
+
+<MapPage Title="Basic Map (Multiple)">
+    <SummaryContent>
+        <MapPageSummary IsMultiple="true"/>
+    </SummaryContent>
+    <ChildContent>
+        <FluentGrid>
+            <FluentGridItem>
+                <FluentCard AreaRestricted="false" MinimalStyle="true" Width="@cardWidth">
+                    <Toolbar>
+                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset A" OnClick="@(() => ResetMap(mapIdA))" />
+                    </Toolbar>
+
+                    <MapControl MapId="@mapIdA" Height="400px" />
+                </FluentCard>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <FluentCard AreaRestricted="false" MinimalStyle="true" Width="@cardWidth">
+                    <Toolbar>
+                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset B" OnClick="@(() => ResetMap(mapIdB))" />
+                    </Toolbar>
+
+                    <MapControl MapId="@mapIdB" Height="400px" />
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapIdA = "mapMultipleA";
+    private const string mapIdB = "mapMultipleB";
+    private const string cardWidth = "400px";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private readonly MapOptions mapOptionsA = MapExtensions.GetDefaultMapOptions();
+    private readonly MapOptions mapOptionsB = MapExtensions.GetDefaultMapOptions();
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                mapOptionsA.Style!.Style = MapStyle.road_shaded_relief;
+                mapOptionsB.Style!.Style = MapStyle.satellite_road_labels;
+                await maps.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
+                await maps.CreateDefaultMap(mapIdB, Logger, ToastService, options: mapOptionsB);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    # endregion
+
+    #region MapsInterop
+        
+    private async Task ResetMap(string mapId)
+    {
+        if (mapReady)
+        {
+            var options = mapId == mapIdA ? mapOptionsA : mapOptionsB;
+            await maps!.ResetMap(mapId, Logger, ToastService, options);
+        }
+    }
+
+    #endregion
+}

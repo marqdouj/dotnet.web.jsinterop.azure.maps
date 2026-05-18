@@ -1,0 +1,136 @@
+﻿@page "/map-utils-mercators"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<MercatorCalc> Logger
+@inject IToastService ToastService
+@inject IAzureMapsCSDocReader MapDocs
+
+<MapPage Title="Mercators">
+    <SummaryContent>
+        <FluentLabel>
+            This page demonstrates Mercator calculations.
+        </FluentLabel>
+    </SummaryContent>
+    <ChildContent>
+        <FluentCard AreaRestricted="false" Height="150px">
+            <Toolbar>
+                <FluentButton Disabled="@mapsNotReady" IconStart="@(new Icons.Regular.Size20.Calculator())" Title="Do Conversions" OnClick="@GetMercatorResults" />
+            </Toolbar>
+            <FluentStack>
+                <FluentTextInput TextInputType="TextInputType.Number" @bind-Value="@longitude" Label="Longitude" />
+                <FluentTextInput TextInputType="TextInputType.Number" @bind-Value="@latitude" Label="Latitude" />
+            </FluentStack>
+        </FluentCard>
+
+        <FluentCard>
+            <FluentLabel Typo="Typography.Subject">Results:<br /><br /></FluentLabel>
+
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="15px">
+                <DocItemEdit Model="@documents?.FromPosition">
+                    @results.FromPosition
+                </DocItemEdit>
+
+                <DocItemEdit Model="@documents?.ToPosition">
+                    @results.ToPosition
+                </DocItemEdit>
+
+                <DocItemEdit Model="@documents?.MercatorScale">
+                    @results.MercatorScale
+                </DocItemEdit>
+
+                <DocItemEdit Model="@documents?.MeterInMercatorUnits">
+                    @results.MeterInMercatorUnits
+                </DocItemEdit>
+            </FluentStack>
+        </FluentCard>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"/>
+
+@code {
+    private Documents? documents;
+    private IAzureMapsInterop? maps;
+    private bool mapsReady => maps != null;
+    private bool mapsNotReady => !mapsReady;
+    private Position mercatorPosition = new Position(-122.33, 47.6); // (Seattle, WA)
+    private string? longitude;
+    private string? latitude;
+    private MercatorResults results = new();
+
+    protected override void OnInitialized()
+    {
+        var source = MapDocs.CreateDocument<IAzureMapsMercators>();
+        documents = new(source);
+
+        longitude = mercatorPosition.Longitude.ToString();
+        latitude = mercatorPosition.Latitude.ToString();
+    }
+
+    private async Task GetMercatorResults()
+    {
+        try
+        {
+            if (maps is null) return;
+
+            mercatorPosition = new Position(double.Parse(longitude ?? "0"), double.Parse(latitude ?? "0"));
+            var data = (Position)mercatorPosition.Clone();
+            var fromPosition = await maps.Mercators.FromPosition(data);
+            var toPosition = await maps.Mercators.ToPosition(fromPosition);
+            var mercatorScale = await maps.Mercators.MercatorScale(data.Latitude);
+            var meterInMercatorUnits = await maps.Mercators.MeterInMercatorUnits(mercatorPosition.Latitude);
+
+            var conv = new MercatorResults
+            {
+                FromPosition = fromPosition.ToString(),
+                ToPosition = toPosition.ToString(),
+                MercatorScale = $"Latitude:{data.Latitude} Scale:{mercatorScale}",
+                MeterInMercatorUnits = $"Latitude:{data.Latitude} Units:{meterInMercatorUnits}"
+            };
+
+            results = conv;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map Provider Handler
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    # endregion
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Source { get; } = document?.GetItem(nameof(IAzureMapsMercators));
+        public CSDocumentItem? FromPosition { get; } = document?.GetItem(nameof(IAzureMapsMercators.FromPosition));
+        public CSDocumentItem? FromPositions { get; } = document?.GetItem(nameof(IAzureMapsMercators.FromPositions));
+        public CSDocumentItem? MercatorScale { get; } = document?.GetItem(nameof(IAzureMapsMercators.MercatorScale));
+        public CSDocumentItem? MeterInMercatorUnits { get; } = document?.GetItem(nameof(IAzureMapsMercators.MeterInMercatorUnits));
+        public CSDocumentItem? ToFloat32Array { get; } = document?.GetItem(nameof(IAzureMapsMercators.ToFloat32Array));
+        public CSDocumentItem? ToPosition { get; } = document?.GetItem(nameof(IAzureMapsMercators.ToPosition));
+        public CSDocumentItem? ToPositions { get; } = document?.GetItem(nameof(IAzureMapsMercators.ToPositions));
+    }
+
+    private class MercatorResults()
+    {
+        public string? FromPosition { get; set; }
+        public string? ToPosition { get; set; }
+        public string? MercatorScale { get; set; }
+        public string? MeterInMercatorUnits { get; set; }
+    }
+}

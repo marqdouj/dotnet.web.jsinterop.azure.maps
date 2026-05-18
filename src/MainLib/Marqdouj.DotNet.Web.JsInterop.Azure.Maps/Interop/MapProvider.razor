@@ -1,0 +1,108 @@
+﻿@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
+@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
+@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
+@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Geolocation
+@using Microsoft.Extensions.Logging
+@using Microsoft.Extensions.Options
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+@inject IOptions<MapConfiguration> Configuration
+@inject ILogger<MapProvider> Logger
+
+@code {
+    private IAzureMapsInterop maps = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            MapConfiguration? config = null;
+
+            try
+            {
+                config = Configuration?.Value;
+                var auth = config?.AuthOptions;
+
+                if (config == null)
+                    throw new Exception($"Injection of {nameof(MapConfiguration)} returned null.");
+
+                if (auth == null)
+                    throw new Exception($"Injection of {nameof(MapConfiguration)}.{nameof(MapConfiguration.AuthOptions)} returned null.");
+
+                if (auth.IsNotValid())
+                    throw new Exception($"Invalid settings for the map: {auth.InValidMessage()}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Map authentication failed.");
+                await OnMapProviderInitialized.InvokeAsync(new MapProviderArgs(MapProviderError.AuthenticationFailed, ex));
+                return;
+            }
+
+            try
+            {
+                if (maps != null)
+                    await maps.DisposeAsync();
+                maps = AzureMapsFactory.Create(JSRuntime, this, config);
+                await OnMapProviderInitialized.InvokeAsync(new MapProviderArgs(maps));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"{nameof(MapProvider)} Initialization caused an exception.");
+                await OnMapProviderInitialized.InvokeAsync(new MapProviderArgs(MapProviderError.CreateInstanceFailed, ex));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Raised when the map provider has been successfully initialized.
+    /// </summary>
+    [Parameter, EditorRequired] public EventCallback<MapProviderArgs> OnMapProviderInitialized { get; set; }
+
+    #region IAzureMapsInterop
+
+    /// <summary>
+    /// Event that is raised when an map error occurs.
+    /// </summary>
+    [Parameter] public EventCallback<MapEventArgs> OnMapEventError { get; set; }
+
+    /// <summary>
+    /// Event that is raised by a subscribed map event.
+    /// </summary>
+    [Parameter] public EventCallback<MapEventArgs> OnMapEvent { get; set; }
+
+    /// <summary>
+    /// Event that is raised by the azure map when it is ready for interation.
+    /// </summary>
+    [Parameter] public EventCallback<MapEventArgs> OnMapEventReady { get; set; }
+
+    [Parameter]
+    public EventCallback<GeolocationEventArgs> OnGeolocationWatch { get; set; }
+
+    [JSInvokable]
+    public async Task NotifyMapEventError(MapEventArgs e) => await OnMapEventError.InvokeAsync(e);
+
+    [JSInvokable]
+    public async Task NotifyMapEvent(MapEventArgs e) => await OnMapEvent.InvokeAsync(e);
+
+    [JSInvokable]
+    public async Task NotifyMapEventReady(MapEventArgs e) => await OnMapEventReady.InvokeAsync(e);
+
+    [JSInvokable]
+    public async Task NotifyGeolocationWatch(GeolocationEventArgs e) { await OnGeolocationWatch.InvokeAsync(e); }
+
+    #endregion
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (maps != null)
+                await maps.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+}

@@ -1,0 +1,144 @@
+﻿@page "/map-basic-layers"
+@rendermode InteractiveServer
+@inject IAzureMapsCSDocReader MapDocs
+@inject IJSRuntime JSRuntime
+@inject ILogger<BasicMapLayers> Logger
+@inject IToastService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Basic Map (Layers)">
+    <SummaryContent>
+        <MapPageSummary>
+            <FluentLabel>
+                Select an item from the list to display a basic map layer.
+            </FluentLabel>
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <FluentStack>
+            <FluentListbox Items="@items" Height="400px"
+                           TOption="IMapLayerViewModel"
+                           TValue="IMapLayerViewModel"
+                           OptionText="@(item => item?.Name)"
+                           ValueChanged="RowChanged">
+            </FluentListbox>
+
+            <MapControl MapId="@mapId" />
+        </FluentStack>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private readonly string mapId = "mapLayers";
+    private ICSDocument? document;
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private MapLayerViewModels viewModels = default!;
+    private List<IMapLayerViewModel> items = [];
+    private List<string> itemNames = [];
+
+    override protected async Task OnInitializedAsync()
+    {
+        try
+        {
+            viewModels = await MapDataService.GetViewModels();
+            document = MapDocs.CreateDocument<LayerType>();
+            items = viewModels.GetModels();
+            itemNames = items.Select(e => e.Name).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task RowChanged(IMapLayerViewModel value)
+    {
+        foreach (var item in items)
+            item.IsActiveRow = false;
+
+        value.IsActiveRow = true;
+        await ShowActiveLayer();
+    }
+
+    private async Task ShowActiveLayer()
+    {
+        try
+        {
+            foreach (var item in items.Where(i => i.IsLoaded && !i.IsActiveRow))
+                await maps!.ShowLayer(mapId, item, false);
+
+            var activeRow = items.FirstOrDefault(i => i.IsActiveRow);
+            if (activeRow != null)
+            {
+                if (!activeRow.IsLoaded)
+                {
+                    var options = activeRow.Source.GetOptions();
+                    await maps!.AddBasicMapLayer(mapId, MapDataService, activeRow);
+                }
+
+                await maps!.ShowLayer(mapId, activeRow, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        { 
+            items.FirstOrDefault(e => e.IsActiveRow)?.IsActiveRow = false;
+            await ShowActiveLayer();
+            await maps!.ResetMap(mapId, Logger, ToastService); 
+        }
+    }
+
+    #endregion
+}

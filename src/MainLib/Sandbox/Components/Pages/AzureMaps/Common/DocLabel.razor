@@ -1,0 +1,56 @@
+﻿<FluentStack HorizontalGap="@ChildContentGap" VerticalAlignment="VerticalAlignment.Center" Width="auto">
+    <FluentLabel Style="white-space:nowrap;">
+        @displayName
+        @if (!string.IsNullOrWhiteSpace(tooltipText))
+        {
+            <IconTooltip Style="@tooltipStyle" Text="@tooltipText"></IconTooltip>
+        }
+    </FluentLabel>
+
+    @ChildContent
+</FluentStack>
+
+@code {
+    private string tooltipId = UIExtensions.GetRandomCssId();
+    private string tooltipStyle => $"margin-left:{TooltipGap ?? 3}px;";
+    private string? displayName => Model?.DisplayName ?? Text;
+    private string? tooltipText => Model?.Comment.Summary ?? TooltipText;
+
+    /// <summary>
+    /// The model containing the information to display in the label and tooltip. 
+    /// If provided, the display name from the model will be used as the label text, 
+    /// and the summary from the model's comment will be used as the tooltip text. 
+    /// If not provided, the <see cref="Text"/> parameter will be used for the label text, and no tooltip will be displayed.
+    /// </summary>
+    [Parameter]
+    public CSDocumentItem? Model { get; set; }
+
+    /// <summary>
+    /// The text to display in the label. If <see cref="Model"/> is provided, 
+    /// this will be ignored and the display name from the model will be used instead.
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// The text to display in the tooltip. If <see cref="Model"/> is provided and contains a summary in its comment, 
+    /// this will be ignored and the summary from the model will be used instead.
+    /// </summary>
+    [Parameter]
+    public string? TooltipText { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// The horizontal gap between the label and the child content. <see cref="FluentStack.HorizontalGap"/> Default is 10.
+    /// </summary>
+    [Parameter]
+    public string? ChildContentGap { get; set; }
+
+    /// <summary>
+    /// The horizontal gap between the label child content and the tooltip icon. Default is 3.
+    /// </summary>
+    [Parameter]
+    public int? TooltipGap { get; set; }
+}

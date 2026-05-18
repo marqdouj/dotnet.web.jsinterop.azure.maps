@@ -1,0 +1,25 @@
+﻿<FluentIcon Id="@tooltipId" Value="@icon" Style="@Style" Tooltip="@Text" />
+
+@code {
+    private string tooltipId = UIExtensions.GetRandomCssId();
+    private readonly Icon defaultIcon = new Icons.Regular.Size16.Info();
+    private Icon icon => Icon ?? defaultIcon;
+
+    /// <summary>
+    /// <see cref="FluentIcon{Icon}"/>
+    /// </summary>
+    [Parameter]
+    public Icon? Icon { get; set; }
+
+    /// <summary>
+    /// Style for the FluentIcon. <see cref="FluentIcon{Icon}.StyleValue"/>
+    /// </summary>
+    [Parameter]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Value to be displayed in the tooltip.
+    /// </summary>
+    [Parameter, EditorRequired] 
+    public string? Text { get; set; }
+}

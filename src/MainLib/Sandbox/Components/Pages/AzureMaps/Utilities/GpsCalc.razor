@@ -1,0 +1,245 @@
+﻿@page "/map-utils-gps-calc"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<GpsCalc> Logger
+@inject IToastService ToastService
+@inject IMapDataService DataService
+@inject IAzureMapsCSDocReader MapDocs
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <MapPageSummary>
+            <FluentLabel>
+                This page shows GPS calculations.
+            </FluentLabel>
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <FluentTabs Height="100%">
+            <FluentTab>
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.CalculateBearing" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <FluentStack Height="100%">
+                        <FluentCard AreaRestricted="false" Width="300px">
+                            <FluentStack Orientation="Orientation.Vertical">
+                                <FluentSelect Items="@models" Width="250px"
+                                              Label="From Position"
+                                              TOption="PositionViewModel"
+                                              TValue="string"
+                                              OptionText="@(item => item?.Text)"
+                                              OptionValue="@(item => item.Value)"
+                                              ValueChanged="@GpsFromChanged" />
+
+                                <FluentSelect Items="@models" Width="250px"
+                                              Label="To Position"
+                                              TOption="PositionViewModel"
+                                              TValue="string"
+                                              OptionText="@(item => item?.Text)"
+                                              OptionValue="@(item => item.Value)"
+                                              ValueChanged="@GpsToChanged" />
+
+                                <br />
+                                <Toolbar>
+                                    <FluentLabel>Bearing (degrees): @bearing</FluentLabel>
+                                    <FluentButton Disabled="@canNotDisplayBearing" IconStart="@(new Icons.Regular.Size20.GlobeLocation())" Title="Display on Map" OnClick="@ShowGpsCalcuationOnMap" />
+                                </Toolbar>
+                            </FluentStack>
+                        </FluentCard>
+
+                        <MapControl MapId="@mapId" Height="400px" Width="400px" />
+                    </FluentStack>
+                </ChildContent>
+            </FluentTab>
+
+            <FluentTab>
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.ToDegrees" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <FluentCard>
+                        <FluentLabel>Enter Radians:</FluentLabel>
+                        <FluentTextInput TextInputType="TextInputType.Number" @bind-Value="@radiansText" />
+                        <br />
+                        <FluentLabel>Degrees: @toDegreesFromRadians</FluentLabel>
+                    </FluentCard>
+                </ChildContent>
+            </FluentTab>
+
+            <FluentTab>
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.ToRadians" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <FluentCard>
+                        <FluentLabel>Enter Degrees:</FluentLabel>
+                        <FluentTextInput TextInputType="TextInputType.Number" @bind-Value="@degreesText" />
+                        <br />
+                        <FluentLabel>Radians: @toRadiansFromDegrees</FluentLabel>
+                    </FluentCard>
+                </ChildContent>
+            </FluentTab>
+        </FluentTabs>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapId = "mapGpsCalc";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private readonly List<PositionViewModel> models = [];
+    private readonly ILayer gpsLayer = LayerType.Line.GetDefaultLayer();
+    private string? gpsFrom;
+    private string? gpsTo;
+    private string? bearing = "0";
+    private Position? gpsFromPosition;
+    private Position? gpsToPosition;
+    private bool canNotDisplayBearing => mapNotReady || bearing == "0";
+    private Documents? documents;
+    private string title => documents?.Source?.DisplayName ?? "Gps Calculator";
+    private string? degreesText;
+    private string? radiansText;
+    private double degrees => string.IsNullOrWhiteSpace(degreesText) ? 0 : double.Parse(degreesText);
+    private double radians => string.IsNullOrWhiteSpace(radiansText) ? 0 : double.Parse(radiansText);
+    private double toDegreesFromRadians => GpsCalculator.ToDegrees(radians);
+    private double toRadiansFromDegrees => GpsCalculator.ToRadians(degrees);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await DataService.GetLineLayerData();
+
+        for (int i = 0; i < data.Count; i++)
+            models.Add(new(new(data[i]), i));
+
+        mapOptions.Camera?.Center = data[0];
+
+        var source = MapDocs.CreateDocument(typeof(GpsCalculator));
+        documents = new(source);
+    }
+
+    private async Task GpsFromChanged(string? value)
+    {
+        gpsFrom = value;
+        bearing = await CalcuateGpsFromBearing();
+    }
+
+    private async Task GpsToChanged(string? value)
+    {
+        gpsTo = value;
+        bearing = await CalcuateGpsFromBearing();
+    }
+
+    private async Task<string?> CalcuateGpsFromBearing()
+    {
+        try
+        {
+            var from = int.Parse(gpsFrom ?? "0");
+            var to = int.Parse(gpsTo ?? "0");
+            gpsFromPosition = models[from].Position;
+            gpsToPosition = models[to].Position;
+
+            var result = GpsCalculator.CalculateBearing(gpsFromPosition.Latitude, gpsFromPosition.Longitude, gpsToPosition.Latitude, gpsToPosition.Longitude);
+            return result == 0 ? "0" : result.ToString("F6");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+            return null;
+        }
+    }
+
+    private async Task ShowGpsCalcuationOnMap()
+    {
+        try
+        {
+            if (maps is null || gpsFromPosition is null || gpsToPosition is null)
+                return;
+
+            await maps.Sources.Clear(mapId, gpsLayer.LayerSource);
+            var lineDef = new MapFeature(new LineString([gpsFromPosition, gpsToPosition]));
+            await maps.Features.Add(mapId, lineDef, gpsLayer.LayerSource.Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            bearing = await CalcuateGpsFromBearing();
+        }
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps =await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+        await maps!.Layers.Add(mapId, gpsLayer);
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (!mapReady) return;
+
+        await maps!.Sources.Clear(mapId, gpsLayer.LayerSource);
+        await maps.ResetMap(mapId, Logger, ToastService, mapOptions);
+    }
+
+    #endregion
+
+    private class PositionViewModel(Position position, int index)
+    {
+        public Position Position { get; } = position;
+        public string Text => $"{Position.ToString("G8")}";
+        public string Value { get; set; } = index.ToString();
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Source { get; } = document?.GetItem(nameof(GpsCalculator));
+        public CSDocumentItem? CalculateBearing { get; } = document?.GetItem(nameof(GpsCalculator.CalculateBearing));
+        public CSDocumentItem? ToDegrees { get; } = document?.GetItem(nameof(GpsCalculator.ToDegrees));
+        public CSDocumentItem? ToRadians { get; } = document?.GetItem(nameof(GpsCalculator.ToRadians));
+    }
+}

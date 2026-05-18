@@ -1,0 +1,20 @@
+﻿<FluentStack Orientation="@Orientation"
+             HorizontalAlignment="HorizontalAlignment.Left"
+             VerticalAlignment="VerticalAlignment.Center">
+    <DocLabel Model="Model">@HeaderContent</DocLabel>
+    @ChildContent
+</FluentStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+
+    [Parameter, EditorRequired]
+    public CSDocumentItem Model { get; set; }
+
+    [Parameter]
+    public Orientation Orientation { get; set; } = Orientation.Vertical;
+}

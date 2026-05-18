@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "lib": [ "ESNext", "DOM" ],
+    "skipLibCheck": true,
+    "outDir": "tsgen",
+    "rootDir": "scripts",
+    "target": "esnext",
+    "moduleResolution": "bundler",
+    "typeRoots": [ "node_modules/@types" ]
+  },
+  "include": [ "scripts/**/*" ],
+  "compileOnSave": true,
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ]
+}
