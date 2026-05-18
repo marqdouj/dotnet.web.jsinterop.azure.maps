@@ -10,13 +10,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>11.0.0-Preview-1.0</Version>
     <Title>.NET library for working with Azure Maps in JavaScript interop scenarios.</Title>
-    <PackageProjectUrl>https://github.com/marqdouj/dotnet.web.jsinterop.azuremaps</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps</PackageProjectUrl>
     <PackageTags>Blazor JSInterop Map Azure</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Authors>Douglas Marquardt</Authors>
     <Copyright>© Douglas Marquardt. All rights reserved.</Copyright>
-    <Description>Designed for use for Blazor interaction with the Azure Maps SDK</Description>
+    <Description>Designed for Blazor interaction with the Azure Maps SDK</Description>
   </PropertyGroup>
 
 	<Target Name="NpmBuild" AfterTargets="CoreCompile">
