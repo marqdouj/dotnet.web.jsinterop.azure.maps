@@ -1,15 +1,19 @@
-﻿@page "/map-basic-map"
+﻿@page "/design"
 @rendermode InteractiveServer
-@inject ILogger<BasicMap> Logger
+@inject ILogger<Design> Logger
 @inject IToastService ToastService
 
-<MapPage Title="Basic Map">
+<MapPage Title="Design">
     <SummaryContent>
         <MapPageSummary />
     </SummaryContent>
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentMenu>
+                <FluentMenuButton Label="Menu: ">@activeMenu</FluentMenuButton>
+                @RenderMenuItems()
+            </FluentMenu>
         </Toolbar>
 
         <MapControl MapId="@mapId" />
@@ -21,10 +25,28 @@
              OnMapEventReady="@OnMapEventReady" />
 
 @code {
-    private const string mapId = "mapBasic";
+    private const string mapId = "mapDesign";
     private IAzureMapsInterop? maps;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
+    private string? activeMenu = "";
+
+    private async Task MenuClick(string? item)
+    {
+        await Task.CompletedTask;
+
+        activeMenu = item;
+        Console.WriteLine(activeMenu);
+    }
+
+
+    RenderFragment RenderMenuItems() =>
+        @<FluentMenuList>
+            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 1"))">Menu item 1</FluentMenuItem>
+            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 2"))">Menu item 2</FluentMenuItem>
+            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 3"))">Menu item 3</FluentMenuItem>
+            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 4"))">Menu item 4</FluentMenuItem>
+        </FluentMenuList>;
 
     #region Map Provider Handlers
 

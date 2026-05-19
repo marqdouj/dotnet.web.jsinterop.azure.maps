@@ -1,6 +1,5 @@
 ﻿@page "/map-basic-layers"
 @rendermode InteractiveServer
-@inject IAzureMapsCSDocReader MapDocs
 @inject IJSRuntime JSRuntime
 @inject ILogger<BasicMapLayers> Logger
 @inject IToastService ToastService
@@ -38,7 +37,6 @@
 
 @code {
     private readonly string mapId = "mapLayers";
-    private ICSDocument? document;
     private IAzureMapsInterop? maps;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
@@ -51,7 +49,6 @@
         try
         {
             viewModels = await MapDataService.GetViewModels();
-            document = MapDocs.CreateDocument<LayerType>();
             items = viewModels.GetModels();
             itemNames = items.Select(e => e.Name).ToList();
         }

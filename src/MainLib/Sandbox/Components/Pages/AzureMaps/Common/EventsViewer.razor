@@ -6,7 +6,7 @@
     <FluentDataGrid Items="@Events.Items.AsQueryable()"
                     TGridItem="MapEventArgsViewModel"
                     GenerateHeader="@DataGridGeneratedHeaderType.Sticky"
-                    GridTemplateColumns="10rem 7rem 12rem 1fr 7rem"
+                    GridTemplateColumns="@gridTemplateColumns"
                     RowStyle="@rowStyle"
                     MultiLine="@Mulitline"
                     ResizableColumns="true">
@@ -31,6 +31,8 @@
 
 @code {
     private string style => $"height:{Height ?? "200px"};width:{Width ?? "100%"};overflow:auto;border:groove;border-width:1";
+    private string gridTemplateColumns => ShowValue ? "auto auto auto 1fr auto" : "auto auto auto auto";
+
     private Func<MapEventArgsViewModel, string?> rowStyle = x => GetRowStyle(x);
 
     [Parameter, EditorRequired]
@@ -61,7 +63,7 @@
             case MapEventType.Error:
                 return "background-color: palevioletred";
             case MapEventType.Ready:
-                return "background-color: lightgreen";
+                return "background-color: green";
             default:
                 return null;
         }
