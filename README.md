@@ -20,4 +20,6 @@
 
 ## [Quickstart](Documents/Quickstart.md)
 
+## [Build Solution](Documents/BuildSolution.md)
+
 ## [Release Notes](Documents/ReleaseNotes.md)
