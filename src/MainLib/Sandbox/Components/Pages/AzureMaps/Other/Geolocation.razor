@@ -22,11 +22,6 @@
         </Toolbar>
 
         <MapControl MapId="@mapId" />
-
-        <FluentOverlay @bind-Visible="@overlay"
-                       Transparent="false">
-            <FluentSpinner />
-        </FluentOverlay>
     </ChildContent>
 </MapPage>
 
@@ -34,6 +29,10 @@
              OnGeolocationWatch="@OnGeolocationWatch"
              OnMapEventError="@OnMapEventError"
              OnMapEventReady="@OnMapEventReady" />
+
+<FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+    <FluentSpinner />
+</FluentOverlay>
 
 @code {
     private const string mapId = "mapGeolocation";

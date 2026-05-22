@@ -59,6 +59,17 @@ export class Sources {
     }
     // #endregion
 
+    public static importDataFromUrl(mapId: string, sourceId: string, url: string) {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const ds = SourceHelper.getDataSource(mapRef, sourceId);
+        if (ds) {
+            ds.importDataFromUrl(url);
+        }
+    }
+
     // #region Remove
     public static remove(mapId: string, sources: Source[]): void {
         const mapRef = Factory.getMapReference(mapId);
@@ -178,11 +189,7 @@ export class SourceHelper {
     static getDataSource(mapRef: MapReference, datasourceId: string, logLevelFail: LogLevel = LogLevel.Error): atlas.source.DataSource | undefined {
         const ds = SourceHelper.getSource(mapRef, datasourceId);
 
-        if (!ds) {
-            return undefined;
-        }
-
-        if (!SourceHelper.isDataSource(ds)) {
+        if (!ds || !SourceHelper.isDataSource(ds)) {
             Logger.logMessage(mapRef.mapId, logLevelFail, `getDataSource: source with ID '${datasourceId}' is not a DataSource`);
             return undefined;
         }

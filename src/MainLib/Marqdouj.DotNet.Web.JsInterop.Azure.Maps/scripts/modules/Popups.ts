@@ -3,7 +3,7 @@ import { Logger, LogLevel } from "./common/";
 import { Factory, MapReference } from "./Factory";
 
 export class Popups {
-    public static add(mapId: string, popups: IPopupDef[]): void {
+    public static add(mapId: string, popups: PopupDef[]): void {
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)
             return;
@@ -15,10 +15,13 @@ export class Popups {
             (popup as any).id = popupDef.id
 
             mapRef.map.popups.add(popup);
+
+            if (popupDef.show)
+                popup.open();
         });
     }
 
-    public static remove(mapId: string, popups: IPopupDef[]): void {
+    public static remove(mapId: string, popups: PopupDef[]): void {
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)
             return;
@@ -28,6 +31,25 @@ export class Popups {
             if (popup) {
                 mapRef.map.popups.remove(popup);
             }
+        });
+    }
+
+    static show(mapId: string, popups: PopupDef[]) {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        popups ??= [];
+
+        popups.forEach(popupDef => {
+            const popup = this.#doGetPopup(mapRef, popupDef.id);
+            if (!popup)
+                return;
+
+            if (popupDef.show)
+                popup.open();
+            else
+                popup.close();
         });
     }
 
@@ -43,7 +65,7 @@ export class Popups {
         const popup = popups.findLast(value => Popups.#hasId(value, id));
 
         if (!popup) {
-            Logger.logMessage(mapRef.mapId, LogLevel.Debug, `getPopup: popup not found where id = '${id}'`);
+            Logger.logMessage(mapRef.mapId, LogLevel.Warn, `popup not found where id = '${id}'`);
         }
 
         return popup;
@@ -54,7 +76,8 @@ export class Popups {
     }
 }
 
-interface IPopupDef {
+interface PopupDef {
     id: string;
     options: atlas.PopupOptions;
+    show?: boolean;
 }

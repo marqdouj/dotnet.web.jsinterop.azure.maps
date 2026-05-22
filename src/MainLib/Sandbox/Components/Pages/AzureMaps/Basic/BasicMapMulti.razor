@@ -10,7 +10,7 @@
     <ChildContent>
         <FluentGrid>
             <FluentGridItem>
-                <FluentCard AreaRestricted="false" MinimalStyle="true" Width="@cardWidth">
+                <FluentCard Width="@cardWidth">
                     <Toolbar>
                         <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset A" OnClick="@(() => ResetMap(mapIdA))" />
                     </Toolbar>
@@ -20,7 +20,7 @@
             </FluentGridItem>
 
             <FluentGridItem>
-                <FluentCard AreaRestricted="false" MinimalStyle="true" Width="@cardWidth">
+                <FluentCard Width="@cardWidth">
                     <Toolbar>
                         <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset B" OnClick="@(() => ResetMap(mapIdB))" />
                     </Toolbar>

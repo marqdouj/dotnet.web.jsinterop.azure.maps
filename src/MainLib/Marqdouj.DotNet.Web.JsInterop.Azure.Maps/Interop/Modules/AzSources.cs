@@ -56,6 +56,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<List<MapEventShape>> GetShapes(string mapId, string sourceId);
 
         /// <summary>
+        /// Downloads a GeoJSON document and imports its data into the data source.
+        /// The GeoJSON document must be on the same domain or accessible using CORS.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="sourceId"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        ValueTask ImportDataFromUrl(string mapId, string sourceId, string url);
+
+        /// <summary>
         /// Removes a collection of LayerSourceBase items from the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the sources will be removed.</param>
@@ -84,6 +94,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         public async ValueTask Add(string mapId, LayerSourceBase item)
         {
             await Add(mapId, [item]);
+        }
+
+        public async ValueTask ImportDataFromUrl(string mapId, string sourceId, string url)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, sourceId, url);
         }
 
         public async ValueTask Remove(string mapId, LayerSourceBase item)

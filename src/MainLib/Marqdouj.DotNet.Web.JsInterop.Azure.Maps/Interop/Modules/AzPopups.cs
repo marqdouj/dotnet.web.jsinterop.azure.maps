@@ -40,6 +40,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="item"></param>
         /// <returns></returns>
         ValueTask Remove(string mapId, Popup item);
+
+        /// <summary>
+        /// Opens/Closes the popup based on the <inheritdoc cref="Popup.Show"/> property.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        ValueTask Show(string mapId, IEnumerable<Popup> items);
     }
 
     internal class AzPopups(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsPopups
@@ -63,6 +71,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         }
 
         public async ValueTask Remove(string mapId, IEnumerable<Popup> items)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, items?.Cast<object>().ToList());
+        }
+
+        public async ValueTask Show(string mapId, IEnumerable<Popup> items)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, items?.Cast<object>().ToList());

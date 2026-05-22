@@ -5,6 +5,7 @@ namespace Sandbox.Services
 {
     public interface IMapDataService
     {
+        Task<List<AcmePipelineInfo>> GetAcmePipelines();
         Task<List<Position>> GetBubbleLayerData();
         Task<string> GetHeatMapLayerUrl();
         Task<ImageLayerData> GetImageLayerData();
@@ -20,6 +21,17 @@ namespace Sandbox.Services
     /// </summary>
     internal class DataService : IMapDataService
     {
+        public async Task<List<AcmePipelineInfo>> GetAcmePipelines()
+        {
+            await Task.CompletedTask;
+            return
+            [
+                new(1, "ACME 24 inch Main Line", ["GeoJSON\\ACME 24 inch Main Line_Part1.geojson", "GeoJSON\\ACME 24 inch Main Line_Part2.geojson"], true, new Position(-113.38603100,52.43719400) ),
+                new(2, "ACME 20 inch Lateral", ["GeoJSON\\ACME 20 inch Lateral.geojson"], false, new Position(-113.08237963, 52.32390956)),
+                new(3, "ACME 16 inch Lateral", ["GeoJSON\\ACME 16 inch Lateral.geojson"], false, new Position(-113.36087359, 52.3079367)),
+            ];
+        }
+
         public async Task<List<Position>> GetBubbleLayerData()
         {
             await Task.CompletedTask;
@@ -152,5 +164,20 @@ namespace Sandbox.Services
             new Position(-74.12544, 40.773941),
             new Position(-74.12544, 40.712216),
             new Position(-74.22655, 40.712216));
+    }
+
+    public class AcmePipelineInfo(int id, string name, List<string> parts, bool isMainLine, Position startPosition)
+    {
+        public int Id { get; } = id;
+        public string Name { get; } = name;
+
+        /// <summary>
+        /// List of Urls that make up parts of the line (could be single url).
+        /// </summary>
+        public List<string> Parts { get; } = parts;
+
+        public bool IsMainLine { get; } = isMainLine;
+
+        public Position StartPosition { get; } = startPosition;
     }
 }

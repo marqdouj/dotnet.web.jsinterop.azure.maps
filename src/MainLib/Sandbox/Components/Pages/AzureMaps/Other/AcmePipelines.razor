@@ -1,0 +1,225 @@
+﻿@page "/map-acme-pipelines"
+@rendermode InteractiveServer
+@inject ILogger<AcmePipelines> Logger
+@inject IToastService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="GeoJSON">
+    <SummaryContent>
+        <FluentLabel>This demo simulates a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.</FluentLabel>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <FluentStack>
+            <FluentStack Orientation="Orientation.Vertical" Height="400px" Width="260px">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5px" Width="200px">
+                    <FluentLabel Weight="LabelWeight.Semibold">Models</FluentLabel>
+                    <FluentLabel>Select a model to display it's popup</FluentLabel>
+                    <FluentListbox Items="@vpms"
+                                   TOption="VpmViewModel"
+                                   TValue="VpmViewModel"
+                                   OptionText="@(item => item.Name)"
+                                   ValueChanged="PipelineChanged">
+                    </FluentListbox>
+                </FluentStack>
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5px" Width="200px">
+                    <FluentLabel Weight="LabelWeight.Semibold">Legend</FluentLabel>
+                    <FluentCard>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@mainlineLegendStyle" />
+                            <FluentLabel>Mainline</FluentLabel>
+                        </FluentStack>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@lateralLegendStyle" />
+                            <FluentLabel>Lateral</FluentLabel>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentStack>
+            </FluentStack>
+
+            <MapControl MapId="@mapId" />
+        </FluentStack>
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+
+
+@code {
+    private const string mapId = "mapAcmePipelines";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-113.08237963, 52.32390956), 9.5);
+    private List<AcmePipelineInfo> pipelines = [];
+    private List<VpmViewModel> vpms = [];
+    private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
+    private readonly LineLayer lateralLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
+    private readonly LineLayer mainLineLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
+    private readonly LineLayer leaderLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
+    private const string lateralColor = "MediumVioletRed";
+    private const string mainlineColor = "Purple";
+    private readonly string lateralLegendStyle = $"background-color: {lateralColor};width:1rem;height:1rem;";
+    private readonly string mainlineLegendStyle = $"background-color: {mainlineColor};width:1rem;height:1rem;";
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Only render one copy of the world.
+        //Lines are replecated multiple times when there is more than one copy of the world, but popups aren't.
+        mapOptions.Style = new() { RenderWorldCopies = false };
+
+        lateralLayer.Options = new() { StrokeColor = lateralColor, StrokeWidth = 3.5 };
+        mainLineLayer.Options = new() { StrokeColor = mainlineColor, StrokeWidth = 3.5 };
+
+        //Enable line metrics on the leader layer. This is needed to enable support for strokeGradient.
+        var ds = (DataSource)leaderLayer.LayerSource;
+        ds.Options!.LineMetrics = true;
+
+        pipelines = await DataService.GetAcmePipelines();
+        vpms = pipelines.Select(e => new VpmViewModel(e)).ToList();
+    }
+
+    private async Task PipelineChanged(VpmViewModel model)
+    {
+        try
+        {
+            foreach (var vpm in vpms)
+            {
+                vpm.Popup.Show = vpm.Id == model.Id;
+                await maps!.Popups.Show(mapId, [vpm.Popup]);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task LoadLayers()
+    {
+        try
+        {
+            ShowOverlay(true);
+
+            await maps!.Layers.Add(mapId, lateralLayer);
+            await maps!.Layers.Add(mapId, leaderLayer);
+            await maps!.Layers.Add(mapId, mainLineLayer);
+            await maps!.Layers.Add(mapId, symbolLayer);
+
+            foreach (var vpm in vpms)
+            {
+                ILayer layer = vpm.IsMainLine ? mainLineLayer : lateralLayer;
+
+                foreach (var part in vpm.Parts)
+                {
+                    await maps!.Sources.ImportDataFromUrl(mapId, layer.LayerSource.Id, part);
+                }
+
+                vpm.IsLoaded = true;
+
+                await maps.Popups.Add(mapId, vpm.Popup);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+        if (mapReady)
+        {
+            await LoadLayers();
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+    }
+
+    #endregion
+
+    private class VpmViewModel
+    {
+        private readonly AcmePipelineInfo info;
+
+        public VpmViewModel(AcmePipelineInfo info)
+        {
+            this.info = info;
+
+            Popup = new Popup();
+            Popup.Options = new()
+            {
+                Content = $"<div style=\"padding:10px;color:white\">{info.Name}</div >",
+                Position = info.StartPosition,
+                FillColor = "SlateGray",
+                CloseButton = true,
+            };
+        }
+
+        public int Id => info.Id;
+        public string Name => info.Name;
+        public List<string> Parts => info.Parts;
+        public bool IsMainLine => info.IsMainLine;
+        public bool IsLoaded { get; set; }
+        public Position StartPosition => info.StartPosition;
+        public Popup Popup { get; }
+    }
+}

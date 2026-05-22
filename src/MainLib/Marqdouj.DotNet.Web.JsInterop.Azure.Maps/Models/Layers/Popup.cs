@@ -14,6 +14,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         public PopupOptions Options { get; set { ArgumentNullException.ThrowIfNull(field, nameof(Options)); field = value; } } = new();
 
         /// <summary>
+        /// Indicates if the popup should be opened or closed. Default is closed.
+        /// </summary>
+        public bool Show { get; set; }
+
+        /// <summary>
         /// <inheritdoc cref="ICloneable"/>
         /// </summary>
         /// <returns></returns>
