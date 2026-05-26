@@ -1,6 +1,15 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.3`: 
+  - `StyleOptions`. Adjust display names.
+  - `StyleOverrides`. Adjust display names.
+  - `IAzureMapsConfiguration`. 
+	- `GetMapOptions`. Args parameter is now optional.
+  - `Sandbox.UI`. New UI companion project for sandbox.
+  - `Sandbox`. 
+	- General updates, including new demos and UI improvements.
+	- Added `Map Settings` dialog to `Basic Map` page.
 - `11.0.0-Preview-1.2`: 
   - `Popup`. Added Show property.
   - `IAzureMapsPopups`. Added Show method.

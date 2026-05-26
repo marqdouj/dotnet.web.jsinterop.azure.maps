@@ -1,0 +1,129 @@
+﻿@implements IDisposable
+@inject IGeoJsonCSDocReader GeoJsonDocReader
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.South" Orientation="@Orientation">
+            @if (editModel is not null)
+            {
+                <FluentNumberInput @bind-Value="@editModel.South" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.West" Orientation="@Orientation">
+            @if (editModel is not null)
+            {
+                <FluentNumberInput @bind-Value="@editModel.West" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    @if (showElevation)
+    {
+        <FluentGridItem>
+            <DocItemEdit Model="@documents?.Elevation1" Orientation="@Orientation">
+                @if (editModel is not null)
+                {
+                    <FluentNumberInput @bind-Value="@editModel.Elevation1" Style="@style" />
+                }
+                else
+                {
+                    <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+                }
+            </DocItemEdit>
+        </FluentGridItem>
+    }
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.North" Orientation="@Orientation">
+            @if (editModel is not null)
+            {
+                <FluentNumberInput @bind-Value="@editModel.North" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.East" Orientation="@Orientation">
+            @if (editModel is not null)
+            {
+                <FluentNumberInput @bind-Value="@editModel.East" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    @if (showElevation)
+    {
+        <FluentGridItem>
+            <DocItemEdit Model="@documents?.Elevation2" Orientation="@Orientation">
+                @if (editModel is not null)
+                {
+                    <FluentNumberInput @bind-Value="@editModel.Elevation2" Style="@style" />
+                }
+                else
+                {
+                    <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+                }
+            </DocItemEdit>
+        </FluentGridItem>
+    }
+</FluentGrid>
+
+@code {
+    private string? style => UIExtensions.EditWidthStyle;
+    private Documents? documents;
+    private IBoundingBoxEdit? editModel => Factory?.Model as IBoundingBoxEdit;
+    private bool showElevation => Factory?.UseElevation ?? false;
+
+    [Parameter, EditorRequired]
+    public IBoundingBoxFactory? Factory { get; set; }
+
+    [Parameter]
+    public Orientation Orientation { get; set; } = Orientation.Vertical;
+
+    protected override void OnParametersSet()
+    {
+        var source = GeoJsonDocReader.CreateDocument<IBoundingBoxEdit>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? West { get; } = document?.GetItem(nameof(IBoundingBoxEdit.West));
+        public CSDocumentItem? South { get; } = document?.GetItem(nameof(IBoundingBoxEdit.South));
+        public CSDocumentItem? Elevation1 { get; } = document?.GetItem(nameof(IBoundingBoxEdit.Elevation1));
+        public CSDocumentItem? North { get; } = document?.GetItem(nameof(IBoundingBoxEdit.North));
+        public CSDocumentItem? East { get; } = document?.GetItem(nameof(IBoundingBoxEdit.East));
+        public CSDocumentItem? Elevation2 { get; } = document?.GetItem(nameof(IBoundingBoxEdit.Elevation2));
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+}

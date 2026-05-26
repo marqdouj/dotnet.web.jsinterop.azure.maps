@@ -1,0 +1,65 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Orientation="@Orientation" Model="@documents?.X">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="Factory.Model.X" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Orientation="@Orientation" Model="@documents?.Y">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="Factory.Model.Y" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string styleShort => UIExtensions.EditWidthShortStyle;
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public IPixelFactory? Factory { get; set; }
+
+    [Parameter]
+    public Orientation Orientation { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<Pixel>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? X { get; } = document?.GetItem(nameof(Pixel.X));
+        public CSDocumentItem? Y { get; } = document?.GetItem(nameof(Pixel.Y));
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+}

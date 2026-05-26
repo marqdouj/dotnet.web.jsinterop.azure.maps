@@ -5,6 +5,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Sandbox.Services;
+using Sandbox.UI.Models;
 
 namespace Sandbox.Components.Pages.AzureMaps.Common
 {

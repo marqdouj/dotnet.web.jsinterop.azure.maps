@@ -1,0 +1,37 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<DocItemEdit Model="@documents?.BorderVisible">
+    <BoolEdit ReadOnly="@readOnly" @bind-Value="@Factory?.Model?.BorderVisible" />
+</DocItemEdit>
+
+@code {
+    private Documents? documents;
+    private bool readOnly => Factory?.Model is null;
+
+    [Parameter, EditorRequired]
+    public IModelFactory<BorderedMapElementStyles>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<BorderedMapElementStyles>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? BorderVisible { get; } = document?.GetItem(nameof(BorderedMapElementStyles.BorderVisible));
+    }
+}

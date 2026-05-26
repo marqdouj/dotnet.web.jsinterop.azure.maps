@@ -1,0 +1,77 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.R">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.R" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.A">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.A" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.P">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.P" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string? style => UIExtensions.EditWidthStyle;
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public IModelFactory<LightPosition>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<LightPosition>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? R { get; } = document?.GetItem(nameof(LightPosition.R));
+        public CSDocumentItem? A { get; } = document?.GetItem(nameof(LightPosition.A));
+        public CSDocumentItem? P { get; } = document?.GetItem(nameof(LightPosition.P));
+    }
+}

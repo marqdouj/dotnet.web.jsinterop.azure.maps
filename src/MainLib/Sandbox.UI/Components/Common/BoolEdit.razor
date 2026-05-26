@@ -1,0 +1,56 @@
+﻿<FluentSelect Items="items" 
+              Disabled="@ReadOnly"
+              TOption="ViewModel"
+              TValue="ViewModel"
+              Value="@selectedItem"
+              OptionText="@(item => item?.Name)"
+              OptionValueToString="@(item => item?.Name)"
+              ValueChanged="@OnValueChanged"
+              Width="@width"
+              Style="@style" />
+
+@code {
+    private string width => Width ?? UIExtensions.EditWidth;
+    private string style => ReadOnly ? UIExtensions.SelectBorderStyleReadOnly : "";
+    private List<ViewModel> items = [];
+    private ViewModel? selectedItem;
+
+    [Parameter] public bool AddDefault { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public bool? Value { get; set; }
+    [Parameter, EditorRequired] public EventCallback<bool?> ValueChanged { get; set; }
+    [Parameter] public string? Width { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var newItems = new List<ViewModel>();
+
+        if (AddDefault)
+        {
+            newItems.Add(new ViewModel(null));
+        }
+
+        newItems.Add(new ViewModel(false));
+        newItems.Add(new ViewModel(true));
+
+        items = newItems;
+        selectedItem = items.FirstOrDefault(item => item.Value.Equals(Value));
+    }
+
+    private async Task OnValueChanged(ViewModel? model)
+    {
+        Value = model?.Value;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private class ViewModel
+    {
+        public ViewModel(bool? value)
+        {
+            Value = value;
+        }
+
+        public bool? Value { get; }
+        public string? Name => Value.HasValue ? Value?.ToString() : "";
+    }
+}

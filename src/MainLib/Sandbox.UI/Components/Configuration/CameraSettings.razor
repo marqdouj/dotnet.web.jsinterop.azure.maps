@@ -1,0 +1,22 @@
+﻿<FluentStack Orientation="Orientation.Vertical">
+    <Toolbar>
+        <CameraDataTypeSelect @bind-Value="@Content.DataType" />
+    </Toolbar>
+
+    <HorizontalSeparator/>
+
+    @switch (Content.DataType)
+    {
+        case CameraDataType.Camera:
+            <CameraEdit Options="@Content?.Camera" />
+            break;
+        case CameraDataType.CameraBounds:
+            <CameraBoundsEdit Options="@Content?.CameraBounds" />
+            break;
+    }
+</FluentStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public MapCameraData Content { get; set; }
+}

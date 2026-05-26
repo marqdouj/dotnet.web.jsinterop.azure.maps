@@ -1,9 +1,9 @@
 ﻿using Marqdouj.DotNet.General.CsDoc;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
-using Sandbox.Services;
+using Sandbox.UI.Services;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
     internal class MapControlEditViewModel<TSource, TOptions> where TSource : class where TOptions : OptionsBase
     {

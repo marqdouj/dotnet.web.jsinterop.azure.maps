@@ -1,0 +1,106 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.AdminDistrict">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.AdminDistrict" />
+            </HeaderContent>
+            <ChildContent>
+               <BorderedMapElementStylesEdit Factory="@viewModels?.AdminDistrict"/>
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.AdminDistrict2">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.AdminDistrict2" />
+            </HeaderContent>
+            <ChildContent>
+                <BorderedMapElementStylesEdit Factory="@viewModels?.AdminDistrict2" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.BuildingFootprint">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.BuildingFootprint" />
+            </HeaderContent>
+            <ChildContent>
+                <MapElementStylesEdit Factory="@viewModels?.BuildingFootprint" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.CountryRegion">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.CountryRegion" />
+            </HeaderContent>
+            <ChildContent>
+                <BorderedMapElementStylesEdit Factory="@viewModels?.CountryRegion" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.RoadDetails">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.RoadDetails" />
+            </HeaderContent>
+            <ChildContent>
+                <MapElementStylesEdit Factory="@viewModels?.RoadDetails" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private Documents? documents;
+    private ViewModels? viewModels;
+
+    [Parameter, EditorRequired]
+    public IModelFactory<StyleOverrides>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        viewModels = Factory?.Model is not null ? new(Factory.Model) : null;
+
+        var source = MapDocs.CreateDocument<StyleOverrides>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        viewModels = Factory?.Model is not null ? new(Factory.Model) : null;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+    private class ViewModels(StyleOverrides options)
+    {
+        public ModelFactory<StyleOverrides, BorderedMapElementStyles> AdminDistrict { get; } = new(options, nameof(StyleOverrides.AdminDistrict));
+        public ModelFactory<StyleOverrides, BorderedMapElementStyles> AdminDistrict2 { get; } = new(options, nameof(StyleOverrides.AdminDistrict2));
+        public ModelFactory<StyleOverrides, MapElementStyles> BuildingFootprint { get; } = new(options, nameof(StyleOverrides.BuildingFootprint));
+        public ModelFactory<StyleOverrides, BorderedMapElementStyles> CountryRegion { get; } = new(options, nameof(StyleOverrides.CountryRegion));
+        public ModelFactory<StyleOverrides, MapElementStyles> RoadDetails { get; } = new(options, nameof(StyleOverrides.RoadDetails));
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? AdminDistrict { get; } = document?.GetItem(nameof(StyleOverrides.AdminDistrict));
+        public CSDocumentItem? AdminDistrict2 { get; } = document?.GetItem(nameof(StyleOverrides.AdminDistrict2));
+        public CSDocumentItem? BuildingFootprint { get; } = document?.GetItem(nameof(StyleOverrides.BuildingFootprint));
+        public CSDocumentItem? CountryRegion { get; } = document?.GetItem(nameof(StyleOverrides.CountryRegion));
+        public CSDocumentItem? RoadDetails { get; } = document?.GetItem(nameof(StyleOverrides.RoadDetails));
+    }
+}

@@ -81,7 +81,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
     /// <summary>
     /// The options for the map's style.
     /// </summary>
-    [Display(Name = "style")]
+    [Display(Name = "Style")]
     public class StyleOptions : OptionsBase
     {
         /// <summary>
@@ -94,7 +94,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
         /// Otherwise map.resize() must be called.
         /// Default 'true'.
         /// </summary>
-        [Display(Name = "auto Resize")]
+        [Display(Name = "Auto Resize")]
         public bool? AutoResize { get; set; }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
         /// Override the default styles for the map elements.​
         /// Default 'null'
         /// </summary>
-        [Display(Name = "style Overrides")]
+        [Display(Name = "Style Overrides")]
         public StyleOverrides? StyleOverrides { get; set; }
 
         /// <summary>

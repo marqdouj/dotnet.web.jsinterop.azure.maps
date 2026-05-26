@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.General.CsDoc;
+using Microsoft.Extensions.Logging;
 
-namespace Sandbox.Services
+namespace Sandbox.UI.Services
 {
     /// <summary>
     /// <see cref="AzureMapsCSDocReader"/>
@@ -11,7 +12,7 @@ namespace Sandbox.Services
     }
 
     /// <summary>
-    /// <see cref="CSDocumentReader"/> for the 'Marqdouj.DotNet.Web.JsInterop.AzureMaps' .NET assembly.
+    /// <see cref="CSDocumentReader"/> for the 'Marqdouj.DotNet.Web.JsInterop.Azure.Maps' .NET assembly.
     /// </summary>
     public class AzureMapsCSDocReader : CSDocumentReader, IAzureMapsCSDocReader
     {

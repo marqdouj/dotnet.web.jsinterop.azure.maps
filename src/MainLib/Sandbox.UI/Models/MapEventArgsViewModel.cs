@@ -1,7 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using System.Collections.ObjectModel;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
     /// <summary>
     /// 

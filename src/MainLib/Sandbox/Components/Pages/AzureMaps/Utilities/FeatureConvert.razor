@@ -110,6 +110,7 @@
     {
         mapDefToFeatureJson = lineString!.ToJson(namingPolicy);
         mapFeatureFromDefJson = "";
+        StateHasChanged();
     }
 
     private async Task ConvertToFeature()
@@ -120,6 +121,7 @@
             var featureDef = mapDefToFeatureJson.ToMapFeature<LineString>();
             var feature = featureDef!.ToFeature<LineString>();
             mapFeatureFromDefJson = feature.ToJson(namingPolicy);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -132,6 +134,7 @@
     {
         mapFeatureToDefJson = lineStringFeature!.ToJson(namingPolicy);
         mapDefFromFeatureJson = "";
+        StateHasChanged();
     }
 
     private async Task ConvertToFeatureDef()
@@ -141,6 +144,7 @@
             ArgumentNullException.ThrowIfNullOrWhiteSpace(mapFeatureToDefJson);
             var feature = mapFeatureToDefJson.ToFeature<LineString>(namingPolicy);
             mapDefFromFeatureJson = feature?.ToMapFeature<LineString>(lineString!.AsShape).ToJson(namingPolicy);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -153,6 +157,7 @@
     {
         mapDefsToFeaturesJson = symbols!.ToJson(namingPolicy);
         mapFeaturesFromDefsJson = "";
+        StateHasChanged();
     }
 
     private async Task ConvertToFeatures()
@@ -162,6 +167,7 @@
             ArgumentNullException.ThrowIfNullOrWhiteSpace(mapDefsToFeaturesJson);
             var featureDefs = mapDefsToFeaturesJson.ToMapFeatures<Point>(namingPolicy);
             mapFeaturesFromDefsJson = featureDefs!.ToFeatureCollection().ToJson(namingPolicy);
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -174,6 +180,7 @@
     {
         mapFeaturesToDefsJson = lineStringFeatures!.ToJson(namingPolicy);
         mapDefsFromFeaturesJson = "";
+        StateHasChanged();
     }
 
     private async Task ConvertToFeatureDefs()
@@ -183,6 +190,7 @@
             ArgumentNullException.ThrowIfNullOrWhiteSpace(mapFeaturesToDefsJson);
             var features = mapFeaturesToDefsJson.ToFeatureCollection<Point>(namingPolicy);
             mapDefsFromFeaturesJson = features.ToMapFeatures<Point>(false).ToJson(namingPolicy);
+            StateHasChanged();
         }
         catch (Exception ex)
         {

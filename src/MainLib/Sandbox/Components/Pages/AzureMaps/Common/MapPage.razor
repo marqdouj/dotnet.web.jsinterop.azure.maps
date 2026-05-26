@@ -1,6 +1,6 @@
 ﻿<PageTitle>@Title</PageTitle>
 
-<FluentStack Height="100%" Orientation="Orientation.Vertical" VerticalGap="@VerticalGap">
+<FluentStack Height="100%" Orientation="Orientation.Vertical" VerticalGap="@verticalGap">
     <MapPageHeader>
         @pageHeader
         @if (hasSummary)
@@ -12,7 +12,7 @@
 
     @if (hasSummary)
     {
-        <FluentCard hidden="@hideSummary">
+        <FluentCard hidden="@hideSummary" Style="margin-bottom:3px;">
             @SummaryContent
         </FluentCard>
     }
@@ -26,6 +26,7 @@
     private string showHideSummary => ShowSummary ? "Hide Summary" : "Show Summary";
     private bool hideSummary => !ShowSummary;
     private bool hasSummary => SummaryContent != null;
+    private string? verticalGap => VerticalGap ?? "3px";
 
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set; }

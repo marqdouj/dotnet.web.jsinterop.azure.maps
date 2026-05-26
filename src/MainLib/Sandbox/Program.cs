@@ -3,6 +3,7 @@ using Sandbox;
 using Sandbox.Azure.Maps;
 using Sandbox.Components;
 using Sandbox.Services;
+using Sandbox.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

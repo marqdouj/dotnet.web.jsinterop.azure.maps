@@ -1,0 +1,112 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Bearing">
+            <FluentNumberInput @bind-Value="@Options.Bearing" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Center">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.CenterFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <PositionEdit Factory="viewModels?.CenterFactory" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.CenterOffset">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.CenterOffsetFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <PixelEdit Factory="@viewModels?.CenterOffsetFactory" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.MaxBounds">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.MaxBoundsFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <BoundingBoxEdit Factory="@viewModels?.MaxBoundsFactory" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Pitch">
+            <FluentNumberInput @bind-Value="@Options.Pitch" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Zoom">
+            <FluentNumberInput @bind-Value="@Options.Zoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.MinZoom">
+            <FluentNumberInput @bind-Value="@Options.MinZoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.MaxZoom">
+            <FluentNumberInput @bind-Value="@Options.MaxZoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string styleShort => UIExtensions.EditWidthShortStyle;
+
+    private Documents? documents;
+    private ViewModels? viewModels;
+
+    [Parameter, EditorRequired]
+    public CameraOptions Options { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        viewModels = new(Options);
+
+        var source = MapDocs.CreateDocument<CameraOptions>();
+        documents = new(source);
+    }
+
+    private class ViewModels(CameraOptions options)
+    {
+        public PositionFactory<CameraOptions> CenterFactory { get; } = new(options, nameof(CameraOptions.Center));
+        public PixelFactory<CameraOptions> CenterOffsetFactory { get; } = new(options, nameof(CameraOptions.CenterOffset));
+        public BoundingBoxFactory<CameraOptions> MaxBoundsFactory { get; } = new(options, nameof(CameraOptions.MaxBounds));
+
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        // public string? Summary { get; } = document?.GetItem(nameof(CameraOptions))?.Comment?.Summary;
+        // public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public CSDocumentItem? Bearing { get; } = document?.GetItem(nameof(CameraOptions.Bearing));
+        public CSDocumentItem? Center { get; } = document?.GetItem(nameof(CameraOptions.Center));
+        public CSDocumentItem? CenterOffset { get; } = document?.GetItem(nameof(CameraOptions.CenterOffset));
+        public CSDocumentItem? MaxBounds { get; } = document?.GetItem(nameof(CameraOptions.MaxBounds));
+        public CSDocumentItem? MaxZoom { get; } = document?.GetItem(nameof(CameraOptions.MaxZoom));
+        public CSDocumentItem? MinZoom { get; } = document?.GetItem(nameof(CameraOptions.MinZoom));
+        public CSDocumentItem? Pitch { get; } = document?.GetItem(nameof(CameraOptions.Pitch));
+        public CSDocumentItem? Zoom { get; } = document?.GetItem(nameof(CameraOptions.Zoom));
+
+        // The CameraOptions class does have MinPitch and MaxPitch properties,
+        // but they are difficult to set (quirky; appears to be a map bug), so we won't show them in the UI for now.
+        // public CSDocumentItem? MinPitch { get; } = document?.GetItem(nameof(CameraOptions.MinPitch));
+        // public CSDocumentItem? MaxPitch { get; } = document?.GetItem(nameof(CameraOptions.MaxPitch));
+    }
+}

@@ -1,0 +1,98 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Anchor">
+            @if (Factory?.Model is not null)
+            {
+                <EnumSelect TEnum="LightAnchorType" @bind-Value="@Factory.Model.Anchor" DocReader="@MapDocs" />
+            }
+            else
+            {
+                <EnumSelect ReadOnly="true" TEnum="LightAnchorType" DocReader="@MapDocs" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Color">
+            @if (Factory?.Model is not null)
+            {
+                <FluentTextInput @bind-Value="Factory.Model.Color" Style="@style" />
+            }
+            else
+            {
+                <FluentTextInput ReadOnly="true" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Intensity">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.Intensity" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.Position">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.Position" />
+            </HeaderContent>
+            <ChildContent>
+                <LightPositionEdit Factory="viewModels?.Position" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string styleShort => UIExtensions.EditWidthShortStyle;
+    private string style => UIExtensions.EditWidthStyle;
+    private Documents? documents;
+    private ViewModels? viewModels;
+
+    [Parameter, EditorRequired] 
+    public IModelFactory<LightOptions>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        viewModels = Factory?.Model is not null ? new(Factory.Model) : null;
+
+        var source = MapDocs.CreateDocument<LightOptions>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        viewModels = Factory?.Model is not null ? new(Factory.Model) : null;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+    private class ViewModels(LightOptions options)
+    {
+        public ModelFactory<LightOptions, LightPosition> Position { get; } = new(options, nameof(LightOptions.Position));
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Anchor { get; } = document?.GetItem(nameof(LightOptions.Anchor));
+        public CSDocumentItem? Color { get; } = document?.GetItem(nameof(LightOptions.Color));
+        public CSDocumentItem? Intensity { get; } = document?.GetItem(nameof(LightOptions.Intensity));
+        public CSDocumentItem? Position { get; } = document?.GetItem(nameof(LightOptions.Position));
+    }
+}

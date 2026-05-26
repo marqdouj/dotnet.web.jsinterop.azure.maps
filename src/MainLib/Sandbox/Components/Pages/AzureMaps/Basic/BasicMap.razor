@@ -2,17 +2,37 @@
 @rendermode InteractiveServer
 @inject ILogger<BasicMap> Logger
 @inject IToastService ToastService
+@inject IDialogService DialogService
 
 <MapPage Title="Basic Map">
     <SummaryContent>
-        <MapPageSummary />
+        <MapPageSummary>
+            This sample demonstrates how to create a basic map and interact with it using the Azure Maps Controls. 
+            Use the buttons in the toolbar to reset the map, open the settings dialog, and adjust various map options.
+            <br />
+            NOTE: There is an issue with the 'All Setttings' configuration that is being investigated.
+            When selecting a FluentSelect option it forces the active tab back to camera.
+            For best results, choose an individual settings category button (e.g. Camera Settings) to adjust and save changes.
+        </MapPageSummary>
     </SummaryContent>
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Settings())" Title="All Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.All))" />
+            <FluentSpacer Width="3px" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Camera())" Title="Camera Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Camera))" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ServerLink())" Title="Style Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Style))" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.TextEditStyle())" Title="Service Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Service))" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.VehicleCar())" Title="Traffic Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Traffic))" />
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Person())" Title="User Interaction Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.UserInteraction))" />
         </Toolbar>
 
         <MapControl MapId="@mapId" />
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
     </ChildContent>
 </MapPage>
 
@@ -25,6 +45,9 @@
     private IAzureMapsInterop? maps;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private MapOptionsData? settings;
 
     #region Map Provider Handlers
 
@@ -51,8 +74,21 @@
 
     private async Task OnMapEventReady(MapEventArgs args)
     {
-        await Task.CompletedTask;
-        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+        try
+        {
+            mapReady = !(await args.HasPayloadError(Logger, ToastService));
+            ShowOverlay(true);
+            settings = new MapOptionsData(await maps!.Configuration.GetMapOptions(mapId));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
     }
 
     # endregion
@@ -63,6 +99,42 @@
     {
         if (mapReady)
             await maps!.ResetMap(mapId, Logger, ToastService);
+    }
+
+    private async Task ShowSettings(MapSettingsDisplay display = MapSettingsDisplay.All)
+    {
+        try
+        {
+            settings!.Display = display;
+
+            var result = await DialogService.ShowDialogAsync<MapSettings>(options =>
+            {
+                options.Parameters.Add(nameof(MapSettings.Options), settings);
+                options.Width = "800px";
+            });
+
+            if (!result.Cancelled)
+            {
+                var data = settings!.ToMapOptionsEdit();
+                await maps!.Configuration.SetMapOptions(mapId, data);
+                await ToastService.ShowInfo("Settings updated.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
     }
 
     #endregion
