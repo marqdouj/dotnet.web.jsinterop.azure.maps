@@ -1,9 +1,9 @@
 ﻿using Marqdouj.DotNet.General.CsDoc;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
-    internal class MapEventViewModel
+    public class MapEventViewModel
     {
         public MapEventViewModel(MapEvent eventDef)
         {

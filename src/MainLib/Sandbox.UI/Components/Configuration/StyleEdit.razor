@@ -1,0 +1,141 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentTabs>
+    <FluentTab Header="General">
+        <FluentGrid Spacing="2">
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.Antialias">
+                    <BoolEdit @bind-Value="@Options.Antialias" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.AutoResize">
+                    <BoolEdit @bind-Value="@Options.AutoResize" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.Language">
+                    <FluentTextInput @bind-Value="@Options.Language" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.PreserveDrawingBuffer">
+                    <BoolEdit @bind-Value="@Options.PreserveDrawingBuffer" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.ProgressiveLoading">
+                    <BoolEdit @bind-Value="@Options.ProgressiveLoading" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.RenderWorldCopies">
+                    <BoolEdit @bind-Value="@Options.RenderWorldCopies" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.ShowFeedbackLink">
+                    <BoolEdit @bind-Value="@Options.ShowFeedbackLink" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.ShowLabels">
+                    <BoolEdit @bind-Value="@Options.ShowLabels" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.ShowLogo">
+                    <BoolEdit @bind-Value="@Options.ShowLogo" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.ShowTileBoundaries">
+                    <BoolEdit @bind-Value="@Options.ShowTileBoundaries" />
+                </DocItemEdit>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <DocItemEdit Model="@documents?.View">
+                    <FluentTextInput @bind-Value="@Options.View" />
+                </DocItemEdit>
+            </FluentGridItem>
+        </FluentGrid>
+    </FluentTab>
+
+    <FluentTab Header="@documents?.Light?.DisplayName">
+        <DocItemEdit Model="@documents?.Light">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.Light" />
+            </HeaderContent>
+            <ChildContent>
+                <LightEdit Factory="viewModels?.Light" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentTab>
+
+    <FluentTab Header="@documents?.StyleOverrides?.DisplayName">
+        <DocItemEdit Model="@documents?.StyleOverrides">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.StyleOverrides" />
+            </HeaderContent>
+            <ChildContent>
+                <StyleOverridesEdit Factory="viewModels?.StyleOverrides" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentTab>
+</FluentTabs>
+
+@code {
+    private Documents? documents;
+    private ViewModels? viewModels;
+
+    [Parameter, EditorRequired]
+    public StyleOptions Options { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        viewModels = new(Options);
+
+        var source = MapDocs.CreateDocument<StyleOptions>();
+        documents = new(source);
+    }
+
+    private class ViewModels(StyleOptions options)
+    {
+        public ModelFactory<StyleOptions, LightOptions> Light { get; } = new(options, nameof(StyleOptions.Light));
+        public ModelFactory<StyleOptions, StyleOverrides> StyleOverrides { get; } = new(options, nameof(StyleOptions.StyleOverrides));
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public string? Summary { get; } = document?.GetItem(nameof(StyleOptions))?.Comment?.Summary;
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public CSDocumentItem? Antialias { get; } = document?.GetItem(nameof(StyleOptions.Antialias));
+        public CSDocumentItem? AutoResize { get; } = document?.GetItem(nameof(StyleOptions.AutoResize));
+        public CSDocumentItem? Language { get; } = document?.GetItem(nameof(StyleOptions.Language));
+        public CSDocumentItem? Light { get; } = document?.GetItem(nameof(StyleOptions.Light));
+        public CSDocumentItem? PreserveDrawingBuffer { get; } = document?.GetItem(nameof(StyleOptions.PreserveDrawingBuffer));
+        public CSDocumentItem? ProgressiveLoading { get; } = document?.GetItem(nameof(StyleOptions.ProgressiveLoading));
+        public CSDocumentItem? RenderWorldCopies { get; } = document?.GetItem(nameof(StyleOptions.RenderWorldCopies));
+        public CSDocumentItem? ShowFeedbackLink { get; } = document?.GetItem(nameof(StyleOptions.ShowFeedbackLink));
+        public CSDocumentItem? ShowLogo { get; } = document?.GetItem(nameof(StyleOptions.ShowLogo));
+        public CSDocumentItem? ShowLabels { get; } = document?.GetItem(nameof(StyleOptions.ShowLabels));
+        public CSDocumentItem? ShowTileBoundaries { get; } = document?.GetItem(nameof(StyleOptions.ShowTileBoundaries));
+        public CSDocumentItem? Style { get; } = document?.GetItem(nameof(StyleOptions.Style));
+        public CSDocumentItem? StyleOverrides { get; } = document?.GetItem(nameof(StyleOptions.StyleOverrides));
+        public CSDocumentItem? View { get; } = document?.GetItem(nameof(StyleOptions.View));
+
+        //Only allowed when creating the map.
+        //public CSDocumentItem? ProgressiveLoadingInitialLayerGroups { get; } = document?.GetItem(nameof(StyleOptions.ProgressiveLoadingInitialLayerGroups));
+    }
+}

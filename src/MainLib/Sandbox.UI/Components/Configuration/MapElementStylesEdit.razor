@@ -1,0 +1,37 @@
+﻿@implements IDisposable
+@inject IAzureMapsCSDocReader MapDocs
+
+<DocItemEdit Model="@documents?.Visible">
+    <BoolEdit ReadOnly="@readOnly" @bind-Value="@Factory?.Model?.Visible" />
+</DocItemEdit>
+
+@code {
+    private Documents? documents;
+    private bool readOnly => Factory?.Model is null;
+
+    [Parameter, EditorRequired]
+    public IModelFactory<MapElementStyles>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<MapElementStyles>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Visible { get; } = document?.GetItem(nameof(MapElementStyles.Visible));
+    }
+}

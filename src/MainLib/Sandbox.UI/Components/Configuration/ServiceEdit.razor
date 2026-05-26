@@ -1,0 +1,101 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.DisableTelemetry">
+            <BoolEdit @bind-Value="@Options.DisableTelemetry" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.EnableAccessibility">
+            <BoolEdit @bind-Value="@Options.EnableAccessibility" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.EnableAccessibilityLocationFallback">
+            <BoolEdit @bind-Value="@Options.EnableAccessibilityLocationFallback" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.FadeDuration">
+            <FluentNumberInput @bind-Value="@Options.FadeDuration" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.LocalIdeographFontFamily">
+            <FluentTextInput @bind-Value="@Options.LocalIdeographFontFamily" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.MaxParallelImageRequests">
+            <FluentNumberInput @bind-Value="@Options.MaxParallelImageRequests" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.RefreshExpiredTiles">
+            <BoolEdit @bind-Value="@Options.RefreshExpiredTiles" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.StyleAPIVersion">
+            <FluentTextInput @bind-Value="@Options.StyleAPIVersion" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.StyleDefinitionsVersion">
+            <FluentTextInput @bind-Value="@Options.StyleDefinitionsVersion" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.ValidateStyle">
+            <BoolEdit @bind-Value="@Options.ValidateStyle" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.WorkerCount">
+            <FluentNumberInput @bind-Value="@Options.WorkerCount" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string? styleShort => UIExtensions.EditWidthShortStyle;
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public ServiceOptions Options { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<ServiceOptions>();
+        documents = new(source);
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public string? Summary { get; } = document?.GetItem(nameof(ServiceOptions))?.Comment?.Summary;
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public CSDocumentItem? DisableTelemetry { get; } = document?.GetItem(nameof(ServiceOptions.DisableTelemetry));
+        public CSDocumentItem? EnableAccessibility { get; } = document?.GetItem(nameof(ServiceOptions.EnableAccessibility));
+        public CSDocumentItem? EnableAccessibilityLocationFallback { get; } = document?.GetItem(nameof(ServiceOptions.EnableAccessibilityLocationFallback));
+        public CSDocumentItem? FadeDuration { get; } = document?.GetItem(nameof(ServiceOptions.FadeDuration));
+        public CSDocumentItem? LocalIdeographFontFamily { get; } = document?.GetItem(nameof(ServiceOptions.LocalIdeographFontFamily));
+        public CSDocumentItem? MaxParallelImageRequests { get; } = document?.GetItem(nameof(ServiceOptions.MaxParallelImageRequests));
+        public CSDocumentItem? RefreshExpiredTiles { get; } = document?.GetItem(nameof(ServiceOptions.RefreshExpiredTiles));
+        public CSDocumentItem? StyleAPIVersion { get; } = document?.GetItem(nameof(ServiceOptions.StyleAPIVersion));
+        public CSDocumentItem? StyleDefinitionsVersion { get; } = document?.GetItem(nameof(ServiceOptions.StyleDefinitionsVersion));
+        public CSDocumentItem? ValidateStyle { get; } = document?.GetItem(nameof(ServiceOptions.ValidateStyle));
+        public CSDocumentItem? WorkerCount { get; } = document?.GetItem(nameof(ServiceOptions.WorkerCount));
+    }
+}

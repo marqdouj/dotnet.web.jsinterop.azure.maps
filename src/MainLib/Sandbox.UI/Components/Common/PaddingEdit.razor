@@ -1,0 +1,92 @@
+﻿@implements IDisposable
+@using Padding = Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common.Padding
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Bottom">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.Bottom" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Left">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.Left" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Right">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.Right" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Top">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput @bind-Value="@Factory.Model.Top" Style="@styleShort" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@styleShort" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string? styleShort => UIExtensions.EditWidthShortStyle;
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public IModelFactory<Padding>? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<Padding>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Bottom { get; } = document?.GetItem(nameof(Padding.Bottom));
+        public CSDocumentItem? Left { get; } = document?.GetItem(nameof(Padding.Left));
+        public CSDocumentItem? Right { get; } = document?.GetItem(nameof(Padding.Right));
+        public CSDocumentItem? Top { get; } = document?.GetItem(nameof(Padding.Top));
+    }
+}

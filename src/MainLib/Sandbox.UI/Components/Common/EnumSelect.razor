@@ -1,0 +1,67 @@
+﻿@typeparam TEnum where TEnum : struct, Enum
+
+<FluentSelect Items="items" 
+              Disabled="@ReadOnly"
+              TOption="ViewModel"
+              TValue="ViewModel"
+              Value="@selectedItem"
+              OptionText="@(item => item?.Name)"
+              OptionValueToString="@(item => item?.Name)"
+              ValueChanged="@OnValueChanged"
+              Width="@width"
+              Style="@style" />
+
+@code {
+    private string width => Width ?? UIExtensions.EditWidth;
+    private string style => ReadOnly ? UIExtensions.SelectBorderStyleReadOnly : "";
+    private ICSDocument? document;
+    private List<ViewModel> items = [];
+    private ViewModel? selectedItem;
+
+    [Parameter] public bool AddDefault { get; set; } = true;
+    [Parameter, EditorRequired] public ICSDocumentReader DocReader { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public TEnum? Value { get; set; }
+    [Parameter] public EventCallback<TEnum?> ValueChanged { get; set; }
+    [Parameter] public string? Width { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        document = DocReader.CreateDocument<TEnum>() ?? DocReader.CreateDocument<TEnum>();
+
+        var newItems = new List<ViewModel>();
+
+        if (AddDefault)
+        {
+            newItems.Add(new ViewModel(document, null));
+        }
+
+        foreach (var value in Enum.GetValues<TEnum>())
+        {
+            newItems.Add(new ViewModel(document, value));
+        }
+
+        items = newItems;
+        selectedItem = items.FirstOrDefault(item => EqualityComparer<TEnum?>.Default.Equals(item.Value, Value));
+    }
+
+    private async Task OnValueChanged(ViewModel? model)
+    {
+        Value = model?.Value;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private class ViewModel
+    {
+        private readonly CSDocumentItem? document;
+
+        public ViewModel(ICSDocument document, TEnum? value)
+        {
+            this.document = value.HasValue ? document.GetItem(value.ToString() ?? "") : null;
+            Value = value;
+        }
+
+        public TEnum? Value { get; }
+        public string? Name => document?.DisplayName ?? (Value.HasValue ? Value.ToString() : "");
+    }
+}

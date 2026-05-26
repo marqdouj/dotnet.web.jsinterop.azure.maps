@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using Padding = Microsoft.FluentUI.AspNetCore.Components.Padding
 
-<FluentLayout Style="border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);">
+<FluentLayout Style="@layoutStyle">
 
     <!-- Header -->
     <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
@@ -13,7 +13,7 @@
     <FluentLayoutItem Area="@LayoutArea.Navigation"
                       Sticky="true"
                       Padding="@Padding.All2"
-                      Style="border-right: var(--strokeWidthThin) solid var(--colorNeutralStroke1);min-width:256px;">
+                      Style="@layoutNavStyle">
         <NavMenu />
     </FluentLayoutItem>
 
@@ -43,3 +43,8 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private string layoutStyle = $"border: {UIExtensions.ThinBorderStyle}";
+    private string layoutNavStyle = $"border-right: {UIExtensions.ThinBorderStyle}min-width:256px;height:100%";
+}

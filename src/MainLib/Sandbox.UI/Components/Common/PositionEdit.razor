@@ -1,0 +1,81 @@
+﻿@implements IDisposable
+@inject IGeoJsonCSDocReader GeoJsonDocReader
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Longitude">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput TValue="double" @bind-Value="@Factory.Model.Longitude" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Latitude">
+            @if (Factory?.Model is not null)
+            {
+                <FluentNumberInput TValue="double" @bind-Value="@Factory.Model.Latitude" Style="@style" />
+            }
+            else
+            {
+                <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+            }
+        </DocItemEdit>
+    </FluentGridItem>
+
+
+    @if (showElevation)
+    {
+        <FluentGridItem>
+            <DocItemEdit Model="@documents?.Elevation">
+                @if (Factory?.Model is not null)
+                {
+                    <FluentNumberInput TValue="double?" @bind-Value="@Factory.Model.Elevation" Style="@style" />
+                }
+                else
+                {
+                    <FluentNumberInput ReadOnly="true" TValue="double?" Style="@style" />
+                }
+            </DocItemEdit>
+        </FluentGridItem>
+    }
+</FluentGrid>
+
+@code {
+    private string? style => UIExtensions.EditWidthStyle;
+    private Documents? documents;
+    private bool showElevation => Factory?.UseElevation ?? false;
+
+    [Parameter, EditorRequired]
+    public IPositionFactory? Factory { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = GeoJsonDocReader.CreateDocument<Position>();
+        documents = new(source);
+
+        Factory?.StateChanged += FactoryStateChanged;
+    }
+
+    private void FactoryStateChanged(string name)
+    {
+        StateHasChanged();
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Longitude { get; } = document?.GetItem(nameof(Position.Longitude));
+        public CSDocumentItem? Latitude { get; } = document?.GetItem(nameof(Position.Latitude));
+        public CSDocumentItem? Elevation { get; } = document?.GetItem(nameof(Position.Elevation));
+    }
+
+    public void Dispose()
+    {
+        Factory?.StateChanged -= FactoryStateChanged;
+    }
+}

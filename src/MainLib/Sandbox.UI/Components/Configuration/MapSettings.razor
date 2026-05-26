@@ -1,0 +1,121 @@
+﻿@inherits FluentDialogInstance
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentDialogBody>
+    <Toolbar>
+        <EditActionSelect @bind-Value="@Options.EditAction" />
+    </Toolbar>
+
+    <FluentTabs ActiveTabId="@activeTabId" @bind-ActiveTab="@ActiveTab" @bind-ActiveTab:after="@OnTabChanged" Style="@tabsStyle">
+        @if (Options.Args.Camera)
+        {
+            <FluentTab Id="tabCamera" Disabled="@cameraDisabled" IconStart="@(new Icons.Regular.Size16.Camera())">
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.Camera" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <CameraSettings Content="@Options.Camera" />
+                </ChildContent>
+            </FluentTab>
+        }
+
+        @if (Options.Args.Service)
+        {
+            <FluentTab Id="tabService" Disabled="@serviceDisabled" IconStart="@(new Icons.Regular.Size16.ServerLink())">
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.Service" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <ServiceEdit Options="@Options.Service.Options" />
+                </ChildContent>
+            </FluentTab>
+        }
+
+        @if (Options.Args.Style)
+        {
+            <FluentTab Id="tabStyle" Disabled="@styleDisabled" IconStart="@(new Icons.Regular.Size16.TextEditStyle())">
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.Style" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <StyleEdit Options="@Options.Style.Options" />
+                </ChildContent>
+            </FluentTab>
+        }
+
+        @if (Options.Args.Traffic)
+        {
+            <FluentTab Id="tabTraffic" Disabled="@trafficDisabled" IconStart="@(new Icons.Regular.Size16.VehicleCar())">
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.Traffic" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <TrafficEdit Options="@Options.Traffic.Options" />
+                </ChildContent>
+            </FluentTab>
+        }
+
+        @if (Options.Args.UserInteraction)
+        {
+            <FluentTab Id="tabUserInteraction" Disabled="@userInteractionDisabled" IconStart="@(new Icons.Regular.Size16.Person())">
+                <HeaderTemplate>
+                    <DocLabel Model="@documents?.UserInteraction" />
+                </HeaderTemplate>
+                <ChildContent>
+                    <UserInteractionEdit Options="@Options.UserInteraction.Options" />
+                </ChildContent>
+            </FluentTab>
+        }
+    </FluentTabs>
+</FluentDialogBody>
+
+@code {
+    private string? activeTabId = "tabCamera";
+    private FluentTab? ActiveTab;
+    private string tabsStyle = $"border: {UIExtensions.ThinBorderStyle}";
+    private Documents documents = new(null);
+    private bool cameraDisabled => !Options.Args.Camera;
+    private bool serviceDisabled => !Options.Args.Service;
+    private bool styleDisabled => !Options.Args.Style;
+    private bool trafficDisabled => !Options.Args.Traffic;
+    private bool userInteractionDisabled => !Options.Args.UserInteraction;
+
+    [Parameter, EditorRequired]
+    public MapOptionsData Options { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        activeTabId = Options.Display.GetTabId();
+    }
+
+    void OnTabChanged()
+    {
+        activeTabId = ActiveTab?.Id; // See issue: https://github.com/microsoft/fluentui-blazor/issues/4887
+        Console.WriteLine($"Tab changed to '{ActiveTab?.Header}'.");
+    }
+
+    protected override void OnInitializeDialog(DialogOptionsHeader header, DialogOptionsFooter footer)
+    {
+        header.Title = $"Map Settings";
+        footer.SecondaryAction.Visible = true;
+
+        documents = new(MapDocs.CreateDocument<MapOptions>());
+    }
+
+    protected override Task OnActionClickedAsync(bool primary)
+    {
+        return primary
+        ? DialogInstance.CloseAsync()
+        : DialogInstance.CancelAsync();
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Camera { get; } = document?.GetItem(nameof(MapOptions.Camera));
+        public CSDocumentItem? Service { get; } = document?.GetItem(nameof(MapOptions.Service));
+        public CSDocumentItem? Style { get; } = document?.GetItem(nameof(MapOptions.Style));
+        public CSDocumentItem? Traffic { get; } = document?.GetItem(nameof(MapOptions.Traffic));
+        public CSDocumentItem? UserInteraction { get; } = document?.GetItem(nameof(MapOptions.UserInteraction));
+    }
+}

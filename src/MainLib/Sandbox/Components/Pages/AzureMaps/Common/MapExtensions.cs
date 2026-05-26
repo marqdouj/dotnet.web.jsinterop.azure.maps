@@ -5,6 +5,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Sandbox.UI.Models;
 
 namespace Sandbox.Components.Pages.AzureMaps.Common
 {

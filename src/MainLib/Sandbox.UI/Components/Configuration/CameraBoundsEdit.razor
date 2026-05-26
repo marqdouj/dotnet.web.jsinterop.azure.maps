@@ -1,0 +1,102 @@
+﻿@using Padding = Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common.Padding
+@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Bearing">
+            <FluentNumberInput @bind-Value="@Options.Bearing" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.Bounds">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.Bounds" />
+            </HeaderContent>
+            <ChildContent>
+                <BoundingBoxEdit Factory="@viewModels?.Bounds" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.MaxBounds">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.MaxBounds" />
+            </HeaderContent>
+            <ChildContent>
+                <BoundingBoxEdit Factory="@viewModels?.MaxBounds" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.MaxZoom">
+            <FluentNumberInput @bind-Value="@Options.MaxZoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Offset">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.Offset" />
+            </HeaderContent>
+            <ChildContent>
+                <PixelEdit Factory="@viewModels?.Offset" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.Padding">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.Padding" />
+            </HeaderContent>
+            <ChildContent>
+                <PaddingEdit Factory="@viewModels?.Padding" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Pitch">
+            <FluentNumberInput @bind-Value="@Options.Pitch" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string styleShort => UIExtensions.EditWidthShortStyle;
+    private Documents? documents;
+    private ViewModels? viewModels;
+
+    [Parameter, EditorRequired]
+    public CameraBoundsOptionsSet Options { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        viewModels = new(Options);
+
+        var source = MapDocs.CreateDocument<CameraBoundsOptionsSet>();
+        documents = new(source);
+    }
+
+    private class ViewModels(CameraBoundsOptionsSet options)
+    {
+        public IBoundingBoxFactory Bounds { get; } = new BoundingBoxFactory<CameraBoundsOptionsSet>(options, nameof(CameraBoundsOptionsSet.Bounds));
+        public IBoundingBoxFactory MaxBounds { get; } = new BoundingBoxFactory<CameraBoundsOptionsSet>(options, nameof(CameraBoundsOptionsSet.MaxBounds));
+        public IPixelFactory Offset { get; } = new PixelFactory<CameraBoundsOptionsSet>(options, nameof(CameraBoundsOptionsSet.Offset));
+        // NOTE: The value is not returned by map.getCamera and seems to have no effect when updataing the map.
+        public ModelFactory<CameraBoundsOptionsSet, Padding> Padding { get; } = new ModelFactory<CameraBoundsOptionsSet, Padding>(options, nameof(CameraBoundsOptionsSet.Padding));
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public string? Summary { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet))?.Comment?.Summary;
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public CSDocumentItem? Bounds { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.Bounds));
+        public CSDocumentItem? MaxBounds { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.MaxBounds));
+        public CSDocumentItem? MaxZoom { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.MaxZoom));
+        public CSDocumentItem? Offset { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.Offset));
+        public CSDocumentItem? Padding { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.Padding));
+
+        // Bearing/Pitch are Camera settings that are supported when setting the CameraBounds
+        public CSDocumentItem? Bearing { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.Bearing));
+        public CSDocumentItem? Pitch { get; } = document?.GetItem(nameof(CameraBoundsOptionsSet.Pitch));
+    }
+}

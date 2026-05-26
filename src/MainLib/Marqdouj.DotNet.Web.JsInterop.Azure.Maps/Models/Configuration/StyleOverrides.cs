@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
     /// <summary>
     /// Override the default styles for the map elements.​
     /// </summary>
-    [Display(Name = "style Overrides")]
+    [Display(Name = "Style Overrides")]
     public class StyleOverrides : OptionsBase
     {
         /// <summary>
@@ -36,7 +36,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
         /// <summary>
         /// Street blocks in the populated places​.
         /// </summary>
-        [Display(Name = "road Details")]
+        [Display(Name = "Road Details")]
         public MapElementStyles? RoadDetails { get; set; } = null;
 
         /// <summary>

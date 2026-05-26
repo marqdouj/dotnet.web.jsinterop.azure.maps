@@ -1,0 +1,42 @@
+﻿@inject IAzureMapsUICSDocReader UIDocs
+
+<FluentLabel>Data Type:</FluentLabel>
+@if (viewModel?.HasSummary == true)
+{
+    <IconTooltip Text="@viewModel.Summary" />
+}
+
+<EnumSelect DocReader="UIDocs" TEnum="CameraDataType" AddDefault="false" Value="Value" ValueChanged="@OnEditTypeChanged" />
+
+@code {
+    private ViewModel? viewModel;
+
+    [Parameter, EditorRequired]
+    public CameraDataType Value { get; set; }
+
+    [Parameter]
+    public EventCallback<CameraDataType> ValueChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        viewModel = new(UIDocs);
+    }
+
+    private async Task OnEditTypeChanged(CameraDataType? editType)
+    {
+        Value = editType ?? CameraDataType.Camera;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private class ViewModel
+    {
+        public ViewModel(IAzureMapsUICSDocReader uiDocs)
+        {
+            var document = uiDocs.CreateDocument<CameraDataType>();
+            Summary = document.GetItem(nameof(CameraDataType))?.Comment?.Summary;
+        }
+
+        public string? Summary { get; } 
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+    }
+}

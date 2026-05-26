@@ -1,0 +1,46 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalGap="5px">
+    <FluentLabel>
+        Edit Action:
+    </FluentLabel>
+    @if (viewModel?.HasSummary == true)
+    {
+        <IconTooltip Text="@viewModel.Summary" />
+    }
+
+    <EnumSelect TEnum="MapEditAction" DocReader="@MapDocs" AddDefault="false" Value="Value" ValueChanged="@OnEditActionChanged" />
+</FluentStack>
+
+@code {
+    private ViewModel? viewModel;
+
+    [Parameter, EditorRequired]
+    public MapEditAction Value { get; set; }
+
+    [Parameter]
+    public EventCallback<MapEditAction> ValueChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        viewModel = new(MapDocs);
+    }
+
+    private async Task OnEditActionChanged(MapEditAction? editAction)
+    {
+        Value = editAction ?? MapEditAction.Update;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private class ViewModel
+    {
+        public ViewModel(IAzureMapsCSDocReader uiDocs)
+        {
+            var document = uiDocs.CreateDocument<MapEditAction>();
+            Summary = document.GetItem(nameof(MapEditAction))?.Comment?.Summary;
+        }
+
+        public string? Summary { get; }
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+    }
+}

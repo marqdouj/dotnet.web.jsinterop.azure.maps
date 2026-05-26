@@ -1,6 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
     /// <summary>
     /// Provides access to view models for all supported map layer types.

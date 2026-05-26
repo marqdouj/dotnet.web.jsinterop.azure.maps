@@ -15,9 +15,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// Gets the existing map options based on <see cref="MapOptionsArgs"/>
         /// </summary>
         /// <param name="mapId"></param>
-        /// <param name="args"><see cref="MapOptionsArgs"/></param>
+        /// <param name="args"><see cref="MapOptionsArgs"/>. If null then all options are retrieved.</param>
         /// <returns></returns>
-        ValueTask<MapOptions?> GetMapOptions(string mapId, MapOptionsArgs args);
+        ValueTask<MapOptions?> GetMapOptions(string mapId, MapOptionsArgs? args = null);
 
         /// <summary>
         /// Updates the map options.
@@ -42,10 +42,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<MapOptions?> GetMapOptions(string mapId, MapOptionsArgs args)
+        public async ValueTask<MapOptions?> GetMapOptions(string mapId, MapOptionsArgs? args = null)
         {
             var module = await moduleTask.Value;
-            var result = await module.InvokeAsync<MapOptionsGet>(GetJsInteropMethod(), mapId, args);
+            var result = await module.InvokeAsync<MapOptionsGet>(GetJsInteropMethod(), mapId, args ?? new());
             return result.ToMapOptions();
         }
 

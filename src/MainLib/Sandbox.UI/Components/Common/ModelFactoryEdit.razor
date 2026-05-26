@@ -1,0 +1,41 @@
+﻿<Toolbar Style="@style">
+    <FluentButton class="no-padding-btn" Disabled="@addDisabled" IconStart="@(new Icons.Regular.Size16.Add())" Title="Add" OnClick="@OnAddClick" />
+    <FluentButton class="no-padding-btn" Disabled="@deleteDisabled" IconStart="@(new Icons.Regular.Size16.Delete())" Title="Delete" OnClick="@OnDeleteClick" />
+</Toolbar>
+
+<style>
+    /* Target your custom class */
+    .no-padding-btn {
+        padding: 0 !important; /* Remove internal padding */
+        min-height: auto; /* Prevent default height from padding */
+        min-width: auto; /* Prevent default width from padding */
+        height: 18px; /* Set a fixed height for the button */
+        width: 18px; /* Set a fixed width for the button */
+    }
+
+        /* Optional: remove padding from the inner slot content */
+        .no-padding-btn::part(control) {
+            padding: 0 !important;
+        }
+</style>
+@code {
+    private string style => string.IsNullOrWhiteSpace(Style) ? "margin-left:10px;" : Style;
+    private bool addDisabled => Factory?.CanDelete ?? true;
+    private bool deleteDisabled => Factory?.CanAdd ?? true;
+
+    [Parameter, EditorRequired]
+    public IModelFactory? Factory { get; set; }
+
+    [Parameter]
+    public string? Style { get; set; }
+
+    private async Task OnAddClick()
+    {
+        Factory?.AddModel();
+    }
+
+    private async Task OnDeleteClick()
+    {
+        Factory?.DeleteModel();
+    }
+}

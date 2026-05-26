@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.General.CsDoc;
+using Microsoft.Extensions.Logging;
 
-namespace Sandbox.Services
+namespace Sandbox.UI.Services
 {
     /// <summary>
     /// <see cref="GeoJsonCSDocReader"/>

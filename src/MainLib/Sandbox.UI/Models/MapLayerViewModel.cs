@@ -3,7 +3,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
     /// <summary>
     /// Interface for a view model that represents a map layer.

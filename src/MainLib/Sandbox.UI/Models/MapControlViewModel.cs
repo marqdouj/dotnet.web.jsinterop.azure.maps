@@ -3,7 +3,7 @@ using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
 using System.Collections.ObjectModel;
 
-namespace Sandbox.Components.Pages.AzureMaps.Common
+namespace Sandbox.UI.Models
 {
     /// <summary>
     /// Collection of MapControlEventsViewModel.

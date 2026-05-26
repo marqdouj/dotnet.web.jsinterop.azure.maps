@@ -1,0 +1,34 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="documents?.Flow">
+            <EnumSelect TEnum="TrafficFlow" @bind-Value="Options.Flow" DocReader="@MapDocs" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="documents?.Incidents">
+            <BoolEdit @bind-Value="Options.Incidents" />
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public TrafficOptions Options { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<TrafficOptions>();
+        documents = new(source);
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public CSDocumentItem? Flow { get; } = document?.GetItem(nameof(TrafficOptions.Flow));
+        public CSDocumentItem? Incidents { get; } = document?.GetItem(nameof(TrafficOptions.Incidents));
+    }
+}

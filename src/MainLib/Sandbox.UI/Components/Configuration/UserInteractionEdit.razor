@@ -1,0 +1,94 @@
+﻿@inject IAzureMapsCSDocReader MapDocs
+
+<FluentGrid Spacing="2">
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.BoxZoomInteraction">
+            <BoolEdit @bind-Value="@Options.BoxZoomInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.DblClickZoomInteraction">
+            <BoolEdit @bind-Value="@Options.DblClickZoomInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.DragPanInteraction">
+            <BoolEdit @bind-Value="@Options.DragPanInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.DragRotateInteraction">
+            <BoolEdit @bind-Value="@Options.DragRotateInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Interactive">
+            <BoolEdit @bind-Value="@Options.Interactive" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.KeyboardInteraction">
+            <BoolEdit @bind-Value="@Options.KeyboardInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.ScrollZoomInteraction">
+            <BoolEdit @bind-Value="@Options.ScrollZoomInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.TouchInteraction">
+            <BoolEdit @bind-Value="@Options.TouchInteraction" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.TouchRotate">
+            <BoolEdit @bind-Value="@Options.TouchRotate" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.WheelZoomRate">
+            <FluentNumberInput @bind-Value="@Options.WheelZoomRate" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private string? styleShort => UIExtensions.EditWidthShortStyle;
+    private Documents? documents;
+
+    [Parameter, EditorRequired]
+    public UserInteractionOptions Options { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var source = MapDocs.CreateDocument<UserInteractionOptions>();
+        documents = new(source);
+    }
+
+    private class Documents(ICSDocument? document)
+    {
+        public string? Summary { get; } = document?.GetItem(nameof(UserInteractionOptions))?.Comment?.Summary;
+        public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public CSDocumentItem? BoxZoomInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.BoxZoomInteraction));
+        public CSDocumentItem? DblClickZoomInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.DblClickZoomInteraction));
+        public CSDocumentItem? DragPanInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.DragPanInteraction));
+        public CSDocumentItem? DragRotateInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.DragRotateInteraction));
+        public CSDocumentItem? Interactive { get; } = document?.GetItem(nameof(UserInteractionOptions.Interactive));
+        public CSDocumentItem? KeyboardInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.KeyboardInteraction));
+        public CSDocumentItem? ScrollZoomInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.ScrollZoomInteraction));
+        public CSDocumentItem? TouchInteraction { get; } = document?.GetItem(nameof(UserInteractionOptions.TouchInteraction));
+        public CSDocumentItem? TouchRotate { get; } = document?.GetItem(nameof(UserInteractionOptions.TouchRotate));
+        public CSDocumentItem? WheelZoomRate { get; } = document?.GetItem(nameof(UserInteractionOptions.WheelZoomRate));
+    }
+}

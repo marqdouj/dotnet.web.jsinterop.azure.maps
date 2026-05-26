@@ -17,12 +17,13 @@
 	
   <ItemGroup>
     <PackageReference Include="Marqdouj.DotNet.General.CsDoc" Version="10.5.0" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.0-rc.2-26098.1" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.1" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.0-rc.3-26138.1" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.14.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Marqdouj.DotNet.Web.JsInterop.Azure.Maps\Marqdouj.DotNet.Web.JsInterop.Azure.Maps.csproj" />
     <ProjectReference Include="..\Sandbox.Azure.Maps\Sandbox.Azure.Maps.csproj" />
+    <ProjectReference Include="..\Sandbox.UI\Sandbox.UI.csproj" />
   </ItemGroup>
 </Project>
