@@ -1,6 +1,7 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.4`: `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.3`: 
   - `StyleOptions`. Adjust display names.
   - `StyleOverrides`. Adjust display names.
