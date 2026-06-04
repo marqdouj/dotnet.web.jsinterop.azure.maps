@@ -72,7 +72,7 @@
 @code {
     private string? activeTabId = "tabCamera";
     private FluentTab? ActiveTab;
-    private string tabsStyle = $"border: {UIExtensions.ThinBorderStyle}";
+    private string tabsStyle = $"border: {UIExtensions.ThinBorderStyle} margin-bottom:1px;";
     private Documents documents = new(null);
     private bool cameraDisabled => !Options.Args.Camera;
     private bool serviceDisabled => !Options.Args.Service;

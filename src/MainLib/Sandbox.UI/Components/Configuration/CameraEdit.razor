@@ -8,39 +8,6 @@
     </FluentGridItem>
 
     <FluentGridItem>
-        <DocItemEdit Model="@documents?.Center">
-            <HeaderContent>
-                <ModelFactoryEdit Factory="viewModels?.CenterFactory" />
-            </HeaderContent>
-            <ChildContent>
-                <PositionEdit Factory="viewModels?.CenterFactory" />
-            </ChildContent>
-        </DocItemEdit>
-    </FluentGridItem>
-
-    <FluentGridItem>
-        <DocItemEdit Model="@documents?.CenterOffset">
-            <HeaderContent>
-                <ModelFactoryEdit Factory="viewModels?.CenterOffsetFactory" />
-            </HeaderContent>
-            <ChildContent>
-                <PixelEdit Factory="@viewModels?.CenterOffsetFactory" />
-            </ChildContent>
-        </DocItemEdit>
-    </FluentGridItem>
-
-    <FluentGridItem xs="12">
-        <DocItemEdit Model="@documents?.MaxBounds">
-            <HeaderContent>
-                <ModelFactoryEdit Factory="viewModels?.MaxBoundsFactory" />
-            </HeaderContent>
-            <ChildContent>
-                <BoundingBoxEdit Factory="@viewModels?.MaxBoundsFactory" />
-            </ChildContent>
-        </DocItemEdit>
-    </FluentGridItem>
-
-    <FluentGridItem>
         <DocItemEdit Model="@documents?.Pitch">
             <FluentNumberInput @bind-Value="@Options.Pitch" Style="@styleShort" />
         </DocItemEdit>
@@ -61,6 +28,39 @@
     <FluentGridItem>
         <DocItemEdit Model="@documents?.MaxZoom">
             <FluentNumberInput @bind-Value="@Options.MaxZoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem Xs="6">
+        <DocItemEdit Model="@documents?.Center">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.CenterFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <PositionEdit Factory="viewModels?.CenterFactory" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem Xs="6">
+        <DocItemEdit Model="@documents?.CenterOffset">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.CenterOffsetFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <PixelEdit Factory="@viewModels?.CenterOffsetFactory" />
+            </ChildContent>
+        </DocItemEdit>
+    </FluentGridItem>
+
+    <FluentGridItem xs="12">
+        <DocItemEdit Model="@documents?.MaxBounds">
+            <HeaderContent>
+                <ModelFactoryEdit Factory="viewModels?.MaxBoundsFactory" />
+            </HeaderContent>
+            <ChildContent>
+                <BoundingBoxEdit Factory="@viewModels?.MaxBoundsFactory" />
+            </ChildContent>
         </DocItemEdit>
     </FluentGridItem>
 </FluentGrid>
