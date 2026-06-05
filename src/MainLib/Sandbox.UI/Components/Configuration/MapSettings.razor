@@ -9,7 +9,7 @@
     <FluentTabs ActiveTabId="@activeTabId" @bind-ActiveTab="@ActiveTab" @bind-ActiveTab:after="@OnTabChanged" Style="@tabsStyle">
         @if (Options.Args.Camera)
         {
-            <FluentTab Id="tabCamera" Disabled="@cameraDisabled" IconStart="@(new Icons.Regular.Size16.Camera())">
+            <FluentTab Id="@TabCamera" Disabled="@cameraDisabled" IconStart="@(new Icons.Regular.Size16.Camera())">
                 <HeaderTemplate>
                     <DocLabel Model="@documents?.Camera" />
                 </HeaderTemplate>
@@ -21,7 +21,7 @@
 
         @if (Options.Args.Service)
         {
-            <FluentTab Id="tabService" Disabled="@serviceDisabled" IconStart="@(new Icons.Regular.Size16.ServerLink())">
+            <FluentTab Id="@TabService" Disabled="@serviceDisabled" IconStart="@(new Icons.Regular.Size16.ServerLink())">
                 <HeaderTemplate>
                     <DocLabel Model="@documents?.Service" />
                 </HeaderTemplate>
@@ -33,7 +33,7 @@
 
         @if (Options.Args.Style)
         {
-            <FluentTab Id="tabStyle" Disabled="@styleDisabled" IconStart="@(new Icons.Regular.Size16.TextEditStyle())">
+            <FluentTab Id="@TabStyle" Disabled="@styleDisabled" IconStart="@(new Icons.Regular.Size16.TextEditStyle())">
                 <HeaderTemplate>
                     <DocLabel Model="@documents?.Style" />
                 </HeaderTemplate>
@@ -45,7 +45,7 @@
 
         @if (Options.Args.Traffic)
         {
-            <FluentTab Id="tabTraffic" Disabled="@trafficDisabled" IconStart="@(new Icons.Regular.Size16.VehicleCar())">
+            <FluentTab Id="@TabTraffic" Disabled="@trafficDisabled" IconStart="@(new Icons.Regular.Size16.VehicleCar())">
                 <HeaderTemplate>
                     <DocLabel Model="@documents?.Traffic" />
                 </HeaderTemplate>
@@ -57,7 +57,7 @@
 
         @if (Options.Args.UserInteraction)
         {
-            <FluentTab Id="tabUserInteraction" Disabled="@userInteractionDisabled" IconStart="@(new Icons.Regular.Size16.Person())">
+            <FluentTab Id="@TabUserInteraction" Disabled="@userInteractionDisabled" IconStart="@(new Icons.Regular.Size16.Person())">
                 <HeaderTemplate>
                     <DocLabel Model="@documents?.UserInteraction" />
                 </HeaderTemplate>
@@ -70,7 +70,12 @@
 </FluentDialogBody>
 
 @code {
-    private string? activeTabId = "tabCamera";
+    private const string TabCamera = "tabCamera";
+    private const string TabService = "tabService";
+    private const string TabStyle = "tabStyle";
+    private const string TabTraffic = "tabTraffic";
+    private const string TabUserInteraction = "tabUserInteraction";
+    private string? activeTabId = TabCamera;
     private FluentTab? ActiveTab;
     private string tabsStyle = $"border: {UIExtensions.ThinBorderStyle} margin-bottom:1px;";
     private Documents documents = new(null);
