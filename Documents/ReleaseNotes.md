@@ -1,6 +1,15 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.4`: 
+  - `LineLayerOptions`. The following options properties have been updated to support both direct values and expressions:
+	- `Blur` property has been changed from double to object to support both double and Expression types.
+	- `StrokeColor` property has been changed from string to object to support both string and Expression types.
+	- `Offset` property has been changed from double to object to support both double and Expression types.
+	- `StrokeOpacity` property has been changed from double to object to support both double and Expression types.
+	- `StrokeWidth` property has been changed from double to object to support both double and Expression types.
+  - `Sandbox`.
+	- `GeoJSON` demo updates to include examples of using expressions with the LineLayerOptions StrokeColor property.
 - `11.0.0-Preview-1.3`: 
   - `StyleOptions`. Adjust display names.
   - `StyleOverrides`. Adjust display names.

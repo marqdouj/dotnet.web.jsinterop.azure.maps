@@ -309,7 +309,8 @@
 	"id": "vpm_2",
 	"properties": {
 		"id": "2",
-		"name": "ACME 20 inch Lateral"
+		"name": "ACME 20 inch Lateral",
+		"category": "lateral"
 	},
 	"bbox": null
 }

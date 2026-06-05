@@ -37,7 +37,7 @@
     public IPixelFactory? Factory { get; set; }
 
     [Parameter]
-    public Orientation Orientation { get; set; }
+    public Orientation Orientation { get; set; } = Orientation.Vertical;
 
     protected override void OnParametersSet()
     {

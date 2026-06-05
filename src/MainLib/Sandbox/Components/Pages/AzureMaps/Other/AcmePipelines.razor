@@ -6,7 +6,14 @@
 
 <MapPage Title="GeoJSON">
     <SummaryContent>
-        <FluentLabel>This demo simulates a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.</FluentLabel>
+        <FluentLabel>
+            This demo simulates a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.
+        </FluentLabel>
+        <br />
+        <FluentLabel>
+            The pipeline color is defined using 
+        </FluentLabel>
+        <a href="https://learn.microsoft.com/en-us/azure/azure-maps/data-driven-style-expressions-web-sdk" target="_blank">data-driven styling</a> 
     </SummaryContent>
     <ChildContent>
         <Toolbar>
@@ -67,9 +74,9 @@
     private List<AcmePipelineInfo> pipelines = [];
     private List<VpmViewModel> vpms = [];
     private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
-    private readonly LineLayer lateralLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
-    private readonly LineLayer mainLineLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
     private readonly LineLayer leaderLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
+    private readonly LineLayer pipelinesLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
+    
     private const string lateralColor = "MediumVioletRed";
     private const string mainlineColor = "Purple";
     private readonly string lateralLegendStyle = $"background-color: {lateralColor};width:1rem;height:1rem;";
@@ -81,8 +88,18 @@
         //Lines are replecated multiple times when there is more than one copy of the world, but popups aren't.
         mapOptions.Style = new() { RenderWorldCopies = false };
 
-        lateralLayer.Options = new() { StrokeColor = lateralColor, StrokeWidth = 3.5 };
-        mainLineLayer.Options = new() { StrokeColor = mainlineColor, StrokeWidth = 3.5 };
+        pipelinesLayer.Options = new()
+        {
+            StrokeColor = new List<object>
+                {
+                    "match",
+                    new List<string> { "get", "category" },
+                    "mainline", mainlineColor,
+                    "lateral", lateralColor,
+                    "blue"
+                },
+            StrokeWidth = 3.5
+        };
 
         //Enable line metrics on the leader layer. This is needed to enable support for strokeGradient.
         var ds = (DataSource)leaderLayer.LayerSource;
@@ -115,18 +132,15 @@
         {
             ShowOverlay(true);
 
-            await maps!.Layers.Add(mapId, lateralLayer);
             await maps!.Layers.Add(mapId, leaderLayer);
-            await maps!.Layers.Add(mapId, mainLineLayer);
             await maps!.Layers.Add(mapId, symbolLayer);
+            await maps!.Layers.Add(mapId, pipelinesLayer);
 
             foreach (var vpm in vpms)
             {
-                ILayer layer = vpm.IsMainLine ? mainLineLayer : lateralLayer;
-
                 foreach (var part in vpm.Parts)
                 {
-                    await maps!.Sources.ImportDataFromUrl(mapId, layer.LayerSource.Id, part);
+                    await maps!.Sources.ImportDataFromUrl(mapId, pipelinesLayer.LayerSource.Id, part);
                 }
 
                 vpm.IsLoaded = true;
@@ -217,7 +231,6 @@
         public int Id => info.Id;
         public string Name => info.Name;
         public List<string> Parts => info.Parts;
-        public bool IsMainLine => info.IsMainLine;
         public bool IsLoaded { get; set; }
         public Position StartPosition => info.StartPosition;
         public Popup Popup { get; }

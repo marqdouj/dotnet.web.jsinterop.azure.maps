@@ -1,5 +1,10 @@
 @import '_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css';
 
+/*Ensure that Fluent Label does not wrap when being used as a label before the input*/
+fluent-field[label-position=before] > label {
+    white-space: nowrap
+}
+
 body {
     --body-font: "Segoe UI Variable", "Segoe UI", sans-serif;
     font-family: var(--body-font);

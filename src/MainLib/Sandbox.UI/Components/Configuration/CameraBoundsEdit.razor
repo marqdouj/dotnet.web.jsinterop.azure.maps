@@ -7,6 +7,16 @@
             <FluentNumberInput @bind-Value="@Options.Bearing" Style="@styleShort" />
         </DocItemEdit>
     </FluentGridItem>
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.MaxZoom">
+            <FluentNumberInput @bind-Value="@Options.MaxZoom" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
+    <FluentGridItem>
+        <DocItemEdit Model="@documents?.Pitch">
+            <FluentNumberInput @bind-Value="@Options.Pitch" Style="@styleShort" />
+        </DocItemEdit>
+    </FluentGridItem>
     <FluentGridItem xs="12">
         <DocItemEdit Model="@documents?.Bounds">
             <HeaderContent>
@@ -27,12 +37,7 @@
             </ChildContent>
         </DocItemEdit>
     </FluentGridItem>
-    <FluentGridItem>
-        <DocItemEdit Model="@documents?.MaxZoom">
-            <FluentNumberInput @bind-Value="@Options.MaxZoom" Style="@styleShort" />
-        </DocItemEdit>
-    </FluentGridItem>
-    <FluentGridItem>
+    <FluentGridItem xs="6">
         <DocItemEdit Model="@documents?.Offset">
             <HeaderContent>
                 <ModelFactoryEdit Factory="viewModels?.Offset" />
@@ -42,7 +47,7 @@
             </ChildContent>
         </DocItemEdit>
     </FluentGridItem>
-    <FluentGridItem xs="12">
+    <FluentGridItem xs="8">
         <DocItemEdit Model="@documents?.Padding">
             <HeaderContent>
                 <ModelFactoryEdit Factory="viewModels?.Padding" />
@@ -50,11 +55,6 @@
             <ChildContent>
                 <PaddingEdit Factory="@viewModels?.Padding" />
             </ChildContent>
-        </DocItemEdit>
-    </FluentGridItem>
-    <FluentGridItem>
-        <DocItemEdit Model="@documents?.Pitch">
-            <FluentNumberInput @bind-Value="@Options.Pitch" Style="@styleShort" />
         </DocItemEdit>
     </FluentGridItem>
 </FluentGrid>

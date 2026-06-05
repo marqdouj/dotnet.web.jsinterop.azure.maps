@@ -11,7 +11,8 @@
 	"id": "vpm_1",
 	"properties": {
 		"id": "1",
-		"name": "ACME 24 inch Main Line"
+		"name": "ACME 24 inch Main Line",
+    "category": "mainline"
 	},
 	"bbox": null
 }

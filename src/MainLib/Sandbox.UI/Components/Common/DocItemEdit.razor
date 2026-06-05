@@ -1,4 +1,6 @@
-﻿<FluentStack Orientation="@Orientation" HorizontalGap="@horizontalGapValue"
+﻿<FluentStack Orientation="@Orientation"
+             HorizontalGap="@horizontalGapValue"
+             VerticalGap="@verticalGapValue"
              HorizontalAlignment="HorizontalAlignment.Left"
              VerticalAlignment="VerticalAlignment.Center">
     <DocLabel Model="Model">@HeaderContent</DocLabel>
@@ -7,6 +9,7 @@
 
 @code {
     private string? horizontalGapValue => HorizontalGap ?? "3px";
+    private string? verticalGapValue => VerticalGap ?? "3px";
 
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set; }
@@ -22,4 +25,7 @@
 
     [Parameter]
     public Orientation Orientation { get; set; } = Orientation.Vertical;
+
+    [Parameter]
+    public string? VerticalGap { get; set; }
 }

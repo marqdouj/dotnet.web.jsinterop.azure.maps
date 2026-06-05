@@ -1,91 +1,48 @@
 ﻿@page "/design"
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
 @rendermode InteractiveServer
-@inject ILogger<Design> Logger
-@inject IToastService ToastService
 
-<MapPage Title="Design">
-    <SummaryContent>
-        <MapPageSummary />
-    </SummaryContent>
-    <ChildContent>
-        <Toolbar>
-            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
-            <FluentMenu>
-                <FluentMenuButton Label="Menu: ">@activeMenu</FluentMenuButton>
-                @RenderMenuItems()
-            </FluentMenu>
-        </Toolbar>
+<FluentSelect Label="Colors"
+              Items="@GetEnumValues()"
+              @bind-Value="@Value">
+    <OptionTemplate>
+        <FluentStack Style="pointer-events: none;">
+            <div class="color-block" style="--item-color: @context.ToAttributeValue()"></div>
+            @{
+                var tooltip = $"Tooltip for {context}";
+                var label = $"{context}";
+                var id = $"option-{context}";
 
-        <MapControl MapId="@mapId" />
-    </ChildContent>
-</MapPage>
+                <span>@label</span>
+                <FluentIcon Tooltip="@tooltip" Id="@id" Value="@((new Icons.Regular.Size16.Info()))" Style="margin-left:3px;" />
 
-<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
-             OnMapEventError="@OnMapEventError"
-             OnMapEventReady="@OnMapEventReady" />
+                // This causes the error: "<FluentTooltipProvider /> needs to be added to the main layout of your application/site."
+                // The error is misleading because the provider is already in the layout, but it seems that FluentSelect's option template doesn't have access to it for some reason.
+                //The workaround is to add a FluentTooltipProvider to this page, but that shouldn't be necessary because the provider is already in the main layout.
+                // <FluentTooltip Anchor="@id">@tooltip</FluentTooltip>
+                // <FluentIcon Id="@id" Value="@((new Icons.Regular.Size16.Info()))" Style="margin-left:3px;" />
+            }
+        </FluentStack>
+    </OptionTemplate>
+</FluentSelect>
+
+@* This is a workaround for the OptionTemplate error for FluentTooltip/>*@
+@* <FluentTooltipProvider @rendermode="InteractiveServer" /> *@
+
+<div>
+    Selected: @Value
+</div>
+
+<style>
+    .color-block {
+        width: 20px;
+        height: 20px;
+        background-color: var(--item-color);
+        margin-right: 8px;
+    }
+</style>
 
 @code {
-    private const string mapId = "mapDesign";
-    private IAzureMapsInterop? maps;
-    private bool mapReady;
-    private bool mapNotReady => !mapReady;
-    private string? activeMenu = "";
-
-    private async Task MenuClick(string? item)
-    {
-        await Task.CompletedTask;
-
-        activeMenu = item;
-        Console.WriteLine(activeMenu);
-    }
-
-
-    RenderFragment RenderMenuItems() =>
-        @<FluentMenuList>
-            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 1"))">Menu item 1</FluentMenuItem>
-            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 2"))">Menu item 2</FluentMenuItem>
-            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 3"))">Menu item 3</FluentMenuItem>
-            <FluentMenuItem OnClick="@(() => MenuClick("Menu item 4"))">Menu item 4</FluentMenuItem>
-        </FluentMenuList>;
-
-    #region Map Provider Handlers
-
-    private async Task OnMapProviderInitialized(MapProviderArgs args)
-    {
-        try
-        {
-            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
-            if (maps != null)
-                await maps.CreateDefaultMap(mapId, Logger, ToastService);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "");
-            await ToastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task OnMapEventError(MapEventArgs args)
-    {
-        await Task.CompletedTask;
-        await args.ProcessMapEventError(Logger, ToastService);
-    }
-
-    private async Task OnMapEventReady(MapEventArgs args)
-    {
-        await Task.CompletedTask;
-        mapReady = !(await args.HasPayloadError(Logger, ToastService));
-    }
-
-    # endregion
-
-    #region MapsInterop
-
-    private async Task Reset()
-    {
-        if (mapReady)
-            await maps!.ResetMap(mapId, Logger, ToastService);
-    }
-
-    #endregion
+    IEnumerable<Color> GetEnumValues() => Enum.GetValues(typeof(Color)).Cast<Color>();
+    Color Value;
 }

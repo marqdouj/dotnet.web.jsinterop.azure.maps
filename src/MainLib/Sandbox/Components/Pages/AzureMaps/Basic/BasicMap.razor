@@ -8,19 +8,13 @@
     <SummaryContent>
         <MapPageSummary>
             This sample demonstrates how to create a basic map and interact with it using the Azure Maps Controls. 
-            Use the buttons in the toolbar to reset the map, open the settings dialog, and adjust various map options.
-            <br />
-            NOTE: There is an issue with the 'All Setttings' configuration that is being investigated.
-            When selecting a FluentSelect option it forces the active tab back to camera.
-            For best results, choose an individual settings category button (e.g. Camera Settings) to adjust and save changes.
+            Use the buttons in the toolbar to reset the map, or adjust various map settings.
         </MapPageSummary>
     </SummaryContent>
     <ChildContent>
         <Toolbar>
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
             <FluentSpacer Width="10px" />
-            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Settings())" Title="All Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.All))" />
-            <FluentSpacer Width="3px" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Camera())" Title="Camera Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Camera))" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ServerLink())" Title="Style Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Style))" />
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.TextEditStyle())" Title="Service Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.Service))" />
