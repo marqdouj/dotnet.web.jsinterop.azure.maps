@@ -26,9 +26,9 @@ namespace Sandbox.Services
             await Task.CompletedTask;
             return
             [
-                new(1, "ACME 24 inch Main Line", ["GeoJSON\\ACME 24 inch Main Line_Part1.geojson", "GeoJSON\\ACME 24 inch Main Line_Part2.geojson"], true, new Position(-113.38603100,52.43719400) ),
-                new(2, "ACME 20 inch Lateral", ["GeoJSON\\ACME 20 inch Lateral.geojson"], false, new Position(-113.08237963, 52.32390956)),
-                new(3, "ACME 16 inch Lateral", ["GeoJSON\\ACME 16 inch Lateral.geojson"], false, new Position(-113.36087359, 52.3079367)),
+                new(1, "ACME 24 inch Main Line", ["GeoJSON\\ACME 24 inch Main Line_Part1.geojson", "GeoJSON\\ACME 24 inch Main Line_Part2.geojson"], "mainline", new Position(-113.38603100,52.43719400) ),
+                new(2, "ACME 20 inch Lateral", ["GeoJSON\\ACME 20 inch Lateral.geojson"], "lateral", new Position(-113.08237963, 52.32390956)),
+                new(3, "ACME 16 inch Lateral", ["GeoJSON\\ACME 16 inch Lateral.geojson"], "lateral", new Position(-113.36087359, 52.3079367)),
             ];
         }
 
@@ -166,17 +166,16 @@ namespace Sandbox.Services
             new Position(-74.22655, 40.712216));
     }
 
-    public class AcmePipelineInfo(int id, string name, List<string> parts, bool isMainLine, Position startPosition)
+    public class AcmePipelineInfo(int id, string name, List<string> parts, string category, Position startPosition)
     {
         public int Id { get; } = id;
         public string Name { get; } = name;
+        public string Category { get; } = category;
 
         /// <summary>
         /// List of Urls that make up parts of the line (could be single url).
         /// </summary>
         public List<string> Parts { get; } = parts;
-
-        public bool IsMainLine { get; } = isMainLine;
 
         public Position StartPosition { get; } = startPosition;
     }

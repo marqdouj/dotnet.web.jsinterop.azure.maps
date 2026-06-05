@@ -94,9 +94,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     {
         /// <summary>
         /// The amount of blur to apply to the line in pixels.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Blur { get; set; }
+        public object? Blur { get; set; }
 
         /// <summary>
         /// Specifies how the ends of the lines are rendered.
@@ -123,9 +124,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// Specifies the color of the line.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default '#1E90FF'.
         /// </summary>
-        public string? StrokeColor { get; set; }
+        public object? StrokeColor { get; set; }
 
         /// <summary>
         /// Specifies the lengths of the alternating dashes and gaps that form the dash pattern.
