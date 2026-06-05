@@ -147,15 +147,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// The line's offset.
         /// A positive value offsets the line to the right, relative to the direction of the line.
         /// A negative value offsets to the left.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Offset { get; set; }
+        public object? Offset { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the line will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? StrokeOpacity { get; set; }
+        public object? StrokeOpacity { get; set; }
 
         /// <summary>
         /// The amount of offset in pixels to render the line relative to where it would render normally.
@@ -174,9 +176,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// The width of the line in pixels. Must be a value greater or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '2'.
         /// </summary>
-        public double? StrokeWidth { get; set; }
+        public object? StrokeWidth { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
