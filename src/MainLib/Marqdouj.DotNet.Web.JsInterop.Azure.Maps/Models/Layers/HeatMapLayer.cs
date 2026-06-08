@@ -42,30 +42,34 @@
         /// <summary>
         /// Similar to heatmap-weight but specifies the global heatmap intensity.
         /// The higher this value is, the more ‘weight’ each point will contribute to the appearance.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Intensity { get; set; }
+        public object? Intensity { get; set; }
 
         /// <summary>
         /// The opacity at which the heatmap layer will be rendered defined as a number between 0 and 1.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Opacity { get; set; }
+        public object? Opacity { get; set; }
 
         /// <summary>
         /// The radius in pixels used to render a data point on the heatmap.
         /// The radius must be a number greater or equal to 1.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '30'.
         /// </summary>
-        public double? Radius { get; set; }
+        public object? Radius { get; set; }
 
         /// <summary>
         /// Specifies how much an individual data point contributes to the heatmap.
         /// Must be a number greater than 0. A value of 5 would be equivalent to having 5 points of weight 1 in the same spot.
         /// This is useful when clustering points to allow heatmap rendering or large datasets.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Weight { get; set; }
+        public object? Weight { get; set; }
 
         /// <summary>
         /// <inheritdoc/>

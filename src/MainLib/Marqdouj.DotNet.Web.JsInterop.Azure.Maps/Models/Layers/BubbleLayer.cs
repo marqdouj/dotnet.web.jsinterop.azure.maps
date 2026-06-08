@@ -39,13 +39,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// The circle is aligned to the plane of the map.
         /// </summary>
-        [Display(Name = "map")]
+        [Display(Name = "Map")]
         map,
 
         /// <summary>
         /// The circle is aligned to the plane of the viewport.
         /// </summary>
-        [Display(Name = "viewport")]
+        [Display(Name = "Viewport")]
         viewport,
     }
 
@@ -56,40 +56,46 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     {
         /// <summary>
         /// The color to fill the circle symbol with.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default "#1A73AA" (dark Blue).
         /// </summary>
-        public string? Color { get; set; }
+        public object? Color { get; set; }
 
         /// <summary>
         /// The amount to blur the circles.
         /// A value of 1 blurs the circles such that only the center point is at full opacity.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Blur { get; set; }
+        public object? Blur { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the circles will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Opacity { get; set; }
+        public object? Opacity { get; set; }
 
         /// <summary>
         /// The color of the circles' outlines.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default '#FFFFFF'.
         /// </summary>
-        public string? StrokeColor { get; set; }
+        public object? StrokeColor { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the circles' outlines will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? StrokeOpacity { get; set; }
+        public object? StrokeOpacity { get; set; }
 
         /// <summary>
         /// The width of the circles' outlines in pixels.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '2'.
         /// </summary>
-        public double? StrokeWidth { get; set; }
+        public object? StrokeWidth { get; set; }
 
         /// <summary>
         /// Specifies the orientation of circle when map is pitched.
@@ -102,9 +108,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// The radius of the circle symbols in pixels.
         /// Must be greater than or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '8'.
         /// </summary>
-        public double? Radius { get; set; }
+        public object? Radius { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
