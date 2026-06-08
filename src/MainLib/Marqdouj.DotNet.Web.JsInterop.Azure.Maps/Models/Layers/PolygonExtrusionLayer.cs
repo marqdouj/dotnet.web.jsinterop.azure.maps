@@ -38,24 +38,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// The height in meters to extrude the base of this layer.
         /// This height is relative to the ground.
         /// Must be greater or equal to 0 and less than or equal to 'height'.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Base { get; set; }
+        public object? Base { get; set; }
 
         /// <summary>
         /// The color to fill the polygons with.
         /// Ignored if 'fillPattern' is set.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default '#1E90FF'.
         /// </summary>
-        public string? FillColor { get; set; }
+        public object? FillColor { get; set; }
 
         /// <summary>
         /// The height in meters to extrude this layer.
         /// This height is relative to the ground.
         /// Must be a number greater or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Height { get; set; }
+        public object? Height { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the fill will be drawn.
@@ -66,8 +69,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Name of image in sprite to use for drawing image fills.
         /// For seamless patterns, image width must be a factor of two (2, 4, 8, ..., 512).
+        /// String or DataDrivenPropertyValueSpecification.
         /// </summary>
-        public string? FillPattern { get; set; }
+        public object? FillPattern { get; set; }
 
         /// <summary>
         /// The amount of offset in pixels to render the line relative to where it would render normally.

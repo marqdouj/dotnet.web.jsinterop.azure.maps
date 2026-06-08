@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.5`: 
+  - `Layer Options`. Any remaining layer option properties that support data-driven styling have been updated to support both direct values and expressions.
 - `11.0.0-Preview-1.4`: 
   - `LineLayerOptions`. The following options properties have been updated to support both direct values and expressions:
 	- `Blur` property has been changed from double to object to support both double and Expression types.

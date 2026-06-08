@@ -34,21 +34,24 @@
     {
         /// <summary>
         /// The color to fill the polygons with.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default '#1E90FF'.
         /// </summary>
-        public string? FillColor { get; set; }
+        public object? FillColor { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the fill will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0.5'.
         /// </summary>
-        public double? FillOpacity { get; set; }
+        public object? FillOpacity { get; set; }
 
         /// <summary>
         /// Name of image in sprite to use for drawing image fills.
         /// For seamless patterns, image width must be a factor of two (2, 4, 8, ..., 512).
+        /// String or DataDrivenPropertyValueSpecification.
         /// </summary>
-        public string? FillPattern { get; set; }
+        public object? FillPattern { get; set; }
 
         /// <summary>
         /// Whether or not the fill should be antialiased.

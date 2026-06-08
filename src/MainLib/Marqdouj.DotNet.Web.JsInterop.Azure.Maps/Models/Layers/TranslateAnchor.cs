@@ -12,7 +12,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Translate relative to the map.
         /// </summary>
-        [Display(Name = "map")]
+        [Display(Name = "Map")]
         map,
 
         /// <summary>

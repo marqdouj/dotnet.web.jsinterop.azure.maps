@@ -57,9 +57,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Sorts features in ascending order based on this value. Features with
         /// lower sort keys are drawn and placed first.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default 'null'.
         /// </summary>
-        public double? SortKey { get; set; }
+        public object? SortKey { get; set; }
 
         /// <summary>
         /// <see cref="SymbolLayerZOrder"/>
@@ -69,9 +70,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// Distance in pixels between two symbol anchors along a line. Must be greater or equal to 1.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '250'.
         /// </summary>
-        public double? LineSpacing { get; set; }
+        public object? LineSpacing { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -128,7 +130,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     public enum SymbolItemAlignment
     {
         [Display(Name = "Auto")] auto,
-        [Display(Name = "map")] map,
+        [Display(Name = "Map")] map,
         [Display(Name = "Viewport")] viewport,
     }
 
@@ -168,22 +170,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// The text is aligned towards the anchor position.
         /// </summary>
-        [Display(Name = "")] Auto,
+        Auto,
 
         /// <summary>
         /// The text is aligned to the left.
         /// </summary>
-        [Display(Name = "")] Left,
+        Left,
 
         /// <summary>
         /// The text is centered.
         /// </summary>
-        [Display(Name = "")] Center,
+        Center,
 
         /// <summary>
         /// The text is aligned to the right.
         /// </summary>
-        [Display(Name = "")] Right
+        Right
     }
 
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
@@ -213,9 +215,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// "top-right": The top right corner of the icon is placed closest to the anchor.
         /// "bottom-left": The bottom left corner of the icon is placed closest to the anchor.
         /// "bottom-right": The bottom right corner of the icon is placed closest to the anchor.
+        /// SymbolPositionAnchor or DataDrivenPropertyValueSpecification.
         /// Default 'bottom'.
         /// </summary>
-        public SymbolPositionAnchor? Anchor { get; set; }
+        public object? Anchor { get; set; }
 
         /// <summary>
         /// Specifies if other symbols can overlap this symbol.
@@ -226,9 +229,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// The name of the image in the map's image sprite to use for drawing the icon.
+        /// SymbolIconImage/String or DataDrivenPropertyValueSpecification.
         /// Default 'marker-blue'.
         /// </summary>
-        public SymbolIconImage? Image { get; set; }
+        public object? Image { get; set; }
 
         /// <summary>
         /// Override <see cref="Image"/> and use an id associated with a custom image template <see cref="ImageTemplate"/>.
@@ -240,9 +244,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// Positive values indicate right and down, while negative values indicate left and up.
         /// Each component is multiplied by the value of size to obtain the final offset in pixels.
         /// When combined with rotation the offset will be as if the rotated direction was up.
+        /// Pixel or DataDrivenPropertyValueSpecification.
         /// Default '[0, 0]'.
         /// </summary>
-        public Pixel? Offset { get; set; }
+        public object? Offset { get; set; }
 
         /// <summary>
         /// Specifies if a symbols icon can be hidden but its text displayed if it is overlapped with another symbol.
@@ -254,9 +259,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// Size of the additional area around the icon bounding box used for detecting symbol collisions.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '2'.
         /// </summary>
-        public double? Padding { get; set; }
+        public object? Padding { get; set; }
 
         /// <summary>
         /// Specifies the orientation of the icon when the map is pitched.
@@ -268,10 +274,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         public SymbolItemAlignment? PitchAlignment { get; set; }
 
         /// <summary>
-        /// The amount to rotate the icon clockwise in degrees
+        /// The amount to rotate the icon clockwise in degrees.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? Rotation { get; set; }
+        public object? Rotation { get; set; }
 
         /// <summary>
         /// Rotation specification applied to the object.
@@ -295,15 +302,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Scales the original size of the icon by the provided factor.
         /// Must be greater or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Size { get; set; }
+        public object? Size { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the icon will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Opacity { get; set; }
+        public object? Opacity { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -312,7 +321,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         public object Clone()
         {
             var clone = (SymbolIconOptions)MemberwiseClone();
-            clone.Offset = (Pixel?)Offset?.Clone();
+            if (clone.Offset is Pixel offset)
+                clone.Offset = offset?.Clone();
 
             return clone;
         }
@@ -332,16 +342,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// Specifies which part of the icon is placed closest to the icons anchor position on the map.
+        /// SymbolPositionAnchor or DataDrivenPropertyValueSpecification.
         /// Default 'center'.
         /// </summary>
-        public SymbolPositionAnchor? Anchor { get; set; }
+        public object? Anchor { get; set; }
 
         /// <summary>
         /// Specifies the name of a property on the features to use for a text label.
+        /// String or DataDrivenPropertyValueSpecification.
         /// </summary>
-        public string? TextField { get; set; }
+        public object? TextField { get; set; }
 
         /// <summary>
+        /// List[string] or DataDrivenPropertyValueSpecification.
         /// Possible values: "SegoeFrutigerHelveticaMYingHei-Bold", "SegoeFrutigerHelveticaMYingHei-Medium",
         /// "SegoeFrutigerHelveticaMYingHei-Regular", "SegoeUi-Bold", "SegoeUi-light", "SegoeUi-Regular",
         /// "SegoeUi-SemiBold", "SegoeUi-SemiLight", "SegoeUi-SymbolRegular", "StandardCondensedSegoeUi-Black",
@@ -351,7 +364,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// "StandardFontCondensed-Regular".
         /// Default 'StandardFont-Regular'.
         /// </summary>
-        public List<string>? Font { get; set; }
+        public object? Font { get; set; }
 
         /// <summary>
         /// Specifies if the other symbols are allowed to collide with the text.
@@ -369,9 +382,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Specifies an offset distance of the icon from its anchor in ems.
         /// Positive values indicate right and down, while negative values indicate left and up.
+        /// Pixel or DataDrivenPropertyValueSpecification.
         /// Default '[0, 0]'. 
         /// </summary>
-        public Pixel? Offset { get; set; }
+        public object? Offset { get; set; }
 
         /// <summary>
         /// Specifies if the text can be hidden if it is overlapped by another symbol.
@@ -383,9 +397,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 
         /// <summary>
         /// Size of the additional area around the text bounding box used for detecting symbol collisions.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '2'.
         /// </summary>
-        public double? Padding { get; set; }
+        public object? Padding { get; set; }
 
         /// <summary>
         /// Specifies the orientation of the text when the map is pitched.
@@ -399,15 +414,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// Radial offset of text, in the direction of the symbol's anchor. Useful in combination
         /// with 'variableAnchor', which defaults to using the two-dimensional 'offset' if present.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default: '0'.
         /// </summary>
-        public double? RadialOffset { get; set; }
+        public object? RadialOffset { get; set; }
 
         /// <summary>
         /// The amount to rotate the text clockwise in degrees.
+        /// Number or DataDrivenPropertyValueSpecification.
         ///  Default '0'.
         /// </summary>
-        public double? Rotation { get; set; }
+        public object? Rotation { get; set; }
 
         /// <summary>
         /// In combination with the 'placement' property of the 'SymbolLayerOptions',
@@ -444,42 +461,48 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// The size of the font in pixels.
         /// Must be a number greater or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '16'.
         /// </summary>
-        public double? Size { get; set; }
+        public object? Size { get; set; }
 
         /// <summary>
         /// The color of the text.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default '#000000'.
         /// </summary>
-        public string? Color { get; set; }
+        public object? Color { get; set; }
 
         /// <summary>
         /// The halo's fadeout distance towards the outside in pixels.
         /// Must be a number greater or equal to 0.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? HaloBlur { get; set; }
+        public object? HaloBlur { get; set; }
 
         /// <summary>
         /// The color of the text's halo, which helps it stand out from backgrounds.
+        /// String or DataDrivenPropertyValueSpecification.
         /// Default 'rgba(0,0,0,0)'.
         /// </summary>
-        public string? HaloColor { get; set; }
+        public object? HaloColor { get; set; }
 
         /// <summary>
         /// The distance of the halo to the font outline in pixels.
         /// Must be a number greater or equal to 0.
         /// The maximum text halo width is 1/4 of the font size.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '0'.
         /// </summary>
-        public double? HaloWidth { get; set; }
+        public object? HaloWidth { get; set; }
 
         /// <summary>
         /// A number between 0 and 1 that indicates the opacity at which the text will be drawn.
+        /// Number or DataDrivenPropertyValueSpecification.
         /// Default '1'.
         /// </summary>
-        public double? Opacity { get; set; }
+        public object? Opacity { get; set; }
 
         /// <summary>
         /// <inheritdoc/>
@@ -488,8 +511,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         public object Clone()
         {
             var clone = (SymbolTextOptions)MemberwiseClone();
-            clone.Font = Font?.ToList();
-            clone.Offset = (Pixel?)Offset?.Clone();
+            if (clone.Font is ICloneable icFont)
+                clone.Font = icFont.Clone();
+            if (clone.Offset is Pixel offset)
+                clone.Offset = offset?.Clone();
             clone.VariableAnchor = VariableAnchor?.ToList();
             return clone;
         }
