@@ -76,7 +76,7 @@
     private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
     private readonly LineLayer leaderLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
     private readonly LineLayer pipelinesLayer = (LineLayer)LayerType.Line.GetDefaultLayer();
-    
+
     private const string lateralColor = "MediumVioletRed";
     private const string mainlineColor = "Purple";
     private readonly string lateralLegendStyle = $"background-color: {lateralColor};width:1rem;height:1rem;";
@@ -88,16 +88,19 @@
         //Lines are replecated multiple times when there is more than one copy of the world, but popups aren't.
         mapOptions.Style = new() { RenderWorldCopies = false };
 
+        var builder = new MatchStyleBuilder(
+            "category",
+            new List<(string Case, string Value)>
+            {
+                ("mainline", mainlineColor),
+                ("lateral", lateralColor)
+            },
+            "blue"
+        );
+
         pipelinesLayer.Options = new()
         {
-            StrokeColor = new List<object>
-                {
-                    "match",
-                    new List<string> { "get", "category" },
-                    "mainline", mainlineColor,
-                    "lateral", lateralColor,
-                    "blue"
-                },
+            StrokeColor = builder.Build(),
             StrokeWidth = 3.5
         };
 
