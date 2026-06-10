@@ -54,7 +54,7 @@
 
   <ItemGroup>
     <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.4.26230.115" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.5.26302.115" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="7.0.0-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
