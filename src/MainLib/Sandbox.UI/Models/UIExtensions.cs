@@ -34,6 +34,10 @@ namespace Sandbox.UI.Models
             }
         }
 
+        /// <summary>
+        /// Generates a random CSS ID string, prefixed with "g_" to ensure it starts with a letter (valid CSS identifier).
+        /// </summary>
+        /// <returns></returns>
         public static string GetRandomCssId()
         {
             return $"g_{Guid.NewGuid()}";

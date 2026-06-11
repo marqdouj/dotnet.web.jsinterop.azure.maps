@@ -1,4 +1,5 @@
-﻿namespace Sandbox.UI.Models
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace Sandbox.UI.Models
 {
     public enum MapSettingsDisplay
     {
@@ -26,3 +27,4 @@
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

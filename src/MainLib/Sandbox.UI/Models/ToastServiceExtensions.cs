@@ -1,6 +1,7 @@
 ﻿using Microsoft.FluentUI.AspNetCore.Components;
 using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Sandbox.UI.Models
 {
     public static class ToastServiceExtensions
@@ -32,3 +33,4 @@ namespace Sandbox.UI.Models
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
