@@ -3,7 +3,7 @@
     /// <summary>
     /// Builder class for creating a linear interpolation style expression for Azure Maps.
     /// </summary>
-    public class LinearInterpolateStyleBuilder
+    internal class LinearInterpolateStyleBuilder
     {
         private readonly List<(double Case, string Value)> _cases;
 

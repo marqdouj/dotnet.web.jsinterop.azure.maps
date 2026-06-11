@@ -3,8 +3,7 @@
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-1.6`: 
   - `Data-Driven Styles`.
-	- `MatchStyleBuilder`. A new builder for creating match-style expressions.
-	- `LinearInterpolateStyleBuilder`. A new builder for creating linear interpolate-style expressions.
+	- `DDSBuilder`. A new builder for creating data-driven style expressions.
 - `11.0.0-Preview-1.5`: 
   - `Layer Options`. Any remaining layer option properties that support data-driven styling have been updated to support both direct values and expressions.
 - `11.0.0-Preview-1.4`: 
