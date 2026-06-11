@@ -58,7 +58,7 @@
         });
 
         bubbleLayer.Options = new() { Blur = 0.25, Color = builder.Build(), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
-        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", TextField = new List<string> { "get", "title" } } };
+        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = new List<string> { "get", "title" } } };
         symbolLayer.DataSource = bubbleLayer.DataSource;
 
         features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
