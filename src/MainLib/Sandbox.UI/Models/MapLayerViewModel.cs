@@ -64,8 +64,6 @@ namespace Sandbox.UI.Models
     /// ViewModel for working with a layer.
     /// </summary>
     /// <param name="layer"></param>
-    /// <param name="camera">Camera options for viewing the layer.</param>
-    /// <param name="selected">Indicates whether the layer is selected.</param>
     public class MapLayerViewModel<TOptions, TSource>(ILayer<TOptions, TSource> layer) : IMapLayerViewModel where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
     {
         /// <summary>

@@ -7,13 +7,13 @@
 <MapPage Title="GeoJSON">
     <SummaryContent>
         <FluentLabel>
-            This demo simulates a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.
-        </FluentLabel>
-        <br />
-        <FluentLabel>
-            The pipeline color is defined using 
+            This sample demonstrates how to visualize linear data using 
         </FluentLabel>
         <DDSLink/>
+        <br />
+        <FluentLabel>
+            The example is a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.
+        </FluentLabel>
     </SummaryContent>
     <ChildContent>
         <Toolbar>
@@ -88,7 +88,7 @@
         //Lines are replecated multiple times when there is more than one copy of the world, but popups aren't.
         mapOptions.Style = new() { RenderWorldCopies = false };
 
-        var builder = new MatchStyleBuilder(
+        var colorBuilder = DDSBuilder.Match(
             "category",
             new List<(string Case, string Value)>
             {
@@ -100,7 +100,7 @@
 
         pipelinesLayer.Options = new()
         {
-            StrokeColor = builder.Build(),
+            StrokeColor = colorBuilder,
             StrokeWidth = 3.5
         };
 

@@ -7,12 +7,9 @@
 <MapPage Title="Temperatures">
     <SummaryContent>
         <FluentLabel>
-            This sample demonstrates how to use 
+            This sample demonstrates how to visualize temperature data using 
         </FluentLabel>
         <DDSLink/>
-        <FluentLabel>
-            to visualize temperature data on an Azure Map.
-        </FluentLabel>
     </SummaryContent>
     <ChildContent>
         <Toolbar>
@@ -49,7 +46,7 @@
         temperatures = await DataService.GetTemperatureLayerData();
         mapOptions.Camera!.Center = temperatures[1].Position;
 
-        var builder = new LinearInterpolateStyleBuilder("temperature", new List<(double Value, string Color)>
+        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
         {
             ( 20, "blue" ),
             ( 21, "yellow" ),
@@ -57,8 +54,8 @@
             ( 23, "red" )
         });
 
-        bubbleLayer.Options = new() { Blur = 0.25, Color = builder.Build(), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
-        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = new List<string> { "get", "title" } } };
+        bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = DDSBuilder.LiteralGet("title") } };
         symbolLayer.DataSource = bubbleLayer.DataSource;
 
         features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
