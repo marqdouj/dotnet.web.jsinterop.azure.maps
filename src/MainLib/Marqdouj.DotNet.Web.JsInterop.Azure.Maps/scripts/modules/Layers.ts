@@ -3,6 +3,7 @@ import { Helpers, Logger, LogLevel } from "./common/"
 import { Events, MapEvent } from "./Events";
 import { Factory, MapReference } from "./Factory";
 import { DataSource, SourceHelper, Sources } from "./Sources";
+import { Popups, PopupDef } from "./Popups";
 
 export class Layers {
     public static add(mapId: string, layer: Layer, events?: MapEvent[]): void {
@@ -206,16 +207,85 @@ export class Layers {
         return result;
     }
 
-    static showLayer(mapId: string, id: string, isVisible: boolean) {
+    public static showLayer(mapId: string, id: string, isVisible: boolean) {
         const map = Factory.getMap(mapId);
         if (!map)
             return;
 
-        var layer = map.layers.getLayerById(id);
+        const layer = map.layers.getLayerById(id);
         if (layer) {
             const options = { visible: isVisible ?? true };
             //Logger.logMapMessage(mapId, LogLevel.Trace, "Layers.showLayer: setting options.", options);
             layer.setOptions(options);
+        }
+    }
+
+    public static addHoverPopup(mapId: string, layerId: string, def: PopupDef) {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const lyr = mapRef.map.layers.getLayerById(layerId);
+        if (!lyr) {
+            Logger.logMapMessage(mapRef.mapId, LogLevel.Error, `addHoverPopup: layer does not exist where layer ID=${layerId}`);
+            return;
+        }
+
+        //Create the popup but leave it closed so we can update it and display it later.
+        def.show = false;
+        def.options.position = [0, 0];
+        def.options.pixelOffset = [0, -18];
+        Popups.add(mapRef.mapId, [def]);
+        const popup = Popups.getPopup(mapRef, def.id);
+
+        if (!popup) {
+            Logger.logMapMessage(mapRef.mapId, LogLevel.Error, `addHoverPopup: popup was not created or can't be found where popup ID=${def.id}`);
+        }
+
+        //Close the popup when the mouse moves on the map.
+        mapRef.map.events.add('mousemove', () => this.#closeSymbolHovered(popup));
+
+        /**
+        * Open the popup on mouse move or touchstart on the symbol layer.
+        * Mouse move is used as mouseover only fires when the mouse initially goes over a symbol. 
+        * If two symbols overlap, moving the mouse from one to the other won't trigger the event for the new shape as the mouse is still over the layer.
+        */
+        mapRef.map.events.add('mousemove', lyr, (e: atlas.MapMouseEvent) => this.#symbolHovered(e, mapRef.mapId, def, popup));
+        mapRef.map.events.add('touchstart', lyr, (e: atlas.MapTouchEvent) => this.#symbolHovered(e, mapRef.mapId, def, popup));
+    }
+
+    static #closeSymbolHovered(popup: atlas.Popup | undefined) {
+        if (popup) {
+            popup.close();
+        }
+    }
+
+    static #symbolHovered(e: any, mapId: string, def: PopupDef, popup: atlas.Popup | undefined) {
+        if (!popup) {
+            Logger.logMapMessage(mapId, LogLevel.Error, `symbolHovered: popup is undefined where popup ID=${def.id}`);
+            return;
+        }
+
+        //Make sure the event occurred on a shape feature.
+        if (e.shapes && e.shapes.length > 0) {
+            var properties = e.shapes[0].getProperties();
+
+            //Update the content and position of the popup.
+            const original = def.options.content as string ?? `<div style="padding:10px;"><b>${properties.name}</b><br/>${properties.description}</div>`;
+            let updated = original.replace("{name}", properties.name);
+            updated = updated.replace("{description}", properties.description);
+
+            popup.setOptions({
+                //Create the content of the popup.
+                content: updated,
+                position: e.shapes[0].getCoordinates(),
+                pixelOffset: [0, -18]
+            });
+
+            //Open the popup.
+            popup.open();
+
+            // Logger.logMapMessage(mapId, LogLevel.Trace, `symbolHovered: Opened popup`, updated, def, popup);
         }
     }
 }
