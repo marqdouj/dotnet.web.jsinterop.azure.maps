@@ -55,7 +55,7 @@
         });
 
         bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
-        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = DDSBuilder.LiteralGet("title") } };
+        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, Offset = new[] { 0, 0.25 }, TextField = DDSBuilder.ConcatGet("temperature", "°C") } };
         symbolLayer.DataSource = bubbleLayer.DataSource;
 
         features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
@@ -63,7 +63,6 @@
             Properties = new Properties
             {
                 { "temperature", temp.Temperature },
-                { "title", $"{temp.Temperature}°C" },
             }
         }).ToList();
     }

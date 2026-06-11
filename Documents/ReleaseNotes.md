@@ -1,6 +1,10 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.7`: 
+  - `Data-Driven Styles`. 
+	- More built-in functions have been added to the `DDSBuilder` class.
+	- More demos have been added to the `Sandbox` project to demonstrate using expressions with various layer options.
 - `11.0.0-Preview-1.6`: 
   - `Data-Driven Styles`.
 	- `DDSBuilder`. A new builder for creating data-driven style expressions.

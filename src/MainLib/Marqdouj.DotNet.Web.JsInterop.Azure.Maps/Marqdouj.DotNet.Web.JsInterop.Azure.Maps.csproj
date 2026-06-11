@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>DMNuGet.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>11.0.0-Preview-1.6</Version>
+    <Version>11.0.0-Preview-1.7</Version>
     <Title>.NET library for working with Azure Maps in JavaScript interop scenarios.</Title>
     <PackageProjectUrl>https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps</PackageProjectUrl>
     <PackageTags>Blazor JSInterop Map Azure</PackageTags>
