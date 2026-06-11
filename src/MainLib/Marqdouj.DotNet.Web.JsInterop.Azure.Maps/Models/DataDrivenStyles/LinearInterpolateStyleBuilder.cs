@@ -1,23 +1,21 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
 {
     /// <summary>
-    /// A builder class for constructing match style expressions in Azure Maps. 
+    /// Builder class for creating a linear interpolation style expression for Azure Maps.
     /// </summary>
-    public class MatchStyleBuilder
+    public class LinearInterpolateStyleBuilder
     {
-        private readonly List<(string Case, string Value)> _cases;
+        private readonly List<(double Case, string Value)> _cases;
 
         /// <summary>
-        /// Initializes a new instance of the MatchStyleBuilder class with the specified input expression and an optional list of cases.
+        /// Initializes a new instance of the LinearInterpolateStyleBuilder class with the specified input expression and an optional list of cases.
         /// </summary>
         /// <param name="inputExpression"><see cref="InputExpression"/></param>
-        /// <param name="cases">cases that define the match expression; see <see cref="AddCase(string, string)"/></param>
-        /// <param name="defaultCase"><see cref="DefaultCase"/></param>
-        public MatchStyleBuilder(string inputExpression, List<(string Case, string Value)>? cases = null, string? defaultCase = null)
+        /// <param name="cases">cases that define the linear interpolation expression; see <see cref="AddCase(double, string)"/></param>
+        public LinearInterpolateStyleBuilder(string inputExpression, List<(double Case, string Value)>? cases = null)
         {
             InputExpression = inputExpression;
             _cases = cases ?? [];
-            DefaultCase = defaultCase;
         }
 
         /// <summary>
@@ -27,28 +25,24 @@
         public string InputExpression { get; set { ArgumentException.ThrowIfNullOrWhiteSpace(value); field = value; } }
 
         /// <summary>
-        /// Adds a default case to the match expression.
-        /// </summary>
-        public string? DefaultCase { get; set; }
-
-        /// <summary>
         /// Adds a case to the match expression with the specified case value and corresponding output style.
         /// </summary>
         /// <param name="caseValue"></param>
         /// <param name="outputValue"></param>
-        public void AddCase(string caseValue, string outputValue)
+        public void AddCase(double caseValue, string outputValue)
         {
             _cases.Add((caseValue, outputValue));
         }
 
         /// <summary>
-        /// Builds the match style expression based on the defined cases and default style.
+        /// Builds the linear interpolation style expression based on the defined cases.
         /// </summary>
         /// <returns></returns>
         public object Build()
         {
             var result = new List<object> {
-                "match",
+                "interpolate",
+                new List<string> { "linear" },
                 new List<string> { "get", InputExpression },
             };
 
@@ -58,14 +52,11 @@
                 result.Add(Value);
             }
 
-            if (!string.IsNullOrWhiteSpace(DefaultCase))
-                result.Add(DefaultCase);
-
             return result;
         }
 
         /// <summary>
-        /// Returns a JSON string representation of the match style expression built by this builder.
+        /// Returns a JSON string representation of the linear interpolation style expression built by this builder.
         /// </summary>
         /// <returns></returns>
         public override string ToString()

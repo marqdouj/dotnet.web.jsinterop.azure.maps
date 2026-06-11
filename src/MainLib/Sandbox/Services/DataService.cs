@@ -13,6 +13,7 @@ namespace Sandbox.Services
         Task<List<List<Position>>> GetPolygonExtLayerData();
         Task<List<List<Position>>> GetPolygonLayerData();
         Task<List<Position>> GetSymbolLayerData();
+        Task<List<TemperatureInfo>> GetTemperatureLayerData();
         Task<string> GetTileLayerUrl();
     }
 
@@ -153,6 +154,19 @@ namespace Sandbox.Services
             var url = "https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png";
             return url;
         }
+
+        public async Task<List<TemperatureInfo>> GetTemperatureLayerData()
+        {
+            await Task.CompletedTask;
+            List<TemperatureInfo> data = [
+                new TemperatureInfo(new Position(-73.985708, 40.75773), "Times Square", 22.5),
+                new TemperatureInfo(new Position(-73.985600, 40.76542), "Central Park South", 21.0),
+                new TemperatureInfo(new Position(-73.985550, 40.77900), "Central Park North", 20.0),
+                new TemperatureInfo(new Position(-73.975550, 40.74859), "Empire State Building", 23.0),
+                new TemperatureInfo(new Position(-73.968900, 40.78859), "Upper West Side", 19.5)
+            ];
+            return data;
+        }
     }
 
     public class ImageLayerData()
@@ -178,5 +192,13 @@ namespace Sandbox.Services
         public List<string> Parts { get; } = parts;
 
         public Position StartPosition { get; } = startPosition;
+    }
+
+    public class TemperatureInfo(Position position, string description, double temperature)
+    {
+        public Position Position { get; } = position;
+        public string Description { get; } = description;
+        public double Temperature { get; } = temperature;
+        public string Unit { get; } = "°C";
     }
 }
