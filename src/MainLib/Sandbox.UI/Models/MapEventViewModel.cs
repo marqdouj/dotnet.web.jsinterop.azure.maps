@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.General.CsDoc;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Sandbox.UI.Models
 {
     public class MapEventViewModel
@@ -20,3 +21,4 @@ namespace Sandbox.UI.Models
         public bool IsNotLoaded => !IsLoaded;
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

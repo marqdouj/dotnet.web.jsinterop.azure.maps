@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Sandbox.UI.Models
 {
     public class MapControlEventsViewModel(ControlBase control)
@@ -19,3 +20,4 @@ namespace Sandbox.UI.Models
         public TControl Control { get; } = control;
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

@@ -1,0 +1,149 @@
+﻿@page "/map-dds-temperatures"
+@rendermode InteractiveServer
+@inject ILogger<Temperatures> Logger
+@inject IToastService ToastService
+@inject IMapDataService DataService
+
+<MapPage Title="Temperatures">
+    <SummaryContent>
+        <FluentLabel>
+            This sample demonstrates how to visualize temperature data using 
+        </FluentLabel>
+        <DDSLink/>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <MapControl MapId="@mapId" />
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapId = "mapTemperatures";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 12);
+    private readonly BubbleLayer bubbleLayer = (BubbleLayer)LayerType.Bubble.GetDefaultLayer();
+    private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
+    private List<TemperatureInfo> temperatures = new();
+    private List<MapFeature> features = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        temperatures = await DataService.GetTemperatureLayerData();
+        mapOptions.Camera!.Center = temperatures[1].Position;
+
+        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
+        {
+            ( 20, "blue" ),
+            ( 21, "yellow" ),
+            ( 22, "orange" ),
+            ( 23, "red" )
+        });
+
+        bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = DDSBuilder.LiteralGet("title") } };
+        symbolLayer.DataSource = bubbleLayer.DataSource;
+
+        features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
+        {
+            Properties = new Properties
+            {
+                { "temperature", temp.Temperature },
+                { "title", $"{temp.Temperature}°C" },
+            }
+        }).ToList();
+    }
+
+    private async Task LoadLayers()
+    {
+        try
+        {
+            ShowOverlay(true);
+            await maps!.Layers.Add(mapId, bubbleLayer);
+            await maps!.Layers.Add(mapId, symbolLayer);
+            await maps.Features.Add(mapId, features, bubbleLayer.DataSource.Id);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        try
+        {
+            mapReady = !(await args.HasPayloadError(Logger, ToastService));
+            await LoadLayers();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+    }
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    #endregion
+}

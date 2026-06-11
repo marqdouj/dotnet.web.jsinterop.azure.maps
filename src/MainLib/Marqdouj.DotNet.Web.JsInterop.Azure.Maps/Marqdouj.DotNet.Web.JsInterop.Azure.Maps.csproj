@@ -8,7 +8,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>DMNuGet.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>11.0.0-Preview-1.5</Version>
+    <Version>11.0.0-Preview-1.6</Version>
     <Title>.NET library for working with Azure Maps in JavaScript interop scenarios.</Title>
     <PackageProjectUrl>https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps</PackageProjectUrl>
     <PackageTags>Blazor JSInterop Map Azure</PackageTags>
@@ -54,7 +54,7 @@
 
   <ItemGroup>
     <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.4.26230.115" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.5.26302.115" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="7.0.0-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
