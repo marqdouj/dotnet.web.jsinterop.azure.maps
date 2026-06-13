@@ -78,7 +78,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="source">The layer to show or hide. Cannot be null.</param>
         /// <param name="visible">A boolean value indicating whether the layer should be visible (true) or hidden (false).</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        Task ShowLayer(string mapId, ILayer source, bool visible);
+        ValueTask ShowLayer(string mapId, ILayer source, bool visible);
+
+        /// <summary>
+        /// Adds a hover popup to a specified layer on the map, which will be displayed when the user hovers over a shape.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="layerId"></param>
+        /// <param name="def"></param>
+        /// <returns></returns>
+        ValueTask AddHoverPopup(string mapId, string layerId, Popup def);
     }
 
     internal class AzLayers(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsLayers
@@ -94,6 +103,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         public async ValueTask AddGroup(string mapId, LayerGroup group)
         {
             await AddGroups(mapId, [group]);
+        }
+
+        public async ValueTask AddHoverPopup(string mapId, string layerId, Popup def)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, layerId, def);
         }
 
         public async ValueTask Add(string mapId, ILayer item, IEnumerable<MapEvent>? events = null)
@@ -143,7 +158,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, layerDef);
         }
 
-        public async Task ShowLayer(string mapId, ILayer source, bool visible)
+        public async ValueTask ShowLayer(string mapId, ILayer source, bool visible)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, source.Id, visible);

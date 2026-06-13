@@ -1,6 +1,13 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.7`: 
+  - `Data-Driven Styles`. 
+	- More built-in functions have been added to the `DDSBuilder` class.
+	- More demos have been added to the `Sandbox` project to demonstrate using expressions with various layer options.
+  - `IAzureMapsLayers`.
+	- `AddHoverPopup`. New method to add a popup to a layer that will show when hovering over shapes.
+	  - See `Sandbox` project for demo of this new method in the `DDS` `Temperatures` page.
 - `11.0.0-Preview-1.6`: 
   - `Data-Driven Styles`.
 	- `DDSBuilder`. A new builder for creating data-driven style expressions.

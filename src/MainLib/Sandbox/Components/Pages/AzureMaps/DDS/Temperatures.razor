@@ -16,7 +16,32 @@
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
         </Toolbar>
 
-        <MapControl MapId="@mapId" />
+        <FluentStack>
+            <FluentStack Orientation="Orientation.Vertical" Height="500px" Width="260px">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="5px" Width="200px">
+                    <FluentLabel Weight="LabelWeight.Semibold">Legend</FluentLabel>
+                    <FluentCard>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@coolStyle" />
+                            <FluentLabel>Cool (20°C)</FluentLabel>
+                        </FluentStack>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@mildStyle" />
+                            <FluentLabel>Mild (21°C)</FluentLabel>
+                        </FluentStack>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@warmStyle" />
+                            <FluentLabel>Warm (22°C)</FluentLabel>
+                        </FluentStack>
+                        <FluentStack HorizontalGap="3px" VerticalAlignment="VerticalAlignment.Center">
+                            <div style="@hotStyle" />
+                            <FluentLabel>Hot (23°C)</FluentLabel>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentStack>
+            </FluentStack>
+            <MapControl MapId="@mapId" />
+        </FluentStack>
 
         <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
             <FluentSpinner />
@@ -38,8 +63,17 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 12);
     private readonly BubbleLayer bubbleLayer = (BubbleLayer)LayerType.Bubble.GetDefaultLayer();
     private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
+    private readonly Popup popup = new() { Options = new PopupOptions { FillColor = "SlateGray", Content = "<div style=\"padding:10px;color:white\">{description}</div>" } };
     private List<TemperatureInfo> temperatures = new();
     private List<MapFeature> features = new();
+    private const string coolColor = "blue";
+    private const string mildColor = "yellow";
+    private const  string warmColor = "orange";
+    private const string hotColor = "red";
+    private readonly string coolStyle = $"background-color: {coolColor};width:1rem;height:1rem;";
+    private readonly string mildStyle = $"background-color: {mildColor};width:1rem;height:1rem;";
+    private readonly string warmStyle = $"background-color: {warmColor};width:1rem;height:1rem;";
+    private readonly string hotStyle = $"background-color: {hotColor};width:1rem;height:1rem;";
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,14 +82,14 @@
 
         var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
         {
-            ( 20, "blue" ),
-            ( 21, "yellow" ),
-            ( 22, "orange" ),
-            ( 23, "red" )
+            ( 20, coolColor ),
+            ( 21, mildColor ),
+            ( 22, warmColor ),
+            ( 23, hotColor )
         });
 
         bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
-        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, TextField = DDSBuilder.LiteralGet("title") } };
+        symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { AllowOverlap = true, Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, Offset = new[] { 0, 0.25 }, TextField = DDSBuilder.ConcatGet("temperature", "°C") } };
         symbolLayer.DataSource = bubbleLayer.DataSource;
 
         features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
@@ -63,7 +97,7 @@
             Properties = new Properties
             {
                 { "temperature", temp.Temperature },
-                { "title", $"{temp.Temperature}°C" },
+                { "description", temp.Description },
             }
         }).ToList();
     }
@@ -76,6 +110,7 @@
             await maps!.Layers.Add(mapId, bubbleLayer);
             await maps!.Layers.Add(mapId, symbolLayer);
             await maps.Features.Add(mapId, features, bubbleLayer.DataSource.Id);
+            await maps.Layers.AddHoverPopup(mapId, symbolLayer.Id, popup);
         }
         catch (Exception ex)
         {

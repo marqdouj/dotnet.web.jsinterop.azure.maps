@@ -76,7 +76,7 @@ export class Popups {
     }
 }
 
-interface PopupDef {
+export interface PopupDef {
     id: string;
     options: atlas.PopupOptions;
     show?: boolean;
