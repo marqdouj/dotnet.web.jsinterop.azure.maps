@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.7`:
+  - `Sandbox`. Update demos.
 - `11.0.0-Preview-1.7`: 
   - `Data-Driven Styles`. 
 	- More built-in functions have been added to the `DDSBuilder` class.
