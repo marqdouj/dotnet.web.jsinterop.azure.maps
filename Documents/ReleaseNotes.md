@@ -1,6 +1,12 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.8`:
+  - `IAzureMapsLayers`.
+	- `AddHoverPopup`. 
+	  - Updated method to provide default content template.
+	  - Popup text is now derived from either a `tooltip` or `description` property.
+	  - See `Sandbox` project for demo of updates to this method in the `DDS` `Temperatures` page.
 - `11.0.0-Preview-1.7`: 
   - `Data-Driven Styles`. 
 	- More built-in functions have been added to the `DDSBuilder` class.

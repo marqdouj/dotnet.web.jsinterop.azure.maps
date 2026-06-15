@@ -269,11 +269,19 @@ export class Layers {
         //Make sure the event occurred on a shape feature.
         if (e.shapes && e.shapes.length > 0) {
             var properties = e.shapes[0].getProperties();
+            const tooltipText = properties.tooltip ?? properties.description;
 
             //Update the content and position of the popup.
-            const original = def.options.content as string ?? `<div style="padding:10px;"><b>${properties.name}</b><br/>${properties.description}</div>`;
-            let updated = original.replace("{name}", properties.name);
-            updated = updated.replace("{description}", properties.description);
+            let original = def.options.content as string ?? "";
+
+            if (Helpers.isEmptyOrNull(original)) {
+                original = `<div style="padding:5px;border-radius:6px;background-color:black;color:white">${tooltipText}</div>`;
+            }
+
+            let updated = original.replace("{tooltip}", tooltipText);
+            if (Helpers.isEmptyOrNull(updated)) {
+                updated = tooltipText;
+            }
 
             popup.setOptions({
                 //Create the content of the popup.
