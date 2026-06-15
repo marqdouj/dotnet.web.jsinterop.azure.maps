@@ -63,7 +63,6 @@
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 12);
     private readonly BubbleLayer bubbleLayer = (BubbleLayer)LayerType.Bubble.GetDefaultLayer();
     private readonly SymbolLayer symbolLayer = (SymbolLayer)LayerType.Symbol.GetDefaultLayer();
-    private readonly Popup popup = new() { Options = new PopupOptions { FillColor = "SlateGray", Content = "<div style=\"padding:10px;color:white\">{description}</div>" } };
     private List<TemperatureInfo> temperatures = new();
     private List<MapFeature> features = new();
     private const string coolColor = "blue";
@@ -97,7 +96,13 @@
             Properties = new Properties
             {
                 { "temperature", temp.Temperature },
-                { "description", temp.Description },
+
+                //optional, not required if using tooltip property
+                { "description", temp.Description }, 
+
+                //optional if using description property. If missing the hover popup will just show the description property.
+                //This is just to demonstrate how you could customize the hover popup content with HTML.
+                //{ "tooltip", $"<b>{temp.Description}</b>" }, 
             }
         }).ToList();
     }
@@ -110,6 +115,14 @@
             await maps!.Layers.Add(mapId, bubbleLayer);
             await maps!.Layers.Add(mapId, symbolLayer);
             await maps.Features.Add(mapId, features, bubbleLayer.DataSource.Id);
+
+            //Add the hover popup to the symbol layer (you can also add it to the bubble layer but it works better in the symbol layer). 
+            Popup popup = new() { Options = new PopupOptions { CloseButton = false } };
+
+            //Add customization to the popup if desired to override the default template, for example:
+            // popup.Options.FillColor = "SlateGray";
+            // popup.Options.Content = "<div style=\"padding:8px;border-radius:6px;color:black\">{tooltip}</div>";
+
             await maps.Layers.AddHoverPopup(mapId, symbolLayer.Id, popup);
         }
         catch (Exception ex)

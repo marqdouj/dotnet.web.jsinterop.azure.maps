@@ -73,6 +73,11 @@ export class Logger {
 }
 
 export class Helpers {
+    // Type-safe property access helper
+    static getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
+        return obj[key]
+    }
+
     /**
     * Recursively replaces all `null` values in an object with `undefined`.
     * Works for nested objects and arrays.
