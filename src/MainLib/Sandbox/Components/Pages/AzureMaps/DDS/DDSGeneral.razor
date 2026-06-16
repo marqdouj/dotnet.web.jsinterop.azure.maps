@@ -26,7 +26,6 @@
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentLabel>Methods</FluentLabel>
                 <FluentDataGrid Items="viewModel.Methods.AsQueryable()" AutoFit="true">
-                    <PropertyColumn Property="@(c => c.Name)" />
                     <TemplateColumn>
                         <FluentLink Href="@context.DocumentationUrl">
                             @context.Name

@@ -1,15 +1,33 @@
 ﻿@page "/map-dds-method-ConcatGet"
 @rendermode InteractiveServer
-@inject ILogger<CaseGet> Logger
+@inject ILogger<ConcatGet> Logger
 @inject IToastService ToastService
 @inject IAzureMapsCSDocReader DocReader
 
-<MapPage Title="DDS - ConcatGet">
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+    </SummaryContent>
     <ChildContent>
 
     </ChildContent>
 </MapPage>
 
 @code {
+    private const string name = nameof(DDSBuilder.ConcatGet);
+    private string title => $"DDS - {name}";
+    private CSDocumentItem? docItem;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var document = DocReader.CreateDocument(typeof(DDSBuilder));
+            docItem = document.GetItem(name);
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleInitializeError(ex, ToastService);
+        }
+    }
 }
