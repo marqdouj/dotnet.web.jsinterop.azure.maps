@@ -7,13 +7,36 @@
 <MapPage Title="Data-Driven Styles" Header="DDS Builder">
     <SummaryContent>
         <FluentLabel>
-            @viewModel?.Summary?.Comment?.Summary
+            @viewModel?.Model?.Comment?.Summary
         </FluentLabel>
         <DDSLink />
     </SummaryContent>
 
     <ChildContent>
-        
+        @if
+        (
+            viewModel == null ||
+            viewModel.Methods.Count == 0
+        )
+        {
+            <FluentLabel>No methods found.</FluentLabel>
+        }
+        else
+        {
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentLabel>Methods</FluentLabel>
+                <FluentDataGrid Items="viewModel.Methods.AsQueryable()" AutoFit="true">
+                    <PropertyColumn Property="@(c => c.Name)" />
+                    <TemplateColumn>
+                        <FluentLink Href="@context.DocumentationUrl">
+                            @context.Name
+                        </FluentLink>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(c => c.Summary)" />
+                </FluentDataGrid>
+            </FluentStack>
+        }
+
     </ChildContent>
 </MapPage>
 
@@ -22,7 +45,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        viewModel = new ViewModel(DocReader.CreateDocument(typeof(DDSBuilder)));
+        try
+        {
+            viewModel = new ViewModel(DocReader.CreateDocument(typeof(DDSBuilder)));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while initializing this page.");
+            await ToastService.ShowError("An error occurred while initializing this page.");
+        }
     }
 
     private class ViewModel
@@ -30,10 +61,29 @@
         public ViewModel(ICSDocument document)
         {
             Document = document;
-            Summary = document.GetItem(nameof(DDSBuilder));
+            Model = document.GetItem(nameof(DDSBuilder));
+
+            var names = typeof(DDSBuilder).GetCustomStaticMethods().Select(m => m.Name).Distinct().OrderBy(e => e).ToList();
+            foreach (var name in names)
+            {
+                var item = document.GetItem(name);
+                if (item != null)
+                    Methods.Add(new ViewModelItem(item));
+                else
+                    Console.WriteLine($"Method Not Found: {name}");
+            }
         }
 
         public ICSDocument Document { get; }
-        public CSDocumentItem? Summary { get; }
+        public CSDocumentItem? Model { get; }
+        public List<ViewModelItem> Methods { get; } = new();
+    }
+
+    private class ViewModelItem(CSDocumentItem item)
+    {
+        public CSDocumentItem Item { get; } = item;
+        public string? Name => Item.DisplayName;
+        public string? Summary => Item.Comment?.Summary;
+        public string DocumentationUrl => $"map-dds-method-{Item.Name}";
     }
 }
