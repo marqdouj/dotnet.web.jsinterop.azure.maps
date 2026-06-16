@@ -1,0 +1,39 @@
+﻿@page "/map-dds-general"
+@rendermode InteractiveServer
+@inject ILogger<DDSGeneral> Logger
+@inject IToastService ToastService
+@inject IAzureMapsCSDocReader DocReader
+
+<MapPage Title="Data-Driven Styles" Header="DDS Builder">
+    <SummaryContent>
+        <FluentLabel>
+            @viewModel?.Summary?.Comment?.Summary
+        </FluentLabel>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        
+    </ChildContent>
+</MapPage>
+
+@code {
+    private ViewModel? viewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        viewModel = new ViewModel(DocReader.CreateDocument(typeof(DDSBuilder)));
+    }
+
+    private class ViewModel
+    {
+        public ViewModel(ICSDocument document)
+        {
+            Document = document;
+            Summary = document.GetItem(nameof(DDSBuilder));
+        }
+
+        public ICSDocument Document { get; }
+        public CSDocumentItem? Summary { get; }
+    }
+}

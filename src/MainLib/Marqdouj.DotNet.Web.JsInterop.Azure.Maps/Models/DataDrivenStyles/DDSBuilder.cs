@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// A builder class for creating data-driven style expressions for Azure Maps. 
-    /// This class provides methods to construct various types of expressions,
+    /// This class provides some methods to construct various types of expressions,
     /// which can be used to define how map features are styled based on their properties.
     /// </summary>
     public static class DDSBuilder
