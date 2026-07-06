@@ -6,7 +6,7 @@
     /// <param name="hasProperty"></param>
     /// <param name="getProperty"></param>
     /// <param name="defaultValue"></param>
-    internal class CaseGetStyleBuilder(string hasProperty, string getProperty, string defaultValue)
+    public class CaseGetStyleBuilder(string hasProperty, string getProperty, string defaultValue)
     {
         /// <summary>
         /// The property to check for existence in the map feature. 

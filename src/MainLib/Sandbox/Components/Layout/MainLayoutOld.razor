@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using Padding = Microsoft.FluentUI.AspNetCore.Components.Padding
 
-<FluentLayout>
+<FluentLayout Style="@layoutStyle">
+
     <!-- Header -->
     <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
         <FluentLayoutHamburger />
@@ -8,19 +10,22 @@
     </FluentLayoutItem>
 
     <!-- Navigation -->
-    <FluentLayoutItem Area="@LayoutArea.Navigation" Sticky="true">
+    <FluentLayoutItem Area="@LayoutArea.Navigation"
+                      Sticky="true"
+                      Padding="@Padding.All2"
+                      Style="@layoutNavStyle">
         <NavMenu />
     </FluentLayoutItem>
 
     <!-- Content -->
-    <FluentLayoutItem Area="@LayoutArea.Content" Class="main">
-        <div class="content">
+    <FluentLayoutItem Area="@LayoutArea.Content" Padding="@Padding.All3">
+        <FluentProviders>
             @Body
-        </div>
+        </FluentProviders>
     </FluentLayoutItem>
 
     <!-- Footer -->
-    <FluentLayoutItem Area="LayoutArea.Footer" Sticky="true">
+    <FluentLayoutItem Area="@LayoutArea.Footer" Sticky="true">
         <FluentStack>
             <a href="https://www.fluentui-blazor.net" target="_blank">Fluent-UI Blazor</a>
             <FluentSpacer />
@@ -29,12 +34,19 @@
             <a href="https://learn.microsoft.com/en-us/aspnet/core/blazor" target="_blank">Blazor</a>
         </FluentStack>
     </FluentLayoutItem>
-</FluentLayout>
 
-<FluentProviders @rendermode="InteractiveServer" />
+@*     <FluentDialogProvider @rendermode="InteractiveServer" />
+    <FluentToastProvider @rendermode="InteractiveServer" />
+    <FluentTooltipProvider @rendermode="InteractiveServer" /> *@
+</FluentLayout>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private string layoutStyle = $"border: {UIExtensions.ThinBorderStyle}";
+    private string layoutNavStyle = $"border-right: {UIExtensions.ThinBorderStyle}min-width:256px;height:100%";
+}

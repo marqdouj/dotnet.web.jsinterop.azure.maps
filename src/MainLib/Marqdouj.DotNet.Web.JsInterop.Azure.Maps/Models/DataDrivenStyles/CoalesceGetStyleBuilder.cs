@@ -1,6 +1,9 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
 {
-    internal class CoalesceGetStyleBuilder
+    /// <summary>
+    /// Builds style expressions for coalescing property values in Azure Maps.
+    /// </summary>
+    public class CoalesceGetStyleBuilder
     {
         private readonly List<string> _cases;
 

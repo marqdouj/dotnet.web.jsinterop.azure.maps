@@ -85,7 +85,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         LayerSourceBase LayerSource { get; }
 
         /// <summary>
-        /// <inheritdoc cref="ILayer.GetOptions"/>
+        /// <inheritdoc cref="LayerOptionsBase"/>
         /// </summary>
         /// <returns></returns>
         LayerOptionsBase? GetOptions();

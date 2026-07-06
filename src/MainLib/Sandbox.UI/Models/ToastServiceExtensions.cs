@@ -10,25 +10,27 @@ namespace Sandbox.UI.Models
         private static readonly Icon iconInfo = new Icons.Regular.Size20.Info();
         private static readonly Icon iconWarning = new Icons.Regular.Size20.Warning();
 
-        extension(IToastService? toastService)
+        extension(INotificationService? toastService)
         {
-            public async Task ShowError(string title, string? body = null) => await toastService.ShowMessage(title, iconError, body);
+            public async Task ShowError(string title) => await toastService.ShowMessage(title, iconError);
 
-            public async Task ShowInfo(string title, string? body = null) => await toastService.ShowMessage(title, iconInfo, body);
+            public async Task ShowInfo(string title) => await toastService.ShowMessage(title, iconInfo);
             
-            public async Task ShowWarning(string title, string? body = null) => await toastService.ShowMessage(title, iconWarning, body);
+            public async Task ShowWarning(string title) => await toastService.ShowMessage(title, iconWarning);
 
-            public async Task ShowMessage(string title, Icon? icon, string? body = null)
+            public async Task ShowMessage(string title, Icon? icon)
             {
                 if (toastService == null)
                     return;
 
-                _ = await toastService.ShowToastAsync(options =>
+                var options = new ToastOptions
                 {
-                    options.Title = title;
-                    options.Icon = icon;
-                    options.Body = body;
-                });
+                    Title = title,
+                    Icon = icon,
+                    Lifetime = TimeSpan.FromSeconds(5),
+                };
+
+                _ = await toastService.ShowToastAsync(options);
             }
         }
     }

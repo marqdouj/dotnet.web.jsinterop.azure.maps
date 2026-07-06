@@ -1,7 +1,7 @@
 ﻿@page "/map-dds-method-GeometryFilter"
 @rendermode InteractiveServer
 @inject ILogger<GeometryFilter> Logger
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IAzureMapsCSDocReader DocReader
 
 <MapPage Title="@title">
@@ -27,7 +27,7 @@
         }
         catch (Exception ex)
         {
-            await Logger.HandleInitializeError(ex, ToastService);
+            await Logger.HandleErrorWithToast(ex, ToastService);
         }
     }
 }

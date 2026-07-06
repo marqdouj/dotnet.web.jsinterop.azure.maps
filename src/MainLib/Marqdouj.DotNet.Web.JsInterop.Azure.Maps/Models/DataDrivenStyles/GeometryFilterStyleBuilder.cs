@@ -5,10 +5,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
     /// <summary>
     /// A builder class for constructing geometry filter style expressions in Azure Maps.
     /// </summary>
-    internal class GeometryFilterStyleBuilder
+    public class GeometryFilterStyleBuilder
     {
         private readonly List<GeometryFilterExpression> _expressions;
 
+        /// <summary>
+        /// Gets the operator for handling multiple expressions, which can be "any" or "all". This operator determines how the geometry filter evaluates multiple expressions.
+        /// </summary>
         public string MultipleExpressionOperator { get; }
 
         /// <summary>

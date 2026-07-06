@@ -1,7 +1,7 @@
 ﻿@page "/map-dds-method-LinearInterpolate"
 @rendermode InteractiveServer
 @inject ILogger<LinearInterpolate> Logger
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IAzureMapsCSDocReader DocReader
 
 <MapPage Title="@title">
@@ -27,7 +27,7 @@
         }
         catch (Exception ex)
         {
-            await Logger.HandleInitializeError(ex, ToastService);
+            await Logger.HandleErrorWithToast(ex, ToastService);
         }
     }
 }

@@ -2,6 +2,10 @@
 
 # A .NET library for working with the Azure Maps SDK in JavaScript interop scenarios.
 
+## NOTE: This library is in preview and is not yet production-ready.
+
+## DEMO: The project uses the [Fluent UI Blazor](https://v5.fluentui-blazor.net/) templates for the `Sandbox` demo app. 
+
 ## Features
 - Provides a set of .NET classes and methods to interact with the Azure Maps SDK in interop scenarios, focused on Blazor applications.
 - Supports common Azure Maps functionalities such as map initialization, adding layers, and handling events.

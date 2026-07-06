@@ -15,7 +15,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
         /// <param name="logger"></param>
         /// <param name="toastService"></param>
         /// <returns>true if there was a payload error.</returns>
-        public static async Task<bool> HasPayloadError(this MapEventArgs args, ILogger? logger, IToastService? toastService)
+        public static async Task<bool> HasPayloadError(this MapEventArgs args, ILogger? logger, INotificationService? toastService)
         {
             if (args.Payload?.Error != null)
             {
@@ -31,7 +31,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
             return false;
         }
 
-        public static async Task<IAzureMapsInterop?> ProcessMapProviderInitialized(this MapProviderArgs args, ILogger logger, IToastService toastService)
+        public static async Task<IAzureMapsInterop?> ProcessMapProviderInitialized(this MapProviderArgs args, ILogger logger, INotificationService toastService)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
             return null!;
         }
 
-        public static async Task ProcessMapEventError(this MapEventArgs args, ILogger? logger, IToastService? toastService)
+        public static async Task ProcessMapEventError(this MapEventArgs args, ILogger? logger, INotificationService? toastService)
         {
             if (! await args.HasPayloadError(logger, toastService))
             {

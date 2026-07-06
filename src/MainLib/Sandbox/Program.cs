@@ -22,6 +22,11 @@ builder.Services.AddScoped<SandboxMapsInterop>();
 builder.Services.AddScoped<IMapDataService, DataService>();
 
 //XML documentation file readers.
+//[New]
+builder.Services.AddScoped<AzureMapsXmlDocReader>();
+builder.Services.AddScoped<AzureMapsUIXmlDocReader>();
+builder.Services.AddScoped<GeoJsonXmlDocReader>();
+//[Legacy]
 builder.Services.AddScoped<IAzureMapsCSDocReader, AzureMapsCSDocReader>();
 builder.Services.AddScoped<IAzureMapsUICSDocReader, AzureMapsUICSDocReader>();
 builder.Services.AddScoped<IGeoJsonCSDocReader, GeoJsonCSDocReader>();

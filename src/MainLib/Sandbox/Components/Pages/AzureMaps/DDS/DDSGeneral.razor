@@ -1,7 +1,7 @@
 ﻿@page "/map-dds-general"
 @rendermode InteractiveServer
 @inject ILogger<DDSGeneral> Logger
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IAzureMapsCSDocReader DocReader
 
 <MapPage Title="Data-Driven Styles" Header="DDS Builder">
@@ -26,7 +26,7 @@
             <FluentStack Orientation="Orientation.Vertical">
                 <FluentLabel>Methods</FluentLabel>
                 <FluentDataGrid Items="viewModel.Methods.AsQueryable()" AutoFit="true">
-                    <TemplateColumn>
+                    <TemplateColumn Title="Name">
                         <FluentLink Href="@context.DocumentationUrl">
                             @context.Name
                         </FluentLink>
@@ -50,8 +50,7 @@
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "An error occurred while initializing this page.");
-            await ToastService.ShowError("An error occurred while initializing this page.");
+            await Logger.HandleErrorWithToast(ex, ToastService);
         }
     }
 
