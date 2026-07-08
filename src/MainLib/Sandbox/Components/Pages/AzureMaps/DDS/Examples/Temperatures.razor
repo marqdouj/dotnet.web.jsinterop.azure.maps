@@ -1,13 +1,17 @@
 ﻿@page "/map-dds-temperatures"
 @rendermode InteractiveServer
 @inject ILogger<Temperatures> Logger
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IMapDataService DataService
 
 <MapPage Title="Temperatures">
     <SummaryContent>
         <FluentLabel>
-            This sample demonstrates how to visualize temperature data using 
+            This example demonstrates visualizing temperature data using DDS. 
+            The map displays different colored bubbles representing temperature ranges (cool, mild, warm, hot) at various locations. 
+            A legend is provided to indicate the temperature ranges corresponding to each color. 
+            <br />
+            When a user hovers over a temperature, a popup appears with the location.
         </FluentLabel>
         <DDSLink/>
     </SummaryContent>

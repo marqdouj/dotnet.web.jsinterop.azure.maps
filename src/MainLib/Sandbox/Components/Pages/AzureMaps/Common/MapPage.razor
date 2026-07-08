@@ -22,7 +22,6 @@
 
 @code {
     private string pageHeader => string.IsNullOrWhiteSpace(Header) ? Title : Header;
-    private string SummaryClass => ShowSummary ? "" : "hidden";
     private string showHideSummary => ShowSummary ? "Hide Summary" : "Show Summary";
     private bool hideSummary => !ShowSummary;
     private bool hasSummary => SummaryContent != null;

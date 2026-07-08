@@ -1,6 +1,6 @@
 ﻿@rendermode InteractiveServer
 
-<FluentNav UseSingleExpanded="true">
+<FluentNav Id="main-menu" UseSingleExpanded="true">
     <FluentNavItem Href="/" IconRest="@((new Icons.Regular.Size20.Home()))">Home</FluentNavItem>
 
     <FluentNavCategory Title="Basic" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
@@ -14,8 +14,20 @@
     </FluentNavCategory>
 
     <FluentNavCategory Title="Data-Driven Styling (DDS)" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="map-dds-general" IconRest="@(new Icons.Regular.Size20.Toolbox())">DDS Builder</FluentNavItem>
+
+        <FluentNavSectionHeader Title="Examples" />
         <FluentNavItem Href="map-acme-pipelines" IconRest="@(new Icons.Regular.Size20.Pipeline())">GeoJSON</FluentNavItem>
         <FluentNavItem Href="map-dds-temperatures" IconRest="@(new Icons.Regular.Size20.Temperature())">Temperatures</FluentNavItem>
+
+        <FluentNavSectionHeader Title="Methods" />
+        <FluentNavItem Href="map-dds-method-caseget" IconRest="@(new Icons.Regular.Size20.Code())">CaseGet</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-CoalesceGet" IconRest="@(new Icons.Regular.Size20.Code())">CoalesceGet</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-ConcatGet" IconRest="@(new Icons.Regular.Size20.Code())">ConcatGet</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-GeometryFilter" IconRest="@(new Icons.Regular.Size20.Code())">GeometryFilter</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-LinearInterpolate" IconRest="@(new Icons.Regular.Size20.Code())">LinearInterpolate</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-LiteralGet" IconRest="@(new Icons.Regular.Size20.Code())">LiteralGet</FluentNavItem>
+        <FluentNavItem Href="map-dds-method-Match" IconRest="@(new Icons.Regular.Size20.Code())">Match</FluentNavItem>
     </FluentNavCategory>
 
     <FluentNavCategory Title="Events" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">

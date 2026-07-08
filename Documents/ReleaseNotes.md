@@ -1,6 +1,10 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.9`:
+- `Data-Driven Styles`. 
+	- `DDSBuilder`. Underlying internal expression builders have been made public.
+  - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.8`:
   - `IAzureMapsLayers`.
 	- `AddHoverPopup`. 

@@ -1,0 +1,87 @@
+﻿@page "/map-dds-general"
+@rendermode InteractiveServer
+@inject ILogger<DDSGeneral> Logger
+@inject INotificationService ToastService
+@inject IAzureMapsCSDocReader DocReader
+
+<MapPage Title="Data-Driven Styles" Header="DDS Builder">
+    <SummaryContent>
+        <FluentLabel>
+            @viewModel?.Model?.Comment?.Summary
+        </FluentLabel>
+        <DDSLink />
+    </SummaryContent>
+
+    <ChildContent>
+        @if
+        (
+            viewModel == null ||
+            viewModel.Methods.Count == 0
+        )
+        {
+            <FluentLabel>No methods found.</FluentLabel>
+        }
+        else
+        {
+            <FluentStack Orientation="Orientation.Vertical">
+                <FluentLabel>Methods</FluentLabel>
+                <FluentDataGrid Items="viewModel.Methods.AsQueryable()" AutoFit="true">
+                    <TemplateColumn Title="Name">
+                        <FluentLink Href="@context.DocumentationUrl">
+                            @context.Name
+                        </FluentLink>
+                    </TemplateColumn>
+                    <PropertyColumn Property="@(c => c.Summary)" />
+                </FluentDataGrid>
+            </FluentStack>
+        }
+
+    </ChildContent>
+</MapPage>
+
+@code {
+    private ViewModel? viewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            viewModel = new ViewModel(DocReader.CreateDocument(typeof(DDSBuilder)));
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }
+    }
+
+    private class ViewModel
+    {
+        public ViewModel(ICSDocument document)
+        {
+            Document = document;
+            Model = document.GetItem(nameof(DDSBuilder));
+
+            var names = typeof(DDSBuilder).GetCustomStaticMethods().Select(m => m.Name).Distinct().OrderBy(e => e).ToList();
+            foreach (var name in names)
+            {
+                var item = document.GetItem(name);
+                if (item != null)
+                    Methods.Add(new ViewModelItem(item));
+                else
+                    Console.WriteLine($"Method Not Found: {name}");
+            }
+        }
+
+        public ICSDocument Document { get; }
+        public CSDocumentItem? Model { get; }
+        public List<ViewModelItem> Methods { get; } = new();
+    }
+
+    private class ViewModelItem(CSDocumentItem item)
+    {
+        public CSDocumentItem Item { get; } = item;
+        public string? Name => Item.DisplayName;
+        public string? Summary => Item.Comment?.Summary;
+        public string DocumentationUrl => $"map-dds-method-{Item.Name}";
+    }
+}

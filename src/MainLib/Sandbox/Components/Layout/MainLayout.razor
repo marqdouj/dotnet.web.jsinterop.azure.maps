@@ -1,50 +1,42 @@
 ﻿@inherits LayoutComponentBase
-@using Padding = Microsoft.FluentUI.AspNetCore.Components.Padding
 
-<FluentLayout Style="@layoutStyle">
-
-    <!-- Header -->
-    <FluentLayoutItem Area="@LayoutArea.Header" Sticky="true">
+<FluentLayout>
+    <FluentLayoutItem Area="LayoutArea.Header" Sticky="true">
         <FluentLayoutHamburger />
         Azure Maps Sandbox
     </FluentLayoutItem>
 
-    <!-- Navigation -->
-    <FluentLayoutItem Area="@LayoutArea.Navigation"
-                      Sticky="true"
-                      Padding="@Padding.All2"
-                      Style="@layoutNavStyle">
+    <FluentLayoutItem Area="LayoutArea.Navigation">
         <NavMenu />
     </FluentLayoutItem>
 
-    <!-- Content -->
-    <FluentLayoutItem Area="@LayoutArea.Content" Padding="@Padding.All3">
-        @Body
+    <FluentLayoutItem Area="LayoutArea.Content" Class="main">
+        <div class="content" style="height: 100%;">
+            @Body
+        </div>
     </FluentLayoutItem>
 
-    <!-- Footer -->
-    <FluentLayoutItem Area="@LayoutArea.Footer" Sticky="true">
+    <FluentLayoutItem Area="LayoutArea.Footer" Sticky="true">
         <FluentStack>
-            <a href="https://www.fluentui-blazor.net" target="_blank">Fluent-UI Blazor</a>
+            <FluentLink Href="https://www.fluentui-blazor.net" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
+                Documentation and demos
+            </FluentLink>
             <FluentSpacer />
-            <a href="https://github.com/marqdouj" target="_blank">&copy; Doug Marquardt @DateTime.Now.Year</a>
+            <FluentLink Href="https://github.com/marqdouj" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
+                &copy; Doug Marquardt @DateTime.Now.Year
+            </FluentLink>
             <FluentSpacer />
-            <a href="https://learn.microsoft.com/en-us/aspnet/core/blazor" target="_blank">Blazor</a>
+            <FluentLink Href="https://learn.microsoft.com/en-us/aspnet/core/blazor" Target="LinkTarget.Blank" IconEnd="@(new Icons.Regular.Size16.ArrowExit())">
+                About Blazor
+            </FluentLink>
         </FluentStack>
     </FluentLayoutItem>
-
-    <FluentDialogProvider @rendermode="InteractiveServer" />
-    <FluentToastProvider @rendermode="InteractiveServer" />
-    <FluentTooltipProvider @rendermode="InteractiveServer" />
 </FluentLayout>
+
+<FluentProviders @rendermode="InteractiveServer" />
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
-
-@code {
-    private string layoutStyle = $"border: {UIExtensions.ThinBorderStyle}";
-    private string layoutNavStyle = $"border-right: {UIExtensions.ThinBorderStyle}min-width:256px;height:100%";
-}

@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// A builder class for creating data-driven style expressions for Azure Maps. 
-    /// This class provides methods to construct various types of expressions,
+    /// This class provides some methods to construct various types of expressions,
     /// which can be used to define how map features are styled based on their properties.
     /// </summary>
     public static class DDSBuilder
@@ -13,11 +13,12 @@
         /// <param name="hasProperty">The property to check for existence in the map feature.</param>
         /// <param name="getProperty">The property to retrieve the value from if the specified property exists in the map feature.</param>
         /// <param name="defaultValue">The default value to use in the case style expression if the specified property does not exist in the map feature.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object CaseGet(string hasProperty, string getProperty, string defaultValue)
+        public static object CaseGet(string hasProperty, string getProperty, string defaultValue, bool returnJson = false)
         {
             var builder = new CaseGetStyleBuilder(hasProperty, getProperty, defaultValue);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>
@@ -25,11 +26,12 @@
         /// </summary>
         /// <param name="expressions">The list of expressions to evaluate. Normally, these are property names.</param>
         /// <param name="defaultCase">The default case to use if none of the expressions evaluate to a truthy value.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object CoalesceGet(List<string> expressions, string defaultCase = "")
+        public static object CoalesceGet(List<string> expressions, string defaultCase = "", bool returnJson = false)
         {
             var builder = new CoalesceGetStyleBuilder(expressions, defaultCase);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>
@@ -37,11 +39,12 @@
         /// </summary>
         /// <param name="getProperty">The property to retrieve the value from if the specified property exists in the map feature.</param>
         /// <param name="concatenateValue">The value to concatenate with the retrieved property value.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object ConcatGet(string getProperty, string concatenateValue)
+        public static object ConcatGet(string getProperty, string concatenateValue, bool returnJson = false)
         {
             var builder = new ConcatGetStyleBuilder(getProperty, concatenateValue);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>
@@ -49,11 +52,12 @@
         /// </summary>
         /// <param name="expressions">The list of geometry filter expressions.</param>
         /// <param name="multipleExpressionOperator">The operator for handling multiple expressions, i.e. "any", "all". Defaults to "any".</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object GeometryFilter(List<GeometryFilterExpression> expressions, string multipleExpressionOperator = "any")
+        public static object GeometryFilter(List<GeometryFilterExpression> expressions, string multipleExpressionOperator = "any", bool returnJson = false)
         {
             var builder = new GeometryFilterStyleBuilder(expressions, multipleExpressionOperator);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>
@@ -61,21 +65,24 @@
         /// </summary>
         /// <param name="inputExpression">The input expression to interpolate.</param>
         /// <param name="cases">A list of cases for the linear interpolation.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object LinearInterpolate(string inputExpression, List<(double Case, string Value)> cases)
+        public static object LinearInterpolate(string inputExpression, List<(double Case, string Value)> cases, bool returnJson = false)
         {
             var builder = new LinearInterpolateStyleBuilder(inputExpression, cases);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
 
         /// <summary>
         /// Creates a literal expression for retrieving the value of a specified property from a map feature.
         /// </summary>
         /// <param name="value">The property value to retrieve.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static List<string> LiteralGet(string value)
+        public static object LiteralGet(string value, bool returnJson = false)
         {
-            return ["get", value];
+            var result = new List<string> { "get", value };
+            return returnJson ? System.Text.Json.JsonSerializer.Serialize(result) : result;
         }
 
         /// <summary>
@@ -84,11 +91,12 @@
         /// <param name="inputExpression">The input expression to match against.</param>
         /// <param name="cases">A list of cases for the match expression.</param>
         /// <param name="defaultCase">The default case to use if no other cases match.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object Match(string inputExpression, List<(string Case, string Value)> cases, string? defaultCase)
+        public static object Match(string inputExpression, List<(string Case, string Value)> cases, string? defaultCase, bool returnJson = false)
         {
             var builder = new MatchStyleBuilder(inputExpression, cases, defaultCase);
-            return builder.Build();
+            return returnJson ? builder.ToString() : builder.Build();
         }
     }
 }

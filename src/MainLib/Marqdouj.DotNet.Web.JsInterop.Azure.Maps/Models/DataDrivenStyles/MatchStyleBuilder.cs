@@ -3,7 +3,7 @@
     /// <summary>
     /// A builder class for constructing match style expressions in Azure Maps. 
     /// </summary>
-    internal class MatchStyleBuilder
+    public class MatchStyleBuilder
     {
         private readonly List<(string Case, string Value)> _cases;
 

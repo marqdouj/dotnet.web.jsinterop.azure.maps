@@ -1,19 +1,17 @@
 ﻿@page "/map-acme-pipelines"
 @rendermode InteractiveServer
 @inject ILogger<AcmePipelines> Logger
-@inject IToastService ToastService
+@inject INotificationService ToastService
 @inject IMapDataService DataService
 
 <MapPage Title="GeoJSON">
     <SummaryContent>
         <FluentLabel>
-            This sample demonstrates how to visualize linear data using 
+            This example is of the ficticious company 'Acme Pipelines'. Their pipelines are displayed on the map using GeoJSON files.
+            DDS is used to style the lines based on the type of pipeline. 
+            When a pipeline is selected from the list, a popup is displayed at the start of the pipeline.
         </FluentLabel>
-        <DDSLink/>
-        <br />
-        <FluentLabel>
-            The example is a ficticious company 'Acme Pipelines' and displays their pipelines on the map using GeoJSON files.
-        </FluentLabel>
+        <DDSLink />
     </SummaryContent>
     <ChildContent>
         <Toolbar>
@@ -23,8 +21,7 @@
         <FluentStack>
             <FluentStack Orientation="Orientation.Vertical" Height="400px" Width="260px">
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="5px" Width="200px">
-                    <FluentLabel Weight="LabelWeight.Semibold">Models</FluentLabel>
-                    <FluentLabel>Select a model to display it's popup</FluentLabel>
+                    <FluentLabel Weight="LabelWeight.Semibold">Pipelines</FluentLabel>
                     <FluentListbox Items="@vpms"
                                    TOption="VpmViewModel"
                                    TValue="VpmViewModel"
@@ -226,7 +223,7 @@
                 Content = $"<div style=\"padding:10px;color:white\">{info.Name}</div >",
                 Position = info.StartPosition,
                 FillColor = "SlateGray",
-                CloseButton = true,
+                CloseButton = false,
             };
         }
 

@@ -6,12 +6,16 @@
     /// </summary>
     /// <param name="getProperty"></param>
     /// <param name="concatenateValue"></param>
-    internal class ConcatGetStyleBuilder(string getProperty, string concatenateValue)
+    public class ConcatGetStyleBuilder(string getProperty, string concatenateValue)
     {
         /// <summary>
         /// The property to retrieve the value from if the specified property exists in the map feature.
         /// </summary>
         public string GetProperty { get; } = getProperty;
+
+        /// <summary>
+        /// The value to concatenate with the retrieved property value.
+        /// </summary>
         public string ConcatenateValue { get; } = concatenateValue;
 
         /// <summary>

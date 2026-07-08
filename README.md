@@ -2,6 +2,8 @@
 
 # A .NET library for working with the Azure Maps SDK in JavaScript interop scenarios.
 
+## NOTE: This library is in preview and is not yet production-ready.
+
 ## Features
 - Provides a set of .NET classes and methods to interact with the Azure Maps SDK in interop scenarios, focused on Blazor applications.
 - Supports common Azure Maps functionalities such as map initialization, adding layers, and handling events.

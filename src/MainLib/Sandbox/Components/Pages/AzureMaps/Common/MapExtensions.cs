@@ -11,12 +11,12 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 {
     internal static class MapExtensions
     {
-        public static async Task CreateDefaultMap(this IAzureMapsInterop maps, string mapId, ILogger logger, IToastService toastService, MapOptions? options = null, IEnumerable<ControlBase>? controls = null, IEnumerable<MapEvent>? events = null)
+        public static async Task CreateDefaultMap(this IAzureMapsInterop maps, string mapId, ILogger logger, INotificationService toastService, MapOptions? options = null, IEnumerable<ControlBase>? controls = null, IEnumerable<MapEvent>? events = null)
         {
             await maps.CreateMap(mapId, logger, toastService, options ?? GetDefaultMapOptions(), controls ?? GetDefaultControls(), events ?? GetDefaultMapEvents());
         }
 
-        public static async Task CreateMap(this IAzureMapsInterop maps, string mapId, ILogger logger, IToastService toastService, MapOptions? options = null, IEnumerable<ControlBase>? controls = null, IEnumerable<MapEvent>? events = null)
+        public static async Task CreateMap(this IAzureMapsInterop maps, string mapId, ILogger logger, INotificationService toastService, MapOptions? options = null, IEnumerable<ControlBase>? controls = null, IEnumerable<MapEvent>? events = null)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
             }
         }
 
-        public static async Task ResetMap(this IAzureMapsInterop maps, string mapId, ILogger logger, IToastService toastService, MapOptions? options = null)
+        public static async Task ResetMap(this IAzureMapsInterop maps, string mapId, ILogger logger, INotificationService toastService, MapOptions? options = null)
         {
             try
             {

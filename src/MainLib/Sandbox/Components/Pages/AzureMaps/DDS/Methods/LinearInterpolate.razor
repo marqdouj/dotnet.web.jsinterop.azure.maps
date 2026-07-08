@@ -1,0 +1,33 @@
+﻿@page "/map-dds-method-LinearInterpolate"
+@rendermode InteractiveServer
+@inject ILogger<LinearInterpolate> Logger
+@inject INotificationService ToastService
+@inject IAzureMapsCSDocReader DocReader
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+    </SummaryContent>
+    <ChildContent>
+
+    </ChildContent>
+</MapPage>
+
+@code {
+    private const string name = nameof(DDSBuilder.LinearInterpolate);
+    private string title => $"DDS - {name}";
+    private CSDocumentItem? docItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var document = DocReader.CreateDocument(typeof(DDSBuilder));
+            docItem = document.GetItem(name);
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }
+    }
+}
