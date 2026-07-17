@@ -9,7 +9,14 @@
         <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical">
+            <Toolbar>
+                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
+            </Toolbar>
 
+
+            <FluentLabel>Build Result as Json: @result</FluentLabel>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
@@ -17,6 +24,7 @@
     private const string name = nameof(DDSBuilder.Match);
     private string title => $"DDS - {name}";
     private XmlDocumentMember? docItem;
+    private string? result;
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,5 +37,17 @@
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
+    }
+
+    private async Task Build()
+    {
+        try
+        {
+            result = "TODO:"; // DDSBuilder.???;
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }       
     }
 }
