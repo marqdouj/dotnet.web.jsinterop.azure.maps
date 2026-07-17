@@ -5,14 +5,14 @@
     /// </summary>
     public class CoalesceGetStyleBuilder
     {
-        private readonly List<string> _cases;
+        private readonly List<DDSPropertyAction> _cases;
 
         /// <summary>
         /// Initializes a new instance of the CoalesceGetStyleBuilder class with the specified list of cases.
         /// </summary>
         /// <param name="cases"></param>
         /// <param name="defaultCase"></param>
-        public CoalesceGetStyleBuilder(List<string> cases, string defaultCase = "")
+        public CoalesceGetStyleBuilder(List<DDSPropertyAction> cases, string defaultCase = "")
         {
             ArgumentNullException.ThrowIfNull(cases, nameof(cases));
             _cases = cases;
@@ -36,7 +36,7 @@
 
             foreach (var caseValue in _cases)
             {
-                result.Add(new List<string> { "get", caseValue });
+                result.Add(caseValue.Build());
             }
 
             result.Add(DefaultCase);

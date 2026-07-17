@@ -2,28 +2,61 @@
 @rendermode InteractiveServer
 @inject ILogger<CoalesceGet> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical">
+            <Toolbar>
+                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
+            </Toolbar>
 
+            <DDSPropertyActionEdit PropertyAction="@propertyTitle" />
+            <DDSPropertyActionEdit PropertyAction="@propertySubTitle" />
+
+            <FluentTextInput Label="Default Value" Tooltip="@docDefaultValue?.Value" @bind-Value="@defaultValue" />
+
+            <FluentLabel>Build Result as Json: @result</FluentLabel>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.CoalesceGet);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private XmlDocumentMemberParameter? docDefaultValue;
+    private readonly DDSPropertyAction propertyTitle = new("title");
+    private readonly DDSPropertyAction propertySubTitle = new("subTitle");
+
+    private string? defaultValue = "myDefaultValue";
+    private string? result;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
+            docDefaultValue = docItem?.GetParameterByName("defaultValue");
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }
+    }
+
+    private async Task Build()
+    {
+        try
+        {
+            propertyTitle.Validate();
+            propertySubTitle.Validate();
+            var cases = new List<DDSPropertyAction> { propertyTitle, propertySubTitle };
+            result = DDSBuilder.CoalesceGet(cases, defaultValue ?? "", returnJson: true).ToString();
         }
         catch (Exception ex)
         {

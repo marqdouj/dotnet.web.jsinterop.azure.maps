@@ -1,6 +1,11 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.10`:
+- `Data-Driven Styles`. 
+    - `DDSPropertyAction`. New class to support property actions for data-driven styles.
+	- `DDSBuilder`.
+	  - `CoalesceGet`. Changed the method to accept a list of `DDSPropertyAction` for cases.
 - `11.0.0-Preview-1.9`:
 - `Data-Driven Styles`. 
 	- `DDSBuilder`. Underlying internal expression builders have been made public.
