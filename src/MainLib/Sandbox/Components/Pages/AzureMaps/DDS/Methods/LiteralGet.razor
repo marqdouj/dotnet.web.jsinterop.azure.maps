@@ -14,6 +14,7 @@
                 <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
             </Toolbar>
 
+            <FluentTextInput @bind-Value="@propertyName" Placeholder="Enter property name" Label="Property Name" />
 
             <FluentLabel>Build Result as Json: @result</FluentLabel>
         </FluentStack>
@@ -24,6 +25,7 @@
     private const string name = nameof(DDSBuilder.LiteralGet);
     private string title => $"DDS - {name}";
     private XmlDocumentMember? docItem;
+    private string propertyName = "propertyName";
     private string? result;
 
     protected override async Task OnInitializedAsync()
@@ -43,7 +45,7 @@
     {
         try
         {
-            result = "TODO:"; // DDSBuilder.???;
+            result = DDSBuilder.LiteralGet(propertyName, true).ToString();
         }
         catch (Exception ex)
         {
