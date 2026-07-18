@@ -10,12 +10,13 @@
     </SummaryContent>
     <ChildContent>
         <FluentStack Orientation="Orientation.Vertical">
-            <Toolbar>
-                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
-            </Toolbar>
-
-
-            <FluentLabel>Build Result as Json: @result</FluentLabel>
+            <FluentLabel>
+                See the&nbsp;
+                <FluentLink Href="map-dds-temperatures">Temperature Example</FluentLink>
+            </FluentLabel>
+            <br />
+            <FluentLabel>Code Snippet:</FluentLabel>
+            <code><pre>@snippet</pre></code>
         </FluentStack>
     </ChildContent>
 </MapPage>
@@ -24,7 +25,15 @@
     private const string name = nameof(DDSBuilder.LinearInterpolate);
     private string title => $"DDS - {name}";
     private XmlDocumentMember? docItem;
-    private string? result;
+    private string snippet = """
+var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
+{
+    ( 20, coolColor ),
+    ( 21, mildColor ),
+    ( 22, warmColor ),
+    ( 23, hotColor )
+});
+""";
 
     protected override async Task OnInitializedAsync()
     {
@@ -37,17 +46,5 @@
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
-    }
-
-    private async Task Build()
-    {
-        try
-        {
-            result = "TODO:"; // DDSBuilder.???;
-        }
-        catch (Exception ex)
-        {
-            await Logger.HandleErrorWithToast(ex, ToastService);
-        }       
     }
 }
