@@ -10,12 +10,13 @@
     </SummaryContent>
     <ChildContent>
         <FluentStack Orientation="Orientation.Vertical">
-            <Toolbar>
-                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
-            </Toolbar>
-
-
-            <FluentLabel>Build Result as Json: @result</FluentLabel>
+            <FluentLabel>
+                See the&nbsp;
+                <FluentLink Href="map-acme-pipelines">Acme Pipelines Example</FluentLink>
+            </FluentLabel>
+            <br />
+            <FluentLabel>Code Snippet:</FluentLabel>
+            <code><pre>@snippet</pre></code>
         </FluentStack>
     </ChildContent>
 </MapPage>
@@ -25,7 +26,23 @@
     private string title => $"DDS - {name}";
     private XmlDocumentMember? docItem;
     private string? result;
+    private string snippet = """
+var colorBuilder = DDSBuilder.Match(
+    "category",
+    new List<(string Case, string Value)>
+    {
+        ("mainline", mainlineColor),
+        ("lateral", lateralColor)
+    },
+    "blue"
+);
 
+pipelinesLayer.Options = new()
+{
+    StrokeColor = colorBuilder,
+    StrokeWidth = 3.5
+};
+""";
     protected override async Task OnInitializedAsync()
     {
         try
