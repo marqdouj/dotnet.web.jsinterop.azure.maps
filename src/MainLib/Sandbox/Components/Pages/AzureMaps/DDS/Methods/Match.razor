@@ -2,28 +2,52 @@
 @rendermode InteractiveServer
 @inject ILogger<Match> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
-
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentLabel>
+                See the&nbsp;
+                <FluentLink Href="map-acme-pipelines">Acme Pipelines Example</FluentLink>
+            </FluentLabel>
+            <br />
+            <FluentLabel>Code Snippet:</FluentLabel>
+            <code><pre>@snippet</pre></code>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.Match);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private string snippet = """
+var colorBuilder = DDSBuilder.Match(
+    "category",
+    new List<(string Case, string Value)>
+    {
+        ("mainline", mainlineColor),
+        ("lateral", lateralColor)
+    },
+    "blue"
+);
 
+pipelinesLayer.Options = new()
+{
+    StrokeColor = colorBuilder,
+    StrokeWidth = 3.5
+};
+""";
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
         }
         catch (Exception ex)
         {

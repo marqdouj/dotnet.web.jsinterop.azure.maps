@@ -2,32 +2,54 @@
 @rendermode InteractiveServer
 @inject ILogger<LiteralGet> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical">
+            <Toolbar>
+                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
+            </Toolbar>
 
+            <FluentTextInput @bind-Value="@propertyName" Placeholder="Enter property name" Label="Property Name" />
+
+            <FluentLabel>Build Result as Json: @result</FluentLabel>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.LiteralGet);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private string propertyName = "propertyName";
+    private string? result;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
         }
         catch (Exception ex)
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
+    }
+
+    private async Task Build()
+    {
+        try
+        {
+            result = DDSBuilder.LiteralGet(propertyName, true).ToString();
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }       
     }
 }

@@ -1,0 +1,9 @@
+﻿<FluentStack>
+    <FluentTextInput Label="Action" @bind-Value="@PropertyAction.Action" />
+    <FluentTextInput Label="Name" @bind-Value="@PropertyAction.Name" />
+</FluentStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public DDSPropertyAction PropertyAction { get; set; }
+}

@@ -2,32 +2,69 @@
 @rendermode InteractiveServer
 @inject ILogger<GeometryFilter> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical">
+            <Toolbar>
+                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
+                <FluentCheckbox @bind-Value="@multipleFilters">Multiple Filters</FluentCheckbox>
+            </Toolbar>
 
+            <FluentTextInput Label="Multiple Filter Operator" Tooltip="The operator to use when combining multiple filters. Default is 'any'." @bind-Value="@multipleOperator" Disabled="@singleFilter" />
+            <GeometryFilterExpressionEdit FilterExpression="@filterPoint" GeometryTypes="@geometryTypes" />
+            <GeometryFilterExpressionEdit FilterExpression="@filterMultiPoint" GeometryTypes="@geometryTypes" Disabled="@singleFilter" />
+
+            <FluentLabel>Build Result as Json: @result</FluentLabel>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.GeometryFilter);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private string? result;
+    private bool multipleFilters;
+    private bool singleFilter => !multipleFilters;
+    private string multipleOperator = "any";
+    private readonly List<string> geometryTypes = Enum.GetValues<GeometryType>().Cast<GeometryType>().Select(x => x.ToString()).ToList();
+    private readonly GeometryFilterExpression filterPoint = new GeometryFilterExpression(GeometryType.Point);
+    private readonly GeometryFilterExpression filterMultiPoint = new GeometryFilterExpression(GeometryType.MultiPoint);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
         }
         catch (Exception ex)
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
+    }
+
+    private async Task Build()
+    {
+        try
+        {
+            filterPoint.Validate();
+            filterMultiPoint.Validate();
+            var filters = new List<GeometryFilterExpression> { filterPoint };
+            if (multipleFilters)
+            {
+                filters.Add(filterMultiPoint);
+            }
+            result = DDSBuilder.GeometryFilter(filters, multipleOperator, true).ToString();
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }       
     }
 }

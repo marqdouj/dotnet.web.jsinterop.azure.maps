@@ -2,32 +2,72 @@
 @rendermode InteractiveServer
 @inject ILogger<ConcatGet> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
+        <FluentStack Orientation="Orientation.Vertical">
+            <Toolbar>
+                <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
+            </Toolbar>
 
+            <FluentTextInput Label="Get Property" Tooltip="@docGetProperty?.Value" @bind-Value="@getProperty" />
+            <FluentTextInput Label="Concatenate Value" Tooltip="@docConcatenateValue?.Value" @bind-Value="@concatValue" />
+
+            <FluentLabel>Build Result as Json: @result</FluentLabel>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.ConcatGet);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private XmlDocumentMemberParameter? docGetProperty;
+    private XmlDocumentMemberParameter? docConcatenateValue;
+    private string? concatValue = "°C";
+    private string? getProperty = "temperature";
+    private string? result;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
+            docGetProperty = docItem?.GetParameterByName("getProperty");
+            docConcatenateValue = docItem?.GetParameterByName("concatenateValue");
         }
         catch (Exception ex)
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
+    }
+
+    private async Task Build()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(getProperty))
+            {
+                await Logger.HandleWarningWithToast("Please provide a value for 'Get Property'.", ToastService);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(concatValue))
+            {
+                await Logger.HandleWarningWithToast("Please provide a value for 'Concatenate Value'.", ToastService);
+                return;
+            }
+
+            result = DDSBuilder.ConcatGet(getProperty, concatValue, returnJson: true).ToString();
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }       
     }
 }

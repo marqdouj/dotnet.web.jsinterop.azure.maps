@@ -2,28 +2,45 @@
 @rendermode InteractiveServer
 @inject ILogger<LinearInterpolate> Logger
 @inject INotificationService ToastService
-@inject IAzureMapsCSDocReader DocReader
+@inject AzureMapsXmlDocReader DocReader
 
 <MapPage Title="@title">
     <SummaryContent>
-        <FluentLabel>@docItem?.Comment.Summary</FluentLabel>
+        <FluentLabel>@docItem?.Summary</FluentLabel>
     </SummaryContent>
     <ChildContent>
-
+        <FluentStack Orientation="Orientation.Vertical">
+            <FluentLabel>
+                See the&nbsp;
+                <FluentLink Href="map-dds-temperatures">Temperature Example</FluentLink>
+            </FluentLabel>
+            <br />
+            <FluentLabel>Code Snippet:</FluentLabel>
+            <code><pre>@snippet</pre></code>
+        </FluentStack>
     </ChildContent>
 </MapPage>
 
 @code {
     private const string name = nameof(DDSBuilder.LinearInterpolate);
     private string title => $"DDS - {name}";
-    private CSDocumentItem? docItem;
+    private XmlDocumentMember? docItem;
+    private string snippet = """
+var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
+{
+    ( 20, coolColor ),
+    ( 21, mildColor ),
+    ( 22, warmColor ),
+    ( 23, hotColor )
+});
+""";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var document = DocReader.CreateDocument(typeof(DDSBuilder));
-            docItem = document.GetItem(name);
+            var members = DocReader.GetMembers(typeof(DDSBuilder));
+            docItem = members.GetMembersWithName(name).FirstOrDefault();
         }
         catch (Exception ex)
         {

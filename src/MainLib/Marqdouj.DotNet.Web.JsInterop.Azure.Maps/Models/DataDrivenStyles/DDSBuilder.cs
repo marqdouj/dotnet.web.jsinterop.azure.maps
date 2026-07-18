@@ -5,6 +5,7 @@
     /// This class provides some methods to construct various types of expressions,
     /// which can be used to define how map features are styled based on their properties.
     /// </summary>
+    /// <remarks><see href="https://learn.microsoft.com/en-us/azure/azure-maps/data-driven-style-expressions-web-sdk"/></remarks>
     public static class DDSBuilder
     {
         /// <summary>
@@ -22,13 +23,13 @@
         }
 
         /// <summary>
-        /// Creates a coalesce expression for styling map features based on a list of expressions and an optional default case.
+        /// Creates a coalesce expression for styling map features based on the presence of multiple specified properties and their values.
         /// </summary>
-        /// <param name="expressions">The list of expressions to evaluate. Normally, these are property names.</param>
+        /// <param name="expressions">The list of property actions to evaluate.</param>
         /// <param name="defaultCase">The default case to use if none of the expressions evaluate to a truthy value.</param>
         /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object CoalesceGet(List<string> expressions, string defaultCase = "", bool returnJson = false)
+        public static object CoalesceGet(List<DDSPropertyAction> expressions, string defaultCase = "", bool returnJson = false)
         {
             var builder = new CoalesceGetStyleBuilder(expressions, defaultCase);
             return returnJson ? builder.ToString() : builder.Build();
