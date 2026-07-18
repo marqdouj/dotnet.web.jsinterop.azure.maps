@@ -33,15 +33,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
         /// <returns></returns>
         public object Build()
         {
-            var result = new List<object>();
-
             if (_expressions.Count > 1)
-                result.Add(MultipleExpressionOperator);
+            {
+                var result = new List<object>
+                {
+                    MultipleExpressionOperator
+                };
 
-            foreach (var expression in _expressions)
-                result.Add(expression);
+                foreach (var expression in _expressions)
+                    result.Add(expression.Build());
 
-            return result;
+                return result;
+            }
+
+            if (_expressions.Count == 1)
+            {
+                return _expressions[0].Build();
+            }
+            else
+            {
+                throw new InvalidOperationException("No expressions defined for the geometry filter style.");
+            }
         }
 
         /// <summary>
@@ -63,20 +75,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
     public class GeometryFilterExpression
     {
         /// <param name="geometryType">The type of geometry to filter.</param>
-        /// <param name="expressionOperator">The operator for the expression.</param>
+        /// <param name="expressionOperator">The operator for the expression. Defaults to "==".</param>
         public GeometryFilterExpression(string geometryType, string expressionOperator = "==")
         {
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(geometryType, nameof(geometryType));
-            ArgumentNullException.ThrowIfNullOrWhiteSpace(expressionOperator, nameof(expressionOperator));
             ExpressionOperator = expressionOperator;
             GeometryType = geometryType;
+            Validate();
         }
 
         /// <summary>
         /// Initializes a new instance of the GeometryFilterExpression class with the specified geometry type and expression operator.
         /// </summary>
         /// <param name="geometryType">The type of geometry to filter.</param>
-        /// <param name="expressionOperator">The operator for the expression.</param>
+        /// <param name="expressionOperator">The operator for the expression. Defaults to "==".</param>
         public GeometryFilterExpression(GeometryType geometryType, string expressionOperator = "==") : this(geometryType.ToString(), expressionOperator)
         {
         }
@@ -84,11 +95,35 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
         /// <summary>
         /// The operator for the expression, which is used to compare the geometry type of a map feature with the specified geometry type in the filter expression.
         /// </summary>
-        public string ExpressionOperator { get; }
+        public string ExpressionOperator { get; set; }
 
         /// <summary>
         /// The type of geometry to filter, which is used in the filter expression to determine whether a map feature's geometry type matches the specified geometry type.
         /// </summary>
-        public string GeometryType { get; }
+        public string GeometryType { get; set; }
+
+        /// <summary>
+        /// Validates the geometry filter expression by checking that the GeometryType and ExpressionOperator properties are not null or whitespace. Throws an ArgumentNullException if either property is invalid.
+        /// </summary>
+        public void Validate()
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(GeometryType, nameof(GeometryType));
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(ExpressionOperator, nameof(ExpressionOperator));
+        }
+
+        /// <summary>
+        /// Builds the geometry filter expression as an object array containing the expression operator and geometry type. This method is used to construct the final representation of the geometry filter expression for use in Azure Maps data-driven styles.
+        /// </summary>
+        /// <returns></returns>
+        public object Build()
+        {
+            return new object[] { ExpressionOperator, new object[] { "geometry-type" }, GeometryType };
+        }
+
+        /// <summary>
+        /// Returns a JSON string representation of the geometry filter expression built by this instance.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => System.Text.Json.JsonSerializer.Serialize(Build());
     }
 }

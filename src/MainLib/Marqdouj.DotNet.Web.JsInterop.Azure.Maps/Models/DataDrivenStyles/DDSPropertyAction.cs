@@ -33,9 +33,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
         public string Name { get; set; }
 
         /// <summary>
-        /// Validates the property action, ensuring that the name and action are not null or whitespace.
+        /// Validates the property action, ensuring that the name and action are not null or whitespace. Throws an ArgumentNullException if either property is invalid.
         /// </summary>
-        /// <remarks>Throws <see cref="ArgumentNullException"/> if the name or action is null or whitespace.</remarks>
         public void Validate()
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(Name, nameof(Name));
