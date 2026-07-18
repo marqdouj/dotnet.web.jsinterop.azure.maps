@@ -25,7 +25,6 @@
     private const string name = nameof(DDSBuilder.Match);
     private string title => $"DDS - {name}";
     private XmlDocumentMember? docItem;
-    private string? result;
     private string snippet = """
 var colorBuilder = DDSBuilder.Match(
     "category",
@@ -54,17 +53,5 @@ pipelinesLayer.Options = new()
         {
             await Logger.HandleErrorWithToast(ex, ToastService);
         }
-    }
-
-    private async Task Build()
-    {
-        try
-        {
-            result = "TODO:"; // DDSBuilder.???;
-        }
-        catch (Exception ex)
-        {
-            await Logger.HandleErrorWithToast(ex, ToastService);
-        }       
     }
 }
