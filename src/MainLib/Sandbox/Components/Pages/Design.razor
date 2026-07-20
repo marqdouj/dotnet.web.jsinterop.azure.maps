@@ -1,48 +1,10 @@
 ﻿@page "/design"
-@using Microsoft.FluentUI.AspNetCore.Components.Extensions
 @rendermode InteractiveServer
 
-<FluentSelect Label="Colors"
-              Items="@GetEnumValues()"
-              @bind-Value="@Value">
-    <OptionTemplate>
-        <FluentStack Style="pointer-events: none;">
-            <div class="color-block" style="--item-color: @context.ToAttributeValue()"></div>
-            @{
-                var tooltip = $"Tooltip for {context}";
-                var label = $"{context}";
-                var id = $"option-{context}";
+<FluentStack>
 
-                <span>@label</span>
-                <FluentIcon Tooltip="@tooltip" Id="@id" Value="@((new Icons.Regular.Size16.Info()))" Style="margin-left:3px;" />
-
-                // This causes the error: "<FluentTooltipProvider /> needs to be added to the main layout of your application/site."
-                // The error is misleading because the provider is already in the layout, but it seems that FluentSelect's option template doesn't have access to it for some reason.
-                //The workaround is to add a FluentTooltipProvider to this page, but that shouldn't be necessary because the provider is already in the main layout.
-                // <FluentTooltip Anchor="@id">@tooltip</FluentTooltip>
-                // <FluentIcon Id="@id" Value="@((new Icons.Regular.Size16.Info()))" Style="margin-left:3px;" />
-            }
-        </FluentStack>
-    </OptionTemplate>
-</FluentSelect>
-
-@* This is a workaround for the OptionTemplate error for FluentTooltip/>*@
-@* <FluentTooltipProvider @rendermode="InteractiveServer" /> *@
-
-<div>
-    Selected: @Value
-</div>
-
-<style>
-    .color-block {
-        width: 20px;
-        height: 20px;
-        background-color: var(--item-color);
-        margin-right: 8px;
-    }
-</style>
+</FluentStack>
 
 @code {
-    IEnumerable<Color> GetEnumValues() => Enum.GetValues(typeof(Color)).Cast<Color>();
-    Color Value;
+
 }

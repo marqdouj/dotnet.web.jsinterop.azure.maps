@@ -2,6 +2,7 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Sandbox;
 using Sandbox.Azure.Maps;
 using Sandbox.Components;
+using Sandbox.Models;
 using Sandbox.Services;
 using Sandbox.UI.Services;
 
@@ -30,6 +31,9 @@ builder.Services.AddScoped<GeoJsonXmlDocReader>();
 builder.Services.AddScoped<IAzureMapsCSDocReader, AzureMapsCSDocReader>();
 builder.Services.AddScoped<IAzureMapsUICSDocReader, AzureMapsUICSDocReader>();
 builder.Services.AddScoped<IGeoJsonCSDocReader, GeoJsonCSDocReader>();
+
+//App Config Helper
+builder.Services.AddSingleton(new AppConfiguration(builder));
 
 var app = builder.Build();
 
