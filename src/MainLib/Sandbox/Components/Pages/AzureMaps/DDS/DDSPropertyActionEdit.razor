@@ -1,9 +1,30 @@
-﻿<FluentStack>
-    <FluentTextInput Label="Action" @bind-Value="@PropertyAction.Action" />
-    <FluentTextInput Label="Name" @bind-Value="@PropertyAction.Name" />
+﻿@inject ILogger<DDSPropertyActionEdit> Logger
+@inject INotificationService ToastService
+@inject AzureMapsXmlDocReader DocReader
+
+<FluentStack>
+    <FluentTextInput Label="@docAction?.DisplayName" @bind-Value="@PropertyAction.Action" LabelInfo="@(LabelInfo.WithText(docAction?.Summary!))" />
+    <FluentTextInput Label="@docName?.DisplayName" @bind-Value="@PropertyAction.Name" LabelInfo="@(LabelInfo.WithText(docName?.Summary!))" />
 </FluentStack>
 
 @code {
+    private XmlDocumentMember? docAction;
+    private XmlDocumentMember? docName;
+
     [Parameter, EditorRequired]
     public DDSPropertyAction PropertyAction { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var members = DocReader.GetMembers(typeof(DDSPropertyAction));
+            docAction = members.GetMemberByName(nameof(DDSPropertyAction.Action));
+            docName = members.GetMemberByName(nameof(DDSPropertyAction.Name));
+        }
+        catch (Exception ex)
+        {
+            await Logger.HandleErrorWithToast(ex, ToastService);
+        }
+    }
 }

@@ -12,11 +12,11 @@
         <FluentStack Orientation="Orientation.Vertical">
             <Toolbar>
                 <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
-            </Toolbar>
+            </Toolbar> 
 
-            <FluentTextInput Label="Has Property" Tooltip="@docHasProperty?.Value" @bind-Value="@hasProperty" />
-            <FluentTextInput Label="Get Property" Tooltip="@docGetProperty?.Value" @bind-Value="@getProperty" />
-            <FluentTextInput Label="Default Value" Tooltip="@docDefaultValue?.Value" @bind-Value="@defaultValue" />
+            <FluentTextInput @bind-Value="@hasProperty" Label="@docHasProperty?.DisplayName" LabelInfo="@(LabelInfo.WithText(docHasProperty?.Value!))" />
+            <FluentTextInput @bind-Value="@getProperty" Label="@docGetProperty?.DisplayName" LabelInfo="@(LabelInfo.WithText(docGetProperty?.Value!))" />
+            <FluentTextInput @bind-Value="@defaultValue" Label="@docDefaultValue?.DisplayName" LabelInfo="@(LabelInfo.WithText(docDefaultValue?.Value!))" />
 
             <FluentLabel>Build Result as Json: @result</FluentLabel>
         </FluentStack>
@@ -41,9 +41,9 @@
         {
             var members = DocReader.GetMembers(typeof(DDSBuilder));
             docItem = members.GetMembersWithName(name).FirstOrDefault();
-            docHasProperty = docItem?.GetParameterByName("hasProperty");
-            docGetProperty = docItem?.GetParameterByName("getProperty");
-            docDefaultValue = docItem?.GetParameterByName("defaultValue");
+            docHasProperty = docItem?.GetParameterByName(nameof(CaseGetStyleBuilder.HasProperty));
+            docGetProperty = docItem?.GetParameterByName(nameof(CaseGetStyleBuilder.GetProperty));
+            docDefaultValue = docItem?.GetParameterByName(nameof(CaseGetStyleBuilder.DefaultValue));
         }
         catch (Exception ex)
         {
