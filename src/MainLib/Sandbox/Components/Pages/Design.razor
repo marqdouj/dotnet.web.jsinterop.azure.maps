@@ -1,9 +1,16 @@
 ﻿@page "/design"
 @rendermode InteractiveServer
 
-<FluentStack>
-
-</FluentStack>
+<div style="height: 100%;background-color: yellowgreen;">
+    <FluentStack Orientation="Orientation.Vertical" Style="background-color: lightgray;overflow:auto;">
+        <FluentLayoutItem Area="LayoutArea.Header">
+            Header
+        </FluentLayoutItem>
+        <div style="min-width: 600px; background-color: khaki;">
+            content
+        </div>
+    </FluentStack>
+</div>
 
 @code {
 

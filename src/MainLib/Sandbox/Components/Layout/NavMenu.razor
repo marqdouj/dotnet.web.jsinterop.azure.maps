@@ -1,7 +1,7 @@
 ﻿@rendermode InteractiveServer
 @inject AppConfiguration AppConfig
 
-<FluentNav Id="main-menu" UseSingleExpanded="true">
+<FluentNav Id="main-menu" UseSingleExpanded="true" Width="265px">
     @if (AppConfig.IsDevelopment)
     {
         <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
