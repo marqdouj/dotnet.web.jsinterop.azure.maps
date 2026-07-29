@@ -76,7 +76,6 @@
 
     private async Task OnMapEventReady(MapEventArgs args)
     {
-        await Task.CompletedTask;
         mapReady = !(await args.HasPayloadError(Logger, ToastService));
     }
 
