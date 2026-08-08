@@ -55,7 +55,7 @@
     private bool buttonsDisabled => mapNotReady | overlay;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 12);
     private readonly BubbleLayer bubbleLayer = (BubbleLayer)LayerType.Bubble.GetDefaultLayer();
-    private string ddsJSON = "";
+    private string? ddsJSON = "";
 
     #region Map Provider Handlers
 
