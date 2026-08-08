@@ -1,6 +1,10 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-1.11`: 
+  - `CoalesceGetStyleBuilder`
+	- `DefaultValue`. "DefaultCase" property has been renamed to DefaultValue for consistency with other builders.
+  - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.10`:
 - `Data-Driven Styles`. 
     - `DDSPropertyAction`. New class to support property actions for data-driven styles.

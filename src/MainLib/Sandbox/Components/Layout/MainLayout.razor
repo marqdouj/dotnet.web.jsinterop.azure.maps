@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@inject AppConfiguration AppConfig
 
 <FluentLayout>
     <FluentLayoutItem Area="LayoutArea.Header" Sticky="true">
         <FluentLayoutHamburger />
-        Azure Maps Sandbox
+        @AppConfig.HeaderText
     </FluentLayoutItem>
 
     <FluentLayoutItem Area="LayoutArea.Navigation">

@@ -15,7 +15,7 @@
                 <FluentCheckbox @bind-Value="@multipleFilters">Multiple Filters</FluentCheckbox>
             </Toolbar>
 
-            <FluentTextInput Label="Multiple Filter Operator" Tooltip="The operator to use when combining multiple filters. Default is 'any'." @bind-Value="@multipleOperator" Disabled="@singleFilter" />
+            <FluentTextInput Label="Multiple Filter Operator" LabelInfo="@(LabelInfo.WithText("The operator to use when combining multiple filters. Default is 'any'."))" @bind-Value="@multipleOperator" Disabled="@singleFilter" />
             <GeometryFilterExpressionEdit FilterExpression="@filterPoint" GeometryTypes="@geometryTypes" />
             <GeometryFilterExpressionEdit FilterExpression="@filterMultiPoint" GeometryTypes="@geometryTypes" Disabled="@singleFilter" />
 

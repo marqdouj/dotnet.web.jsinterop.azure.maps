@@ -62,7 +62,6 @@
 
     private async Task OnMapEventError(MapEventArgs args)
     {
-        await Task.CompletedTask;
         await args.ProcessMapEventError(Logger, ToastService);
     }
 

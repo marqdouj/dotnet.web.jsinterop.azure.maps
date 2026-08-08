@@ -14,8 +14,8 @@
                 <FluentButton IconStart="@((new Icons.Regular.Size20.CodeBlock()))" OnClick="@Build">Build</FluentButton>
             </Toolbar>
 
-            <FluentTextInput Label="Get Property" Tooltip="@docGetProperty?.Value" @bind-Value="@getProperty" />
-            <FluentTextInput Label="Concatenate Value" Tooltip="@docConcatenateValue?.Value" @bind-Value="@concatValue" />
+            <FluentTextInput @bind-Value="@getProperty" Label="@docGetProperty?.DisplayName" LabelInfo="@(LabelInfo.WithText(docGetProperty?.Value!))" />
+            <FluentTextInput @bind-Value="@concatValue" Label="@docConcatenateValue?.DisplayName" LabelInfo="@(LabelInfo.WithText(docConcatenateValue?.Value!))" />
 
             <FluentLabel>Build Result as Json: @result</FluentLabel>
         </FluentStack>
@@ -38,8 +38,8 @@
         {
             var members = DocReader.GetMembers(typeof(DDSBuilder));
             docItem = members.GetMembersWithName(name).FirstOrDefault();
-            docGetProperty = docItem?.GetParameterByName("getProperty");
-            docConcatenateValue = docItem?.GetParameterByName("concatenateValue");
+            docGetProperty = docItem?.GetParameterByName(nameof(ConcatGetStyleBuilder.GetProperty));
+            docConcatenateValue = docItem?.GetParameterByName(nameof(ConcatGetStyleBuilder.ConcatenateValue));
         }
         catch (Exception ex)
         {

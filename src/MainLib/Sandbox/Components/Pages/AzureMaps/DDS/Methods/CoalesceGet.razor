@@ -17,7 +17,7 @@
             <DDSPropertyActionEdit PropertyAction="@propertyTitle" />
             <DDSPropertyActionEdit PropertyAction="@propertySubTitle" />
 
-            <FluentTextInput Label="Default Value" Tooltip="@docDefaultValue?.Value" @bind-Value="@defaultValue" />
+            <FluentTextInput @bind-Value="@defaultValue" Label="@docDefaultValue?.DisplayName" LabelInfo="@(LabelInfo.WithText(docDefaultValue?.Value!))" />
 
             <FluentLabel>Build Result as Json: @result</FluentLabel>
         </FluentStack>
@@ -41,7 +41,7 @@
         {
             var members = DocReader.GetMembers(typeof(DDSBuilder));
             docItem = members.GetMembersWithName(name).FirstOrDefault();
-            docDefaultValue = docItem?.GetParameterByName("defaultValue");
+            docDefaultValue = docItem?.GetParameterByName(nameof(CoalesceGetStyleBuilder.DefaultValue));
         }
         catch (Exception ex)
         {

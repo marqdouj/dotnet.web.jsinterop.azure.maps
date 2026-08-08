@@ -80,7 +80,6 @@
             {
                 if (!activeRow.IsLoaded)
                 {
-                    var options = activeRow.Source.GetOptions();
                     await maps!.AddBasicMapLayer(mapId, MapDataService, activeRow);
                 }
 
@@ -113,7 +112,6 @@
 
     private async Task OnMapEventError(MapEventArgs args)
     {
-        await Task.CompletedTask;
         await args.ProcessMapEventError(Logger, ToastService);
     }
 

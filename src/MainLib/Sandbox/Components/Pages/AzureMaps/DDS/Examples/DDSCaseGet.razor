@@ -1,6 +1,6 @@
-﻿@page "/design"
+﻿@page "/map-dds-CaseGet"
 @rendermode InteractiveServer
-@inject ILogger<Design> Logger
+@inject ILogger<DDSCaseGet> Logger
 @inject INotificationService ToastService
 @inject AzureMapsXmlDocReader DocReader
 @inject IMapDataService MapDataService
@@ -15,7 +15,15 @@
             Each bubble on the map represents a different zone, and the color of the bubble indicates the zone's status (red, yellow, or green).
             Blue is the default color if the bubble does not have a 'zoneColor' property.
             <br />
-            <code>layer.Options.Color = DDSBuilder.CaseGet("zoneColor", "zoneColor", "blue");</code>
+            <br />
+            Code: <code>layer.Options.Color = DDSBuilder.CaseGet("zone", "zoneColor", "blue");</code>
+            <br />
+            JSON: <code>@ddsJSON</code>
+            <br />
+            <br />
+            Optionally, you could just check for the 'zoneColor' property and use that value directly.
+            <br />
+            Code: <code>layer.Options.Color = DDSBuilder.CaseGet("zoneColor", "zoneColor", "blue");</code>
         </FluentText>
     </SummaryContent>
     <ChildContent>
@@ -47,6 +55,7 @@
     private bool buttonsDisabled => mapNotReady | overlay;
     private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(zoomLevel: 12);
     private readonly BubbleLayer bubbleLayer = (BubbleLayer)LayerType.Bubble.GetDefaultLayer();
+    private string? ddsJSON = "";
 
     #region Map Provider Handlers
 
@@ -77,7 +86,9 @@
             mapReady = !(await args.HasPayloadError(Logger, ToastService));
             ShowOverlay(true);
 
-            bubbleLayer.Options = new() { Blur = 0.25, Color = DDSBuilder.CaseGet("zoneColor", "zoneColor", "blue"), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
+            ddsJSON = DDSBuilder.CaseGet("zone", "zoneColor", "blue", true).ToString();
+
+            bubbleLayer.Options = new() { Blur = 0.25, Color = DDSBuilder.CaseGet("zone", "zoneColor", "blue"), Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
 
             var data = await MapDataService.GetBubbleLayerData();
             var points = data.Select(e => new MapFeature(new Point(e.Longitude, e.Latitude))).ToList();
@@ -104,7 +115,10 @@
                 }
 
                 if (!string.IsNullOrEmpty(color))
+                {
+                    point.Properties.Add("zone", i);
                     point.Properties.Add("zoneColor", color);
+                }
             }
 
             await maps!.Layers.Add(mapId, bubbleLayer);

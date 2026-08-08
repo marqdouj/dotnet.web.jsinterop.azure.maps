@@ -11,18 +11,18 @@
         /// Initializes a new instance of the CoalesceGetStyleBuilder class with the specified list of cases.
         /// </summary>
         /// <param name="cases"></param>
-        /// <param name="defaultCase"></param>
-        public CoalesceGetStyleBuilder(List<DDSPropertyAction> cases, string defaultCase = "")
+        /// <param name="defaultValue"></param>
+        public CoalesceGetStyleBuilder(List<DDSPropertyAction> cases, string defaultValue = "")
         {
             ArgumentNullException.ThrowIfNull(cases, nameof(cases));
             _cases = cases;
-            DefaultCase = defaultCase;
+            DefaultValue = defaultValue;
         }
 
         /// <summary>
         /// Default case for the coalesce expression.
         /// </summary>
-        public string DefaultCase { get; }
+        public string DefaultValue { get; }
 
         /// <summary>
         /// Builds the coalesce style expression based on the defined cases.
@@ -39,7 +39,7 @@
                 result.Add(caseValue.Build());
             }
 
-            result.Add(DefaultCase);
+            result.Add(DefaultValue);
 
             return result;
         }

@@ -26,12 +26,12 @@
         /// Creates a coalesce expression for styling map features based on the presence of multiple specified properties and their values.
         /// </summary>
         /// <param name="expressions">The list of property actions to evaluate.</param>
-        /// <param name="defaultCase">The default case to use if none of the expressions evaluate to a truthy value.</param>
+        /// <param name="defaultValue">The default value to use if none of the expressions evaluate to a truthy value.</param>
         /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object CoalesceGet(List<DDSPropertyAction> expressions, string defaultCase = "", bool returnJson = false)
+        public static object CoalesceGet(List<DDSPropertyAction> expressions, string defaultValue = "", bool returnJson = false)
         {
-            var builder = new CoalesceGetStyleBuilder(expressions, defaultCase);
+            var builder = new CoalesceGetStyleBuilder(expressions, defaultValue);
             return returnJson ? builder.ToString() : builder.Build();
         }
 

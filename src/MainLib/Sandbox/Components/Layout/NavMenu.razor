@@ -1,6 +1,11 @@
 ﻿@rendermode InteractiveServer
+@inject AppConfiguration AppConfig
 
-<FluentNav Id="main-menu" UseSingleExpanded="true">
+<FluentNav Id="main-menu" UseSingleExpanded="true" Width="265px">
+    @if (AppConfig.IsDevelopment)
+    {
+        <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
+    }
     <FluentNavItem Href="/" IconRest="@((new Icons.Regular.Size20.Home()))">Home</FluentNavItem>
 
     <FluentNavCategory Title="Basic" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
@@ -17,6 +22,7 @@
         <FluentNavItem Href="map-dds-general" IconRest="@(new Icons.Regular.Size20.Toolbox())">DDS Builder</FluentNavItem>
 
         <FluentNavSectionHeader Title="Examples" />
+        <FluentNavItem Href="map-dds-caseget" IconRest="@(new Icons.Regular.Size20.Code())">CaseGet</FluentNavItem>
         <FluentNavItem Href="map-acme-pipelines" IconRest="@(new Icons.Regular.Size20.Pipeline())">GeoJSON</FluentNavItem>
         <FluentNavItem Href="map-dds-temperatures" IconRest="@(new Icons.Regular.Size20.Temperature())">Temperatures</FluentNavItem>
 
