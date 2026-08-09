@@ -4,6 +4,11 @@
 - `11.0.0-Preview-2`: 
   - `NPM Packages`.
 	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.
+  - `IAzureMapsInterop`.
+	- `Atlas`. New property to access the Azure Maps global functionality.
+	  - `SetLanguage`. New method to set the language for the Azure Maps global functionality.
+	  - `SetView`. New method to set the view for the Azure Maps global functionality.
+  - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.11`: 
   - `CoalesceGetStyleBuilder`.
 	- `DefaultValue`. "DefaultCase" property has been renamed to DefaultValue for consistency with other builders.

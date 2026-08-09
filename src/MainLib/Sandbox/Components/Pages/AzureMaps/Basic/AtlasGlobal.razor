@@ -1,0 +1,140 @@
+﻿@page "/map-atlas-global"
+@rendermode InteractiveServer
+@inject ILogger<AtlasGlobal> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="Atlas Global">
+    <SummaryContent>
+        <MapPageSummary>
+            This sample demonstrates how to interact with Azure Maps global settings.
+        </MapPageSummary>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentLabel Disabled="@mapNotReady">Language:</FluentLabel>
+            <FluentSelect Disabled="@mapNotReady"
+                          Items="@languages"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedLanguage"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnLanguageChanged" />
+            <FluentLabel Disabled="@mapNotReady">View:</FluentLabel>
+            <FluentSelect Disabled="@mapNotReady"
+                          Items="@views"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedView"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnViewChanged" />
+        </Toolbar>
+        <FluentGrid>
+            <FluentGridItem>
+                <FluentCard Width="@cardWidth">
+                    <Toolbar>
+                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset A" OnClick="@(() => ResetMap(mapIdA))" />
+                    </Toolbar>
+
+                    <MapControl MapId="@mapIdA" Height="400px" />
+                </FluentCard>
+            </FluentGridItem>
+
+            <FluentGridItem>
+                <FluentCard Width="@cardWidth">
+                    <Toolbar>
+                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset B" OnClick="@(() => ResetMap(mapIdB))" />
+                    </Toolbar>
+
+                    <MapControl MapId="@mapIdB" Height="400px" />
+                </FluentCard>
+            </FluentGridItem>
+        </FluentGrid>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapIdA = "mapGlobalA";
+    private const string mapIdB = "mapGlobalB";
+    private const string cardWidth = "400px";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private readonly MapOptions mapOptionsA = MapExtensions.GetDefaultMapOptions();
+    private readonly MapOptions mapOptionsB = MapExtensions.GetDefaultMapOptions();
+    private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
+    private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
+    private string? selectedLanguage = AtlasGlobalUI.DefaultLanguage;
+    private string? selectedView = AtlasGlobalUI.DefaultView;
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                mapOptionsA.Style!.Style = MapStyle.road_shaded_relief;
+                mapOptionsB.Style!.Style = MapStyle.satellite_road_labels;
+                await maps.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
+                await maps.CreateDefaultMap(mapIdB, Logger, ToastService, options: mapOptionsB);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    #endregion
+
+    #region MapsInterop
+
+    private async Task ResetMap(string mapId)
+    {
+        if (mapReady)
+        {
+            var options = mapId == mapIdA ? mapOptionsA : mapOptionsB;
+            await maps!.ResetMap(mapId, Logger, ToastService, options);
+        }
+    }
+
+    private async Task OnLanguageChanged(string? language)
+    {
+        if (mapReady && !string.IsNullOrEmpty(language))
+        {
+            selectedLanguage = language;
+            await maps!.Atlas.SetLanguage(language);
+        }
+    }
+
+    private async Task OnViewChanged(string? view)
+    {
+        if (mapReady && !string.IsNullOrEmpty(view))
+        {
+            selectedView = view;
+            await maps!.Atlas.SetView(view);
+        }
+    }
+
+    #endregion
+}
