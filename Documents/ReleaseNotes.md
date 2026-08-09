@@ -1,8 +1,19 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2`: 
+  - `NPM Packages`.
+	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.
+  - `IAzureMapsInterop`.
+	- `Atlas`. New property to access the Azure Maps global functionality.
+	  - `GetVersion`. Gets the current API version number based on build number.
+	  - `SetLanguage`. Set the "language" for the Azure Maps global functionality.
+	  - `SetView`. Set the "view" for the Azure Maps global functionality.
+	- `RemoveMap`. New method to remove a map instance.
+  - `Sandbox`. Demo updates.
+	- `Basic/Atlas Global` demo page added to demonstrate the new Atlas global functionality.
 - `11.0.0-Preview-1.11`: 
-  - `CoalesceGetStyleBuilder`
+  - `CoalesceGetStyleBuilder`.
 	- `DefaultValue`. "DefaultCase" property has been renamed to DefaultValue for consistency with other builders.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.10`:

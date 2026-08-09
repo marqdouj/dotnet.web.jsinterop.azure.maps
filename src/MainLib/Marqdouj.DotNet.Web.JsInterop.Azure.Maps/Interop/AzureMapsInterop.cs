@@ -36,6 +36,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsAnimations Animations { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAzureMapsAtlas"/>
+        /// </summary>
+        IAzureMapsAtlas Atlas { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAzureMapsCommon"/>
         /// </summary>
         IAzureMapsCommon Common { get; }
@@ -124,6 +129,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         /// </summary>
         /// <returns></returns>
         ValueTask DisposeAsync();
+
+        /// <summary>
+        /// Removes a map instance.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <returns></returns>
+        ValueTask RemoveMap(string mapId);
     }
 
     internal class AzureMapsInterop : IAzureMapsInterop, IAsyncDisposable
@@ -140,6 +152,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
             dotNetRef = DotNetObjectReference.Create(component);
 
             Animations = new AzAnimations(moduleTask);
+            Atlas = new AzAtlas(moduleTask);
             Common = new AzCommon(moduleTask);
             Controls = new AzControls(moduleTask);
             Configuration = new AzConfiguration(moduleTask);
@@ -155,6 +168,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         }
 
         public IAzureMapsAnimations Animations { get; }
+
+        public IAzureMapsAtlas Atlas { get; }
 
         public IAzureMapsCommon Common { get; }
 
@@ -207,6 +222,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
             var mapRef = await module.InvokeAsync<IJSObjectReference>(GetJsInteropMethod(), mapId.Trim());
 
             return mapRef;
+        }
+
+        public async ValueTask RemoveMap(string mapId)
+        {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(mapId, nameof(mapId));
+
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId.Trim());
         }
 
         public async ValueTask SetLogLevel(LogLevel logLevel)

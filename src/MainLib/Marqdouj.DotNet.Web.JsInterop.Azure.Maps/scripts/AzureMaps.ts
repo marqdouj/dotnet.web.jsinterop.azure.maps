@@ -1,5 +1,6 @@
 
 export { Animations } from "./modules/Animations";
+export { Atlas } from "./modules/Atlas";
 export { Common } from "./modules/Common"
 export { Configuration } from "./modules/Configuration"
 export { Controls } from "./modules/Controls"

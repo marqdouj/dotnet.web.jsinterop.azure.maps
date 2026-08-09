@@ -4,12 +4,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {
     internal enum JsModule
     {
-        Factory,
         Animations,
+        Atlas,
         Common,
         Configuration,
         Controls,
         Events,
+        Factory,
         Features,
         Geolocations,
         Sprites,

@@ -1,0 +1,168 @@
+﻿@page "/map-atlas-global"
+@rendermode InteractiveServer
+@inject ILogger<AtlasGlobal> Logger
+@inject INotificationService ToastService
+
+<MapPage Title="Atlas Global">
+    <SummaryContent>
+        <FluentText>
+            This example demonstrates how to interact with Azure Maps global settings for "language" and "view".
+            <br />
+            By default, the language is "en-US" and the view is "Auto" (browser detected).
+            Changing the global settings will affect all maps created after the change.
+            <br />
+            You can override the language and view for each map when creating them or
+            by changing a map's style after they have been created.
+            <br />
+            Change the language and view using the dropdowns in the toolbar above the map.
+            Then remove the map and create it again to see the changes take effect.
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar HorizontalGap="5px">
+            <FluentLabel Disabled="@mapsNotReady">Language:</FluentLabel>
+            <FluentSelect Disabled="@mapsNotReady"
+                          Tooltip="Sets the default language used by the map and service modules."
+                          Items="@languages"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedLanguage"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnLanguageChanged" />
+            <FluentLabel Disabled="@mapsNotReady">View:</FluentLabel>
+            <FluentSelect Disabled="@mapsNotReady"
+                          Tooltip="Specifies which set of geopolitically disputed borders and labels are displayed on the map."
+                          Items="@views"
+                          TOption="KeyValuePair<string, string>"
+                          TValue="string"
+                          Value="@selectedView"
+                          OptionText="@(item => item.Value)"
+                          OptionValue="@(item => item.Key)"
+                          ValueChanged="@OnViewChanged" />
+
+            <FluentLabel Disabled="@mapsNotReady">API Version: @apiVersion</FluentLabel>
+        </Toolbar>
+        <FluentCard Width="@cardWidth">
+            <Toolbar>
+                <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetMap" />
+            </Toolbar>
+
+            <MapControl MapId="@mapIdA" Height="400px" />
+        </FluentCard>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string mapIdA = "mapGlobalA";
+    private const string cardWidth = "100%";
+    private IAzureMapsInterop? maps;
+    private bool mapsReady => maps != null;
+    private bool mapsNotReady => !mapsReady;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private readonly MapOptions mapOptionsA = MapExtensions.GetDefaultMapOptions(new Position(0, 0), 1);
+    private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
+    private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
+    private string? selectedLanguage = AtlasGlobalUI.DefaultLanguage;
+    private string? selectedView = AtlasGlobalUI.DefaultView;
+    private string? apiVersion;
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                apiVersion = await maps.Atlas.GetVersion();
+
+                // Set the default language and view for the Atlas global settings
+                // This is only for demonstration purposes on how to override the global settings.
+                // This code is not required unless you want to override the default global settings.
+                await maps!.Atlas.SetLanguage(AtlasGlobalUI.DefaultLanguage);
+                await maps!.Atlas.SetView(AtlasGlobalUI.DefaultView);
+                await maps!.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await Task.CompletedTask;
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    #endregion
+
+    #region MapsInterop
+
+    private async Task ResetMap()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapIdA, Logger, ToastService, mapOptionsA);
+        }
+    }
+
+    private async Task OnLanguageChanged(string? language)
+    {
+        if (mapReady && !string.IsNullOrEmpty(language))
+        {
+            selectedLanguage = language;
+            await maps!.Atlas.SetLanguage(language);
+            await RemoveAndCreateMap();
+        }
+    }
+
+    private async Task OnViewChanged(string? view)
+    {
+        if (mapReady && !string.IsNullOrEmpty(view))
+        {
+            selectedView = view;
+            await maps!.Atlas.SetView(view);
+            await RemoveAndCreateMap();
+        }
+    }
+
+    private async Task RemoveAndCreateMap()
+    {
+        await RemoveMap();
+        await CreateMap();
+    }
+
+    private async Task RemoveMap()
+    {
+        if (mapReady)
+        {
+            await maps!.RemoveMap(mapIdA);
+            mapReady = false;
+        }
+    }
+
+    private async Task CreateMap()
+    {
+        if (mapNotReady)
+        {
+            await maps!.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
+        }
+    }
+
+    #endregion
+}
