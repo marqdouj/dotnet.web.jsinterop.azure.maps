@@ -19,7 +19,7 @@
         </FluentText>
     </SummaryContent>
     <ChildContent>
-        <Toolbar>
+        <Toolbar HorizontalGap="5px">
             <FluentLabel Disabled="@mapsNotReady">Language:</FluentLabel>
             <FluentSelect Disabled="@mapsNotReady"
                           Tooltip="Sets the default language used by the map and service modules."
@@ -40,6 +40,8 @@
                           OptionText="@(item => item.Value)"
                           OptionValue="@(item => item.Key)"
                           ValueChanged="@OnViewChanged" />
+
+            <FluentLabel Disabled="@mapsNotReady">API Version: @apiVersion</FluentLabel>
         </Toolbar>
         <FluentCard Width="@cardWidth">
             <Toolbar>
@@ -68,6 +70,7 @@
     private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
     private string? selectedLanguage = AtlasGlobalUI.DefaultLanguage;
     private string? selectedView = AtlasGlobalUI.DefaultView;
+    private string? apiVersion;
 
     #region Map Provider Handlers
 
@@ -78,12 +81,13 @@
             maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
             if (maps != null)
             {
+                apiVersion = await maps.Atlas.GetVersion();
+
                 // Set the default language and view for the Atlas global settings
                 // This is only for demonstration purposes on how to override the global settings.
                 // This code is not required unless you want to override the default global settings.
                 await maps!.Atlas.SetLanguage(AtlasGlobalUI.DefaultLanguage);
                 await maps!.Atlas.SetView(AtlasGlobalUI.DefaultView);
-
                 await maps!.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
             }
         }

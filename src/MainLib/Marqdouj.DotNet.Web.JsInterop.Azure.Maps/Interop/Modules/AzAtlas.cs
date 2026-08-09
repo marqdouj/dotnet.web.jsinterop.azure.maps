@@ -12,6 +12,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     public interface IAzureMapsAtlas
     {
         /// <summary>
+        /// Gets the current API version number based on build number.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask<string> GetVersion();
+
+        /// <summary>
         /// Sets the default language used by the map and service modules..
         /// </summary>
         /// <param name="language"></param>
@@ -29,6 +35,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     internal class AzAtlas(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsAtlas
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
+
+        public async ValueTask<string> GetVersion()
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<string>(GetJsInteropMethod());
+        }
 
         public async ValueTask SetLanguage(string language)
         {
