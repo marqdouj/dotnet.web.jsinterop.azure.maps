@@ -12,14 +12,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     public interface IAzureMapsAtlas
     {
         /// <summary>
-        /// Sets the language for the Azure Maps.
+        /// Sets the default language used by the map and service modules..
         /// </summary>
         /// <param name="language"></param>
         /// <returns></returns>
         ValueTask SetLanguage(string language);
 
         /// <summary>
-        /// Sets the view for the Azure Maps.
+        /// Specifies which set of geopolitically disputed borders and labels are displayed on the map.
         /// </summary>
         /// <param name="view"></param>
         /// <returns></returns>

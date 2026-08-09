@@ -22,6 +22,7 @@
         <Toolbar>
             <FluentLabel Disabled="@mapsNotReady">Language:</FluentLabel>
             <FluentSelect Disabled="@mapsNotReady"
+                          Tooltip="Sets the default language used by the map and service modules."
                           Items="@languages"
                           TOption="KeyValuePair<string, string>"
                           TValue="string"
@@ -31,6 +32,7 @@
                           ValueChanged="@OnLanguageChanged" />
             <FluentLabel Disabled="@mapsNotReady">View:</FluentLabel>
             <FluentSelect Disabled="@mapsNotReady"
+                          Tooltip="Specifies which set of geopolitically disputed borders and labels are displayed on the map."
                           Items="@views"
                           TOption="KeyValuePair<string, string>"
                           TValue="string"
