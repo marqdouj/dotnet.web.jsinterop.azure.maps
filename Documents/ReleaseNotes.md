@@ -1,8 +1,11 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2`: 
+  - `NPM Packages`.
+	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.
 - `11.0.0-Preview-1.11`: 
-  - `CoalesceGetStyleBuilder`
+  - `CoalesceGetStyleBuilder`.
 	- `DefaultValue`. "DefaultCase" property has been renamed to DefaultValue for consistency with other builders.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.10`:
