@@ -5,14 +5,23 @@
 
 <MapPage Title="Atlas Global">
     <SummaryContent>
-        <MapPageSummary>
-            This sample demonstrates how to interact with Azure Maps global settings.
-        </MapPageSummary>
+        <FluentText>
+            This example demonstrates how to interact with Azure Maps global settings for "language" and "view".
+            <br />
+            By default, the language is "en-US" and the view is "Auto" (browser detected).
+            Changing the global settings will affect all maps created after the change.
+            <br />
+            You can override the language and view for each map when creating them or
+            by changing a map's style after they have been created.
+            <br />
+            Change the language and view using the dropdowns in the toolbar above the map.
+            Then remove the map and create it again to see the changes take effect.
+        </FluentText>
     </SummaryContent>
     <ChildContent>
         <Toolbar>
-            <FluentLabel Disabled="@mapNotReady">Language:</FluentLabel>
-            <FluentSelect Disabled="@mapNotReady"
+            <FluentLabel Disabled="@mapsNotReady">Language:</FluentLabel>
+            <FluentSelect Disabled="@mapsNotReady"
                           Items="@languages"
                           TOption="KeyValuePair<string, string>"
                           TValue="string"
@@ -20,8 +29,8 @@
                           OptionText="@(item => item.Value)"
                           OptionValue="@(item => item.Key)"
                           ValueChanged="@OnLanguageChanged" />
-            <FluentLabel Disabled="@mapNotReady">View:</FluentLabel>
-            <FluentSelect Disabled="@mapNotReady"
+            <FluentLabel Disabled="@mapsNotReady">View:</FluentLabel>
+            <FluentSelect Disabled="@mapsNotReady"
                           Items="@views"
                           TOption="KeyValuePair<string, string>"
                           TValue="string"
@@ -30,27 +39,13 @@
                           OptionValue="@(item => item.Key)"
                           ValueChanged="@OnViewChanged" />
         </Toolbar>
-        <FluentGrid>
-            <FluentGridItem>
-                <FluentCard Width="@cardWidth">
-                    <Toolbar>
-                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset A" OnClick="@(() => ResetMap(mapIdA))" />
-                    </Toolbar>
+        <FluentCard Width="@cardWidth">
+            <Toolbar>
+                <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@ResetMap" />
+            </Toolbar>
 
-                    <MapControl MapId="@mapIdA" Height="400px" />
-                </FluentCard>
-            </FluentGridItem>
-
-            <FluentGridItem>
-                <FluentCard Width="@cardWidth">
-                    <Toolbar>
-                        <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset B" OnClick="@(() => ResetMap(mapIdB))" />
-                    </Toolbar>
-
-                    <MapControl MapId="@mapIdB" Height="400px" />
-                </FluentCard>
-            </FluentGridItem>
-        </FluentGrid>
+            <MapControl MapId="@mapIdA" Height="400px" />
+        </FluentCard>
     </ChildContent>
 </MapPage>
 
@@ -60,13 +55,13 @@
 
 @code {
     private const string mapIdA = "mapGlobalA";
-    private const string mapIdB = "mapGlobalB";
-    private const string cardWidth = "400px";
+    private const string cardWidth = "100%";
     private IAzureMapsInterop? maps;
+    private bool mapsReady => maps != null;
+    private bool mapsNotReady => !mapsReady;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
-    private readonly MapOptions mapOptionsA = MapExtensions.GetDefaultMapOptions();
-    private readonly MapOptions mapOptionsB = MapExtensions.GetDefaultMapOptions();
+    private readonly MapOptions mapOptionsA = MapExtensions.GetDefaultMapOptions(new Position(0, 0), 1);
     private readonly Dictionary<string, string> languages = AtlasGlobalUI.Languages;
     private readonly Dictionary<string, string> views = AtlasGlobalUI.Views;
     private string? selectedLanguage = AtlasGlobalUI.DefaultLanguage;
@@ -81,10 +76,13 @@
             maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
             if (maps != null)
             {
-                mapOptionsA.Style!.Style = MapStyle.road_shaded_relief;
-                mapOptionsB.Style!.Style = MapStyle.satellite_road_labels;
-                await maps.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
-                await maps.CreateDefaultMap(mapIdB, Logger, ToastService, options: mapOptionsB);
+                // Set the default language and view for the Atlas global settings
+                // This is only for demonstration purposes on how to override the global settings.
+                // This code is not required unless you want to override the default global settings.
+                await maps!.Atlas.SetLanguage(AtlasGlobalUI.DefaultLanguage);
+                await maps!.Atlas.SetView(AtlasGlobalUI.DefaultView);
+
+                await maps!.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
             }
         }
         catch (Exception ex)
@@ -109,12 +107,11 @@
 
     #region MapsInterop
 
-    private async Task ResetMap(string mapId)
+    private async Task ResetMap()
     {
         if (mapReady)
         {
-            var options = mapId == mapIdA ? mapOptionsA : mapOptionsB;
-            await maps!.ResetMap(mapId, Logger, ToastService, options);
+            await maps!.ResetMap(mapIdA, Logger, ToastService, mapOptionsA);
         }
     }
 
@@ -124,6 +121,7 @@
         {
             selectedLanguage = language;
             await maps!.Atlas.SetLanguage(language);
+            await RemoveAndCreateMap();
         }
     }
 
@@ -133,6 +131,30 @@
         {
             selectedView = view;
             await maps!.Atlas.SetView(view);
+            await RemoveAndCreateMap();
+        }
+    }
+
+    private async Task RemoveAndCreateMap()
+    {
+        await RemoveMap();
+        await CreateMap();
+    }
+
+    private async Task RemoveMap()
+    {
+        if (mapReady)
+        {
+            await maps!.RemoveMap(mapIdA);
+            mapReady = false;
+        }
+    }
+
+    private async Task CreateMap()
+    {
+        if (mapNotReady)
+        {
+            await maps!.CreateDefaultMap(mapIdA, Logger, ToastService, options: mapOptionsA);
         }
     }
 

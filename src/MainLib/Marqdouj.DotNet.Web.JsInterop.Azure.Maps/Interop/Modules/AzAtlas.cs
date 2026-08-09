@@ -6,6 +6,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     /// <summary>
     /// Interface for Azure Maps global interactions.
     /// </summary>
+    /// <remarks>Global settings are applied to all Azure Maps instances 
+    /// that are created after the setting is applied. Settings can be changed at any time
+    /// for each individual instance by changing the map's style.</remarks>
     public interface IAzureMapsAtlas
     {
         /// <summary>

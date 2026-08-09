@@ -55,7 +55,7 @@ export class Factory {
         }
     }
 
-    static getMap(mapId: string): atlas.Map | undefined {
+    public static getMap(mapId: string): atlas.Map | undefined {
         var mapRef = this.getMapReference(mapId);
         if (!mapRef) {
             Logger.logMapMessage(mapId, LogLevel.Warn, "Factory.getMap: Map was not found.");
@@ -64,7 +64,7 @@ export class Factory {
         return mapRef.map;
     }
 
-    static getMapReference(mapId: string): MapReference | undefined {
+    public static getMapReference(mapId: string): MapReference | undefined {
         const mapRef = this.#azmaps.get(mapId);
 
         if (!mapRef) {
@@ -74,7 +74,7 @@ export class Factory {
         return mapRef;
     }
 
-    static clear() {
+    public static clear() {
         const keys: string[] = [...this.#azmaps.keys()];
 
         keys.forEach(mapId => {
@@ -82,7 +82,7 @@ export class Factory {
         });
     }
 
-    static removeMap(mapId: string): void {
+    public static removeMap(mapId: string): void {
         if (this.#azmaps.has(mapId)) {
             var mapRef = this.getMapReference(mapId);
             this.#azmaps.delete(mapId);
@@ -193,6 +193,7 @@ export class MapReference {
     clear() {
         this.#dotNetRef = null;
         this.#mapId = undefined;
+        this.#map?.dispose();
         this.#map = undefined;
         this.#eventsMap?.clear();
         this.#eventsMap = undefined;

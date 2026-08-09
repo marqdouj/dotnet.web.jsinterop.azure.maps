@@ -179,11 +179,11 @@
         /// <summary>
         /// Gets the default language code for Azure Maps, which is "en-US" (English - United States).
         /// </summary>
-        public static readonly string? DefaultLanguage = "en-US";
+        public static readonly string DefaultLanguage = "en-US";
 
         /// <summary>
         /// Gets the default view code for Azure Maps, which is "auto" (Automatically detect).
         /// </summary>
-        public static readonly string? DefaultView = "auto";
+        public static readonly string DefaultView = "auto";
     }
 }

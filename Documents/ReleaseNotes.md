@@ -6,8 +6,9 @@
 	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.
   - `IAzureMapsInterop`.
 	- `Atlas`. New property to access the Azure Maps global functionality.
-	  - `SetLanguage`. New method to set the language for the Azure Maps global functionality.
-	  - `SetView`. New method to set the view for the Azure Maps global functionality.
+	  - `SetLanguage`. Set the "language" for the Azure Maps global functionality.
+	  - `SetView`. Set the "view" for the Azure Maps global functionality.
+	- `RemoveMap`. New method to remove a map instance.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-1.11`: 
   - `CoalesceGetStyleBuilder`.
