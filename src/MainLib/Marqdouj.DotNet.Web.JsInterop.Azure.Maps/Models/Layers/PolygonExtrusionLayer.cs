@@ -1,11 +1,12 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 {
     /// <summary>
     /// <inheritdoc cref="LayerType.PolygonExtrusion"/>
     /// </summary>
-    public class PolygonExtrusionLayer : LayerBase<PolygonExtrusionLayerOptions, DataSource>
+    public class PolygonExtrusionLayer : LayerBase<PolygonExtrusionLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

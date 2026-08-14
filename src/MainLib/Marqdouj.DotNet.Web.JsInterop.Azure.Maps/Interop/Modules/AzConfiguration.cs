@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
@@ -11,6 +12,30 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     /// </summary>
     public interface IAzureMapsConfiguration
     {
+        /// <summary>
+        /// Disables elevation on the map.
+        /// </summary>
+        /// <returns></returns>
+        ValueTask DisableElevation(string mapId);
+
+        /// <summary>
+        /// Enables elevation on the map with the specified elevation source and optional exaggeration factor.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="elevationSource"></param>
+        /// <param name="exaggeration"></param>
+        /// <returns></returns>
+        ValueTask EnableElevation(string mapId, ElevationTileSource elevationSource, double? exaggeration = null);
+
+        /// <summary>
+        /// Enables elevation on the map with the specified elevation source and optional exaggeration factor.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="elevationSource"></param>
+        /// <param name="exaggeration"></param>
+        /// <returns></returns>
+        ValueTask EnableElevation(string mapId, string elevationSource, double? exaggeration = null);
+
         /// <summary>
         /// Gets the existing map options based on <see cref="MapOptionsArgs"/>
         /// </summary>
@@ -61,8 +86,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, center, zoomLevel, animation);
         }
 
+        public async ValueTask DisableElevation(string mapId)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId);
+        }
+
+        public async ValueTask EnableElevation(string mapId, ElevationTileSource elevationSource, double? exaggeration = null)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, elevationSource, exaggeration);
+        }
+
+        public async ValueTask EnableElevation(string mapId, string elevationSource, double? exaggeration = null)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, elevationSource, exaggeration);
+        }
+
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Configuration.GetJsModuleMethod(name);
-
     }
 }

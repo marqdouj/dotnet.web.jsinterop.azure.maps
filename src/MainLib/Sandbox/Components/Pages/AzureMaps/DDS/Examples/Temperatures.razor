@@ -83,7 +83,7 @@
         temperatures = await DataService.GetTemperatureLayerData();
         mapOptions.Camera!.Center = temperatures[1].Position;
 
-        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
+        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, object Color)>
         {
             ( 20, coolColor ),
             ( 21, mildColor ),
@@ -93,7 +93,7 @@
 
         bubbleLayer.Options = new() { Blur = 0.25, Color = bubbleColor, Radius = 20, StrokeColor = "LightSteelBlue", StrokeWidth = 3 };
         symbolLayer.Options = new() { IconOptions = new SymbolIconOptions { AllowOverlap = true, Image = "none" }, TextOptions = new SymbolTextOptions { Color = "black", HaloColor = "white", HaloWidth = 2, Offset = new[] { 0, 0.25 }, TextField = DDSBuilder.ConcatGet("temperature", "°C") } };
-        symbolLayer.DataSource = bubbleLayer.DataSource;
+        symbolLayer.Source = bubbleLayer.Source;
 
         features = temperatures.Select(temp => new MapFeature(new Point(temp.Position))
         {
@@ -118,7 +118,7 @@
             ShowOverlay(true);
             await maps!.Layers.Add(mapId, bubbleLayer);
             await maps!.Layers.Add(mapId, symbolLayer);
-            await maps.Features.Add(mapId, features, bubbleLayer.DataSource.Id);
+            await maps.Features.Add(mapId, features, bubbleLayer.Source.Id);
 
             //Add the hover popup to the symbol layer (you can also add it to the bubble layer but it works better in the symbol layer). 
             Popup popup = new() { Options = new PopupOptions { CloseButton = false } };

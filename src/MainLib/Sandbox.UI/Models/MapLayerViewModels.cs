@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 
 namespace Sandbox.UI.Models
 {
@@ -14,35 +15,35 @@ namespace Sandbox.UI.Models
         /// <summary>
         /// Gets the view model for the bubble map layer.
         /// </summary>  
-        public MapLayerViewModel<BubbleLayerOptions, DataSource> Bubble { get; set => field = value ?? throw new ArgumentNullException(nameof(Bubble)); } = new(new BubbleLayer());
+        public MapLayerViewModel<BubbleLayerOptions> Bubble { get; set => field = value ?? throw new ArgumentNullException(nameof(Bubble)); } = new(new BubbleLayer());
         /// <summary>
         /// Gets the view model for the heat map layer.
         /// </summary>
-        public MapLayerViewModel<HeatMapLayerOptions, DataSource> HeatMap { get; set => field = value ?? throw new ArgumentNullException(nameof(HeatMap)); } = new(new HeatMapLayer());
+        public MapLayerViewModel<HeatMapLayerOptions> HeatMap { get; set => field = value ?? throw new ArgumentNullException(nameof(HeatMap)); } = new(new HeatMapLayer());
         /// <summary>
         /// Gets the view model for the image map layer.
         /// </summary>
-        public MapLayerViewModel<ImageLayerOptions, DataSource> Image { get; set => field = value ?? throw new ArgumentNullException(nameof(Image)); } = new(new ImageLayer());
+        public MapLayerViewModel<ImageLayerOptions> Image { get; set => field = value ?? throw new ArgumentNullException(nameof(Image)); } = new(new ImageLayer());
         /// <summary>
         /// Gets the view model for the line map layer.
         /// </summary>
-        public MapLayerViewModel<LineLayerOptions, DataSource> Line { get; set => field = value ?? throw new ArgumentNullException(nameof(Line)); } = new(new LineLayer());
+        public MapLayerViewModel<LineLayerOptions> Line { get; set => field = value ?? throw new ArgumentNullException(nameof(Line)); } = new(new LineLayer());
         /// <summary>
         /// Gets the view model for the polygon map layer.
         /// </summary>
-        public MapLayerViewModel<PolygonLayerOptions, DataSource> Polygon { get; set => field = value ?? throw new ArgumentNullException(nameof(Polygon)); } = new(new PolygonLayer());
+        public MapLayerViewModel<PolygonLayerOptions> Polygon { get; set => field = value ?? throw new ArgumentNullException(nameof(Polygon)); } = new(new PolygonLayer());
         /// <summary>
         /// Gets the view model for the polygon extrusion map layer.
         /// </summary>
-        public MapLayerViewModel<PolygonExtrusionLayerOptions, DataSource> PolygonExtrusion { get; set => field = value ?? throw new ArgumentNullException(nameof(PolygonExtrusion)); } = new(new PolygonExtrusionLayer());
+        public MapLayerViewModel<PolygonExtrusionLayerOptions> PolygonExtrusion { get; set => field = value ?? throw new ArgumentNullException(nameof(PolygonExtrusion)); } = new(new PolygonExtrusionLayer());
         /// <summary>
         /// Gets the view model for the symbol map layer.
         /// </summary>
-        public MapLayerViewModel<SymbolLayerOptions, DataSource> Symbol { get; set => field = value ?? throw new ArgumentNullException(nameof(Symbol)); } = new(new SymbolLayer());
+        public MapLayerViewModel<SymbolLayerOptions> Symbol { get; set => field = value ?? throw new ArgumentNullException(nameof(Symbol)); } = new(new SymbolLayer());
         /// <summary>
         /// Gets the view model for the tile map layer.
         /// </summary>
-        public MapLayerViewModel<TileLayerOptions, DataSource> Tile { get; set => field = value ?? throw new ArgumentNullException(nameof(Tile)); } = new(new TileLayer());
+        public MapLayerViewModel<TileLayerOptions> Tile { get; set => field = value ?? throw new ArgumentNullException(nameof(Tile)); } = new(new TileLayer());
 
         /// <summary>
         /// Gets a list of all map layer view models contained in this class.

@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Converters;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers.Images;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -9,7 +10,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Symbol"/>
     /// </summary>
-    public class SymbolLayer : LayerBase<SymbolLayerOptions, DataSource>
+    public class SymbolLayer : LayerBase<SymbolLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Geolocation
@@ -25,8 +26,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Geolocation
         public GeolocationLayers(string mapId, IEnumerable<MapEvent>? positionEvents = null, IEnumerable<MapEvent>? accuracyEvents = null)
         {
             MapId = mapId;
-            positionLayer = new SymbolLayer() { DataSource = dataSourceDef };
-            accuracyLayer = new PolygonLayer() { DataSource = dataSourceDef };
+            positionLayer = new SymbolLayer() { Source = dataSourceDef };
+            accuracyLayer = new PolygonLayer() { Source = dataSourceDef };
 
             //Render point or MultiPoints in this layer.
             positionLayer.Options ??= new();

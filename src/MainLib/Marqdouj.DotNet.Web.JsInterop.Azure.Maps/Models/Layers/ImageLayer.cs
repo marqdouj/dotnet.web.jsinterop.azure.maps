@@ -1,4 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
@@ -6,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Image"/>
     /// </summary>
-    public class ImageLayer : LayerBase<ImageLayerOptions, DataSource>
+    public class ImageLayer : LayerBase<ImageLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

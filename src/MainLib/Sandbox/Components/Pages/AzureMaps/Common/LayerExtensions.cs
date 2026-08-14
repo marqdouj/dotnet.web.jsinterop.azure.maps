@@ -86,7 +86,6 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
         private static async Task<HeatMapLayer> GetDefaultHeatLayer(IMapDataService dataService)
         {
             var layerDef = new HeatMapLayer();
-            layerDef.DataSource.Url = await dataService.GetHeatMapLayerUrl();
             return layerDef;
         }
 
@@ -106,7 +105,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         public static async Task AddBasicMapLayer(this IAzureMapsInterop mapsInterop, string mapId, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            switch (vm.Source.Type)
+            switch (vm.Layer.Type)
             {
                 case LayerType.Bubble:
                     await AddBubbleLayer(mapId, mapsInterop, dataService, vm);
@@ -139,8 +138,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddBubbleLayer(string mapId, IAzureMapsInterop mapsInterop, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            if (vm.Source is not BubbleLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(BubbleLayer)}", nameof(vm));
+            if (vm.Layer is not BubbleLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(BubbleLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -158,8 +157,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
                     }
             };
 
-            var layer = (BubbleLayer)vm.Source;
-            await mapsInterop.Features.Add(mapId, featureDef, layer.DataSource.Id!);
+            var layer = (BubbleLayer)vm.Layer;
+            await mapsInterop.Features.Add(mapId, featureDef, layer.Source.Id!);
 
             vm.Camera ??= new CameraOptions
             {
@@ -173,8 +172,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddHeatMapLayer(string mapId, IAzureMapsInterop mapsInterop, IMapLayerViewModel vm)
         {
-            if (vm.Source is not HeatMapLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(HeatMapLayer)}", nameof(vm));
+            if (vm.Layer is not HeatMapLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(HeatMapLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -194,8 +193,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddImageLayer(string mapId, IAzureMapsInterop mapsInterop, IMapLayerViewModel vm)
         {
-            if (vm.Source is not ImageLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(ImageLayer)}", nameof(vm));
+            if (vm.Layer is not ImageLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(ImageLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -215,8 +214,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddLineLayer(string mapId, IAzureMapsInterop mapsInterop, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            if (vm.Source is not LineLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(LineLayer)}", nameof(vm));
+            if (vm.Layer is not LineLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(LineLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -225,9 +224,9 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
             var data = await dataService.GetLineLayerData();
             var feature = data.GetLineLayerFeatureDef();
-            var layer = (LineLayer)vm.Source;
+            var layer = (LineLayer)vm.Layer;
 
-            await mapsInterop.Features.Add(mapId, feature, layer.DataSource.Id!);
+            await mapsInterop.Features.Add(mapId, feature, layer.Source.Id!);
             vm.IsLoaded = true;
 
             vm.Camera ??= new CameraOptions
@@ -254,8 +253,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddPolygonLayer(string mapId, IAzureMapsInterop mapsInterop, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            if (vm.Source is not PolygonLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(PolygonLayer)}", nameof(vm));
+            if (vm.Layer is not PolygonLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(PolygonLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -274,8 +273,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
                 AsShape = true
             };
 
-            var layer = (PolygonLayer)vm.Source;
-            await mapsInterop.Features.Add(mapId, feature, layer.DataSource.Id!);
+            var layer = (PolygonLayer)vm.Layer;
+            await mapsInterop.Features.Add(mapId, feature, layer.Source.Id!);
 
             vm.Camera ??= new CameraOptions
             {
@@ -289,8 +288,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddPolygonExtLayer(string mapId, IAzureMapsInterop mapsInterop, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            if (vm.Source is not PolygonExtrusionLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(PolygonExtrusionLayer)}", nameof(vm));
+            if (vm.Layer is not PolygonExtrusionLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(PolygonExtrusionLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -309,8 +308,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
                 AsShape = true
             };
 
-            var layer = (PolygonExtrusionLayer)vm.Source;
-            await mapsInterop.Features.Add(mapId, feature, layer.DataSource.Id!);
+            var layer = (PolygonExtrusionLayer)vm.Layer;
+            await mapsInterop.Features.Add(mapId, feature, layer.Source.Id!);
 
             vm.Camera ??= new CameraOptions
             {
@@ -324,8 +323,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddSymbolLayer(string mapId, IAzureMapsInterop mapsInterop, IMapDataService dataService, IMapLayerViewModel vm)
         {
-            if (vm.Source is not SymbolLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(SymbolLayer)}", nameof(vm));
+            if (vm.Layer is not SymbolLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(SymbolLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -347,8 +346,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
                     }
                 };
 
-                var layer = (SymbolLayer)vm.Source;
-                await mapsInterop.Features.Add(mapId, feature, layer.DataSource.Id!);
+                var layer = (SymbolLayer)vm.Layer;
+                await mapsInterop.Features.Add(mapId, feature, layer.Source.Id!);
             }
 
             vm.Camera ??= new CameraOptions
@@ -389,8 +388,8 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
 
         private static async Task AddTileLayer(string mapId, IAzureMapsInterop mapsInterop, IMapLayerViewModel vm)
         {
-            if (vm.Source is not TileLayer)
-                throw new ArgumentException($"Expected {nameof(vm.Source)} to be of type {nameof(TileLayer)}", nameof(vm));
+            if (vm.Layer is not TileLayer)
+                throw new ArgumentException($"Expected {nameof(vm.Layer)} to be of type {nameof(TileLayer)}", nameof(vm));
 
             if (vm.IsLoaded)
                 return;
@@ -420,7 +419,7 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
             if (!vm.IsLoaded)
                 return;
 
-            await mapsInterop.Layers.ShowLayer(mapId, vm.Source, isVisible);
+            await mapsInterop.Layers.ShowLayer(mapId, vm.Layer, isVisible);
             vm.IsVisible = isVisible;
 
             if (isVisible && zoomToIfVisible)

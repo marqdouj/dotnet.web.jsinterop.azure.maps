@@ -1,6 +1,28 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2.1`:
+  - `BREAKING CHANGES`!
+  - `Map Sources`. Major update/refactoring for managing map sources.
+	- `Namespace`. All map sources have been moved to a new namespace `Sources`.
+	- `LayerSourceBase` has been renamed to `MapSource`.
+	- `LayerSourceType` has been renamed to `MapSourceType`.
+	  - `LayerSourceType.DataSource` has been renamed to `MapSourceType.Data`.
+	- `ElevationTileSource`. New data source for accessing elevation (raster DEM) tile data.
+	  - `Configuration`. This source is used with these new methods:
+		- `DisableElevation`
+		- `EnableElevation`.
+	- `DataSource`.
+	  - `Url` property has been removed. Use the `IAzureMapsInterop.Sources.ImportDataFromUrl` method to set the URL for the data source.
+	- `VectorTileSource`. New data source for accessing vector tile data.
+  - `LinearInterpolateStyleBuilder`.
+	- Cases have been changed from {double, string} to {double, object}.
+  - `ILayer`. 
+	- `DataSource` property has been renamed to `Source`.
+	- `Constructor` for `Layers` has been updated to require a `MapSource`.
+  - `StepStyleBuilder` New DDSBuilder for creating step expressions. See `Vector Tile Layer` demo in Sandbox for example usage.
+  - `Sandbox`. Demo updates.
+	- `Basic/Vector Tile Layer` page added.
 - `11.0.0-Preview-2`: 
   - `NPM Packages`.
 	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.

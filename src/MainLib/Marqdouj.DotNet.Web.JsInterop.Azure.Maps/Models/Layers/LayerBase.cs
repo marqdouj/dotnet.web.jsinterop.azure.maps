@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -80,9 +81,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         LayerType Type { get; }
 
         /// <summary>
-        /// <inheritdoc cref="LayerSourceBase"/>
+        /// <inheritdoc cref="MapSource"/>
         /// </summary>
-        LayerSourceBase LayerSource { get; }
+        MapSource Source { get; set; }
 
         /// <summary>
         /// <inheritdoc cref="LayerOptionsBase"/>
@@ -102,14 +103,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// Defines a layer that exposes strongly typed options for configuration.
     /// </summary>
     /// <typeparam name="TOptions">The type of options used to configure the layer.</typeparam>
-    /// <typeparam name="TSource">The type of data source used by the layer.</typeparam>
-    public interface ILayer<TOptions, TSource> : ILayer where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public interface ILayer<TOptions> : ILayer where TOptions : LayerOptionsBase
     {
-        /// <summary>
-        /// <typeparamref name="TSource"/>
-        /// </summary>
-        TSource DataSource { get; set; }
-
         /// <summary>
         /// The options for the layer.
         /// </summary>
@@ -119,7 +114,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// Base class that all layer objects inherit from.
     /// </summary>
-    public abstract class LayerBase<TOptions, TSource> : JsInteropBase, ILayer<TOptions, TSource> where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public abstract class LayerBase<TOptions> : JsInteropBase, ILayer<TOptions> where TOptions : LayerOptionsBase
     {
         /// <summary>
         /// <inheritdoc cref="ILayer.Type"/>
@@ -132,14 +127,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         public string? Before { get; set; }
 
         /// <summary>
-        /// <typeparamref name="TSource"/>
+        /// <inheritdoc cref="ILayer.Source"/>
         /// </summary>
-        public TSource DataSource { get; set => field = value ?? throw new ArgumentNullException(nameof(DataSource)); } = new TSource();
+        [JsonIgnore]
+        public MapSource Source { get; set => field = value ?? throw new ArgumentNullException(nameof(Source)); } = new DataSource();
 
-        /// <summary>
-        /// <typeparamref name="TSource"/>
-        /// </summary>
-        public LayerSourceBase LayerSource => DataSource;
+        [JsonInclude]
+        [JsonPropertyName("source")]
+        internal object LayerSource => Source;
 
         /// <summary>
         /// <inheritdoc cref="ILayer.GetMapEvents(IEnumerable{MapEventTypeLayer}?)"/>

@@ -290,6 +290,28 @@ export class Configuration {
     }
 
     // #endregion
+
+    // #region misc
+
+    public static disableElevation(mapId: string): void {
+        const map = Factory.getMap(mapId);
+        if (!map) {
+            return;
+        }
+
+        map.disableElevation();
+    }
+
+    public static enableElevation(mapId: string, elevationSource: string | atlas.source.ElevationTileSource, exaggeration?: number): void {
+        const map = Factory.getMap(mapId);
+        if (!map) {
+            return;
+        }
+
+        map.enableElevation(elevationSource, exaggeration);
+    }
+
+    // #endregion
 }
 
 type SetCameraOptions = (atlas.CameraOptions | (atlas.CameraBoundsOptions & { pitch?: number, bearing?: number })) & atlas.AnimationOptions;

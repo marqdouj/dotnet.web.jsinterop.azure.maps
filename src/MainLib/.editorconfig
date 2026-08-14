@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# BL0016: Unguarded JS interop call
+dotnet_diagnostic.BL0016.severity = none

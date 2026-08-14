@@ -1,0 +1,117 @@
+﻿@page "/map-basic-vector-tile-layer"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<VectorTileLayer> Logger
+@inject INotificationService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Basic Map (Vector Tile Layer)">
+    <SummaryContent>
+        <FluentText>
+            This example shows how to how to use a vector tile service to render line data on the map.
+            <br />
+            Based on this <a href="https://github.com/Azure-Samples/AzureMapsCodeSamples/blob/main/Samples/Vector%20tiles/Vector%20tile%20line%20layer/Vector%20tile%20line%20layer.html" target="_blank">example</a>
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <MapControl MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private readonly string mapId = "mapVectorTile";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-74, 40.723));
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+
+        try
+        {
+            if (mapReady && maps != null)
+            {
+                var source = new VectorTileSource
+                {
+                    Options = new VectorTileSourceOptions
+                    {
+                        Tiles = new List<string> { "https://{azMapsDomain}/traffic/flow/tile/pbf?api-version=1.0&style=relative&zoom={z}&x={x}&y={y}" },
+                        MaxZoom = 22,
+                    }
+                };
+
+                var layer = new LineLayer() { 
+                    Before = "labels",
+                    Source = source,
+                    Options = new LineLayerOptions
+                    {
+                        SourceLayer = "Traffic flow",
+                        StrokeColor = DDSBuilder.Step("traffic_level", new List<(double Case, object Value)> { (0.01, "#EE2F53"), (0.8, "orange"), (1, "#66CC99") }, defaultValue: "#6B0512"),
+                        // StrokeColor = new List<object> { 
+                        //     "step", 
+                        //     new List<object> { "get", "traffic_level" },
+                        //     "#6B0512", //Dark Red
+                        //     0.01, "#EE2F53", //Red
+                        //     0.8, "orange",
+                        //     1, "#66CC99" //Green
+                        // },
+                        StrokeWidth = DDSBuilder.LinearInterpolate("traffic_level", new List<(double Case, object Value)> { (0, 6), (1, 1) }),
+                    }
+                };
+
+                await maps.Layers.Add(mapId, layer);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    #endregion
+}

@@ -68,7 +68,7 @@
         /// <param name="cases">A list of cases for the linear interpolation.</param>
         /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
         /// <returns></returns>
-        public static object LinearInterpolate(string inputExpression, List<(double Case, string Value)> cases, bool returnJson = false)
+        public static object LinearInterpolate(string inputExpression, List<(double Case, object Value)> cases, bool returnJson = false)
         {
             var builder = new LinearInterpolateStyleBuilder(inputExpression, cases);
             return returnJson ? builder.ToString() : builder.Build();
@@ -97,6 +97,20 @@
         public static object Match(string inputExpression, List<(string Case, string Value)> cases, string? defaultCase, bool returnJson = false)
         {
             var builder = new MatchStyleBuilder(inputExpression, cases, defaultCase);
+            return returnJson ? builder.ToString() : builder.Build();
+        }
+
+        /// <summary>
+        /// Creates a step expression for styling map features based on a specified input expression and a list of cases.
+        /// </summary>
+        /// <param name="inputExpression">The input expression to step through.</param>
+        /// <param name="cases">A list of cases for the step expression.</param>
+        /// <param name="defaultValue">The default value to use if no other cases match.</param>
+        /// <param name="returnJson">Indicates whether to return the result as JSON.</param>
+        /// <returns></returns>
+        public static object Step(string inputExpression, List<(double Case, object Value)> cases, object? defaultValue = null, bool returnJson = false)
+        {
+            var builder = new StepStyleBuilder(inputExpression, cases, defaultValue);
             return returnJson ? builder.ToString() : builder.Build();
         }
     }

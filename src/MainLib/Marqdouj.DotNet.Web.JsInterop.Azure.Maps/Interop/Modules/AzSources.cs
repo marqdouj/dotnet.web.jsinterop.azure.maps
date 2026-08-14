@@ -1,5 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 
@@ -12,36 +12,36 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     public interface IAzureMapsSources
     {
         /// <summary>
-        /// Adds a collection of LayerSourceBase items to the specified map.
+        /// Adds a collection of MapSource items to the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map to which the sources will be added.</param>
-        /// <param name="items">The collection of LayerSourceBase items to add.</param>
-        ValueTask Add(string mapId, IEnumerable<LayerSourceBase> items);
+        /// <param name="items">The collection of MapSource items to add.</param>
+        ValueTask Add(string mapId, IEnumerable<MapSource> items);
 
         /// <summary>
-        /// Adds a single LayerSourceBase item to the specified map.
+        /// Adds a single MapSource item to the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map to which the source will be added.</param>
-        /// <param name="item">The LayerSourceBase item to add.</param>
-        ValueTask Add(string mapId, LayerSourceBase item);
+        /// <param name="item">The MapSource item to add.</param>
+        ValueTask Add(string mapId, MapSource item);
 
         /// <summary>
-        /// Clears a collection of LayerSourceBase items from the specified map.
+        /// Clears a collection of MapSource items from the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the sources will be cleared.</param>
-        /// <param name="items">The collection of LayerSourceBase items to clear.</param>
-        ValueTask Clear(string mapId, IEnumerable<LayerSourceBase> items);
+        /// <param name="items">The collection of MapSource items to clear.</param>
+        ValueTask Clear(string mapId, IEnumerable<MapSource> items);
 
         /// <summary>
-        /// Clears a single LayerSourceBase item from the specified map.
+        /// Clears a single MapSource item from the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the source will be cleared.</param>
-        /// <param name="item">The LayerSourceBase item to clear.</param>
-        ValueTask Clear(string mapId, LayerSourceBase item);
+        /// <param name="item">The MapSource item to clear.</param>
+        ValueTask Clear(string mapId, MapSource item);
 
 
         /// <summary>
-        /// Clears a collection of LayerSourceBase items from the specified map by their IDs.
+        /// Clears a collection of MapSource items from the specified map by their IDs.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the sources will be cleared.</param>
         /// <param name="sourceIds">The collection of source IDs to clear.</param>
@@ -66,21 +66,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask ImportDataFromUrl(string mapId, string sourceId, string url);
 
         /// <summary>
-        /// Removes a collection of LayerSourceBase items from the specified map.
+        /// Removes a collection of MapSource items from the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the sources will be removed.</param>
-        /// <param name="items">The collection of LayerSourceBase items to remove.</param>
-        ValueTask Remove(string mapId, IEnumerable<LayerSourceBase> items);
+        /// <param name="items">The collection of MapSource items to remove.</param>
+        ValueTask Remove(string mapId, IEnumerable<MapSource> items);
 
         /// <summary>
-        /// Removes a single LayerSourceBase item from the specified map.
+        /// Removes a single MapSource item from the specified map.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the source will be removed.</param>
-        /// <param name="item">The LayerSourceBase item to remove.</param>
-        ValueTask Remove(string mapId, LayerSourceBase item);
+        /// <param name="item">The MapSource item to remove.</param>
+        ValueTask Remove(string mapId, MapSource item);
 
         /// <summary>
-        /// Removes a collection of LayerSourceBase items from the specified map by their IDs.
+        /// Removes a collection of MapSource items from the specified map by their IDs.
         /// </summary>
         /// <param name="mapId">The ID of the map from which the sources will be removed.</param>
         /// <param name="sourceIds">The collection of source IDs to remove.</param>
@@ -91,7 +91,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask Add(string mapId, LayerSourceBase item)
+        public async ValueTask Add(string mapId, MapSource item)
         {
             await Add(mapId, [item]);
         }
@@ -102,23 +102,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, sourceId, url);
         }
 
-        public async ValueTask Remove(string mapId, LayerSourceBase item)
+        public async ValueTask Remove(string mapId, MapSource item)
         {
             await Remove(mapId, [item]);
         }
 
-        public async ValueTask Clear(string mapId, LayerSourceBase item)
+        public async ValueTask Clear(string mapId, MapSource item)
         {
             await Clear(mapId, [item]);
         }
 
-        public async ValueTask Add(string mapId, IEnumerable<LayerSourceBase> items)
+        public async ValueTask Add(string mapId, IEnumerable<MapSource> items)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, items?.Cast<object>().ToList());
         }
 
-        public async ValueTask Remove(string mapId, IEnumerable<LayerSourceBase> items)
+        public async ValueTask Remove(string mapId, IEnumerable<MapSource> items)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, items?.Cast<object>().ToList());
@@ -130,7 +130,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, sourceIds);
         }
 
-        public async ValueTask Clear(string mapId, IEnumerable<LayerSourceBase> items)
+        public async ValueTask Clear(string mapId, IEnumerable<MapSource> items)
         {
             var module = await moduleTask.Value;
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, items?.Cast<object>().ToList());

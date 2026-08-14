@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 
 namespace Sandbox.UI.Models
 {
@@ -16,7 +17,7 @@ namespace Sandbox.UI.Models
         /// <remarks>Use this property to access the original layer that provides the data or features
         /// represented by this object. The returned layer may be used for further queries or operations, depending on
         /// the implementation.</remarks>
-        ILayer Source { get; }
+        ILayer Layer { get; }
 
         /// <summary>
         /// The camera options for viewing the layer.
@@ -64,17 +65,17 @@ namespace Sandbox.UI.Models
     /// ViewModel for working with a layer.
     /// </summary>
     /// <param name="layer"></param>
-    public class MapLayerViewModel<TOptions, TSource>(ILayer<TOptions, TSource> layer) : IMapLayerViewModel where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public class MapLayerViewModel<TOptions>(ILayer<TOptions> layer) : IMapLayerViewModel where TOptions : LayerOptionsBase
     {
-        /// <summary>
-        /// Gets the underlying layer for this view model.
-        /// </summary>
-        public ILayer<TOptions, TSource> Layer { get; private set; } = layer;
+        ///// <summary>
+        ///// Gets the underlying layer for this view model.
+        ///// </summary>
+        //public ILayer<TOptions> Layer { get; private set; } = layer;
 
         /// <summary>
-        /// <inheritdoc cref="IMapLayerViewModel.Source"/>
+        /// <inheritdoc cref="IMapLayerViewModel.Layer"/>
         /// </summary>
-        public ILayer Source => Layer;
+        public ILayer Layer { get; } = layer;
 
         /// <summary>
         /// Camera used to view the layer.
@@ -114,7 +115,7 @@ namespace Sandbox.UI.Models
         /// <summary>
         /// <inheritdoc cref="IMapLayerViewModel.ToLayerGroup"/>
         /// </summary>
-        public LayerGroup ToLayerGroup() => new(Source, Events);
+        public LayerGroup ToLayerGroup() => new(Layer, Events);
 
         /// <summary>
         /// <inheritdoc/>

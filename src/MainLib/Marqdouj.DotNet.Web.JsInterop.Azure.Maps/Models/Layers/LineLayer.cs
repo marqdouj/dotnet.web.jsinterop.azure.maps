@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -7,7 +8,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Line"/>
     /// </summary>
-    public class LineLayer : LayerBase<LineLayerOptions, DataSource>
+    public class LineLayer : LayerBase<LineLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>
