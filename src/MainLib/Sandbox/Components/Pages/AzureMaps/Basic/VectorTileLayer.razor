@@ -1,0 +1,73 @@
+﻿@page "/map-basic-vector-tile-layer"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<VectorTileLayer> Logger
+@inject INotificationService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Basic Map (Vector Tile Layer)">
+    <SummaryContent>
+        <FluentText>
+            Vector Tile Layer
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <MapControl MapId="@mapId" />
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private readonly string mapId = "mapVectorTile";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService);
+        }
+    }
+
+    #endregion
+}
