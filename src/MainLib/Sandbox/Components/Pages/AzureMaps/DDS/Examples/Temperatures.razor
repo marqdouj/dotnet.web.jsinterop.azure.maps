@@ -83,7 +83,7 @@
         temperatures = await DataService.GetTemperatureLayerData();
         mapOptions.Camera!.Center = temperatures[1].Position;
 
-        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, string Color)>
+        var bubbleColor = DDSBuilder.LinearInterpolate("temperature", new List<(double Value, object Color)>
         {
             ( 20, coolColor ),
             ( 21, mildColor ),

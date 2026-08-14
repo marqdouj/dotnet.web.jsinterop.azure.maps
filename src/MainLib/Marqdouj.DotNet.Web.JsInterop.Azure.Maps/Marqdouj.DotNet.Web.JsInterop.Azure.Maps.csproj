@@ -17,7 +17,7 @@
     <Authors>Douglas Marquardt</Authors>
     <Copyright>© Douglas Marquardt. All rights reserved.</Copyright>
     <Description>Designed for Blazor interaction with the Azure Maps SDK</Description>
-    <PackageReleaseNotes>https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps/blob/master/Documents/ReleaseNotes.md</PackageReleaseNotes>
+    <PackageReleaseNotes>BREAKING CHANGES - https://github.com/marqdouj/dotnet.web.jsinterop.azure.maps/blob/master/Documents/ReleaseNotes.md</PackageReleaseNotes>
   </PropertyGroup>
 
 	<Target Name="NpmBuild" AfterTargets="CoreCompile">

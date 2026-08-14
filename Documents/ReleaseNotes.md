@@ -12,9 +12,12 @@
 	- `DataSource`.
 	  - `Url` property has been removed. Use the `IAzureMapsInterop.Sources.ImportDataFromUrl` method to set the URL for the data source.
 	- `VectorTileSource`. New data source for accessing vector tile data.
+  - `LinearInterpolateStyleBuilder`.
+	- Cases have been changed from {double, string} to {double, object}.
   - `ILayer`. 
 	- `DataSource` property has been renamed to `Source`.
 	- `Constructor` for `Layers` has been updated to require a `MapSource`.
+  - `StepStyleBuilder` New DDSBuilder for creating step expressions. See `Vector Tile Layer` demo in Sandbox for example usage.
   - `Sandbox`. Demo updates.
 	- `Basic/Elevation Tile Layer` page added.
 	- `Basic/Vector Tile Layer` page added.

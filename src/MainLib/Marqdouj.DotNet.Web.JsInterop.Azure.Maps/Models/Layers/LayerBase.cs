@@ -129,7 +129,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// <inheritdoc cref="ILayer.Source"/>
         /// </summary>
+        [JsonIgnore]
         public MapSource Source { get; set => field = value ?? throw new ArgumentNullException(nameof(Source)); } = new DataSource();
+
+        [JsonInclude]
+        [JsonPropertyName("source")]
+        internal object LayerSource => Source;
 
         /// <summary>
         /// <inheritdoc cref="ILayer.GetMapEvents(IEnumerable{MapEventTypeLayer}?)"/>

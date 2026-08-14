@@ -1,9 +1,9 @@
 ﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.DataDrivenStyles
 {
     /// <summary>
-    /// Builder class for creating a linear interpolation style expression for Azure Maps.
+    /// Builder class for creating a linear step style expression for Azure Maps.
     /// </summary>
-    public class LinearInterpolateStyleBuilder
+    public class StepStyleBuilder
     {
         private readonly List<(double Case, object Value)> _cases;
 
@@ -11,11 +11,13 @@
         /// Initializes a new instance of the LinearInterpolateStyleBuilder class with the specified input expression and an optional list of cases.
         /// </summary>
         /// <param name="inputExpression"><see cref="InputExpression"/></param>
-        /// <param name="cases">cases that define the linear interpolation expression; see <see cref="AddCase(double, object)"/></param>
-        public LinearInterpolateStyleBuilder(string inputExpression, List<(double Case, object Value)>? cases = null)
+        /// <param name="cases">cases that define the linear step expression; see <see cref="AddCase(double, object)"/></param>
+        /// <param name="defaultValue">The default value to be used when none of the defined cases match the input expression.</param>
+        public StepStyleBuilder(string inputExpression, List<(double Case, object Value)>? cases = null, object? defaultValue = null)
         {
             InputExpression = inputExpression;
             _cases = cases ?? [];
+            DefaultValue = defaultValue;
         }
 
         /// <summary>
@@ -35,16 +37,25 @@
         }
 
         /// <summary>
-        /// Builds the linear interpolation style expression based on the defined cases.
+        /// Gets or sets the default value to be used when none of the defined cases match the input expression.
+        /// </summary>
+        public object? DefaultValue { get; set; }
+
+        /// <summary>
+        /// Builds the linear step style expression based on the defined cases.
         /// </summary>
         /// <returns></returns>
         public object Build()
         {
             var result = new List<object> {
-                "interpolate",
-                new List<string> { "linear" },
+                "step",
                 new List<string> { "get", InputExpression },
             };
+
+            if (DefaultValue != null)
+            {
+                result.Add(DefaultValue);
+            }
 
             foreach (var (Case, Value) in _cases)
             {
@@ -56,7 +67,7 @@
         }
 
         /// <summary>
-        /// Returns a JSON string representation of the linear interpolation style expression built by this builder.
+        /// Returns a JSON string representation of the linear step style expression built by this builder.
         /// </summary>
         /// <returns></returns>
         public override string ToString()

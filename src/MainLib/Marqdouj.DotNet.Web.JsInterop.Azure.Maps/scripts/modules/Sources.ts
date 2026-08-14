@@ -78,14 +78,14 @@ export class Sources {
     }
 
     static #doAddVectorTileSource(mapRef: MapReference, def: VectorTileSource, events?: MapEvent[]): void {
-        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addVectorTileSource: creating source with ID '${def.id}'.`);
+        Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addVectorTileSource: creating source with ID '${def.id}'.`, def);
         const newDs = new atlas.source.VectorTileSource(def.id, def.options);
 
         if (events) {
             Events.sources.add(mapRef, events, newDs);
         }
 
-        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addVectorTileSource: adding source with ID '${def.id}'.`);
+        Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addVectorTileSource: adding source with ID '${def.id}'.`);
         mapRef.map.sources.add(newDs);
     }
     // #endregion
