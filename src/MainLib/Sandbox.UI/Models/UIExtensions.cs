@@ -40,7 +40,7 @@ namespace Sandbox.UI.Models
         /// <returns></returns>
         public static string GetRandomCssId()
         {
-            return $"g_{Guid.NewGuid()}";
+            return $"g_{Guid.CreateVersion7()}";
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -80,9 +81,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         LayerType Type { get; }
 
         /// <summary>
-        /// <inheritdoc cref="LayerSourceBase"/>
+        /// <inheritdoc cref="MapSource"/>
         /// </summary>
-        LayerSourceBase LayerSource { get; }
+        MapSource LayerSource { get; }
 
         /// <summary>
         /// <inheritdoc cref="LayerOptionsBase"/>
@@ -103,7 +104,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// </summary>
     /// <typeparam name="TOptions">The type of options used to configure the layer.</typeparam>
     /// <typeparam name="TSource">The type of data source used by the layer.</typeparam>
-    public interface ILayer<TOptions, TSource> : ILayer where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public interface ILayer<TOptions, TSource> : ILayer where TOptions : LayerOptionsBase where TSource : MapSource, new()
     {
         /// <summary>
         /// <typeparamref name="TSource"/>
@@ -119,7 +120,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// Base class that all layer objects inherit from.
     /// </summary>
-    public abstract class LayerBase<TOptions, TSource> : JsInteropBase, ILayer<TOptions, TSource> where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public abstract class LayerBase<TOptions, TSource> : JsInteropBase, ILayer<TOptions, TSource> where TOptions : LayerOptionsBase where TSource : MapSource, new()
     {
         /// <summary>
         /// <inheritdoc cref="ILayer.Type"/>
@@ -139,7 +140,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
         /// <summary>
         /// <typeparamref name="TSource"/>
         /// </summary>
-        public LayerSourceBase LayerSource => DataSource;
+        public MapSource LayerSource => DataSource;
 
         /// <summary>
         /// <inheritdoc cref="ILayer.GetMapEvents(IEnumerable{MapEventTypeLayer}?)"/>

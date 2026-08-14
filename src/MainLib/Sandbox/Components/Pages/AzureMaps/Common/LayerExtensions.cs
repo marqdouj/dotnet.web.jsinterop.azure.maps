@@ -86,7 +86,6 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
         private static async Task<HeatMapLayer> GetDefaultHeatLayer(IMapDataService dataService)
         {
             var layerDef = new HeatMapLayer();
-            layerDef.DataSource.Url = await dataService.GetHeatMapLayerUrl();
             return layerDef;
         }
 

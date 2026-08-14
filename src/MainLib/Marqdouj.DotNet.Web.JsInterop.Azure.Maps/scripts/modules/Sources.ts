@@ -19,11 +19,11 @@ export class Sources {
 
     static #doAdd(mapRef: MapReference, def: Source, events?: MapEvent[]): void {
         const sourceType = Helpers.switchCaseInsensitive(def.type, {
-            datasource: () => "DataSource",
+            data: () => "Data",
         }, () => "");
 
         switch (sourceType) {
-            case 'DataSource':
+            case 'Data':
                 Sources.#doAddDataSource(mapRef, def as DataSource, events);
                 break;
             default:
@@ -38,6 +38,7 @@ export class Sources {
             return;
         }
 
+        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addDataSource: searching for source with ID '${def.id}'.`);
         let ds = mapRef.map.sources.getById(def.id);
 
         if (ds) {
@@ -45,17 +46,15 @@ export class Sources {
             return;
         }
 
+        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addDataSource: creating source with ID '${def.id}'.`);
         const newDs = new atlas.source.DataSource(def.id, def.options);
 
         if (events) {
             Events.sources.add(mapRef, events, newDs);
         }
 
+        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `addDataSource: adding source with ID '${def.id}'.`);
         mapRef.map.sources.add(newDs);
-
-        if (def.url) {
-            newDs.importDataFromUrl(def.url);
-        }
     }
     // #endregion
 
@@ -64,9 +63,14 @@ export class Sources {
         if (!mapRef)
             return;
 
+        //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `importDataFromUrl: searching for source with ID '${sourceId}'.`);
         const ds = SourceHelper.getDataSource(mapRef, sourceId);
         if (ds) {
+            //Logger.logMessage(mapRef.mapId, LogLevel.Trace, `importDataFromUrl: found source with ID '${sourceId}'.`);
             ds.importDataFromUrl(url);
+        }
+        else {
+            Logger.logMessage(mapRef.mapId, LogLevel.Error, `importDataFromUrl: source with ID '${sourceId}' not found.`);
         }
     }
 
@@ -177,10 +181,11 @@ export class SourceHelper {
         if (!id)
             return;
 
+        Logger.logMessage(mapRef.mapId, LogLevel.Trace, `getSource: attempting to get source with ID '${id}'.`);
         const source = mapRef.map.sources.getById(id);
 
         if (!source && logNotFound) {
-            Logger.logMessage(mapRef.mapId, LogLevel.Warn, `get: source with ID '${id}' was not found.`);
+            Logger.logMessage(mapRef.mapId, LogLevel.Warn, `getSource: source with ID '${id}' was not found.`);
         }
 
         return source;
@@ -205,11 +210,10 @@ export class SourceHelper {
 
 interface Source {
     id: string;
-    type: 'DataSource' | 'ElevationTile' | 'VectorTile';
+    type: 'Data' | 'ElevationTile' | 'VectorTile';
 }
 
 export interface DataSource extends Source {
-    url: string;
     options?: atlas.DataSourceOptions;
 }
 

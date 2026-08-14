@@ -15,9 +15,9 @@
   <ItemGroup>
     <PackageReference Include="Marqdouj.DotNet.General" Version="10.2.0" />
     <PackageReference Include="Marqdouj.DotNet.General.CsDoc" Version="10.6.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.6.26359.118" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.0-rc.4-26180.1" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="5.0.0-rc.4-26180.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-preview.7.26381.103" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="5.0.0-rc.5-26219.1" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="5.0.0-rc.5-26219.1" />
   </ItemGroup>
 
   <ItemGroup>

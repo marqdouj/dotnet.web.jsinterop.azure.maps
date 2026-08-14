@@ -55,7 +55,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
 
         //datasource
         /// <summary>
-        /// Applies to target DataSource only.
+        /// Applies to target Data only.
         /// </summary>
         DataSourceUpdated,
         /// <summary>

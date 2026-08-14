@@ -1,6 +1,17 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2.1`:
+  - `BREAKING CHANGES`!
+  - `Map Sources`. Major update/refactoring for managing map sources.
+	- `Namespace`. All map sources have been moved to a new namespace `Sources`.
+	- `LayerSourceBase` has been renamed to `MapSource`.
+	- `LayerSourceType` has been renamed to `MapSourceType`.
+	  - `LayerSourceType.DataSource` has been renamed to `MapSourceType.Data`.
+	- `ElevationTileSource`. New data source for accessing elevation (raster DEM) tile data.
+	- `DataSource`.
+	  - `Url` property has been removed. Use the `IAzureMapsInterop.Sources.ImportDataFromUrl` method to set the URL for the data source.
+	- `VectorTileSource`. New data source for accessing vector tile data.
 - `11.0.0-Preview-2`: 
   - `NPM Packages`.
 	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.

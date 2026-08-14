@@ -1,6 +1,7 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Geolocation

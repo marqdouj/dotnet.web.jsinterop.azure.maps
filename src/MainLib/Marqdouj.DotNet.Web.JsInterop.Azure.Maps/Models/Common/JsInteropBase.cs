@@ -13,6 +13,6 @@
         /// <summary>
         /// Id assigned internally for use with js interop when the Id is missing.
         /// </summary>
-        internal string InteropId { get; set; } = $"g_{Guid.NewGuid()}";
+        internal string InteropId { get; set; } = $"g_{Guid.CreateVersion7()}";
     }
 }

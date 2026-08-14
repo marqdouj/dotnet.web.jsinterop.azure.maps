@@ -1,14 +1,16 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
+﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources
 {
     /// <summary>
-    /// A Datasource for a map layer
+    /// A data source class that makes it easy to manage shapes data that will be displayed on the map.
+    /// A data source must be added to a layer before it is visible on the map.
+    /// The Data class may be used with the SymbolLayer, LineLayer, PolygonLayer, BubbleLayer, and HeatMapLayer.
     /// </summary>
-    public class DataSource : LayerSourceBase, ICloneable
+    public class DataSource : MapSource, ICloneable
     {
         /// <summary>
-        /// <see cref="LayerSourceType"/>
+        /// <see cref="MapSourceType"/>
         /// </summary>
-        public override LayerSourceType? Type => LayerSourceType.DataSource;
+        public override MapSourceType? Type => MapSourceType.Data;
 
         /// <summary>
         /// URL to fetch the data from (If applicable).
@@ -16,7 +18,7 @@
         public string? Url { get; set; }
 
         /// <summary>
-        /// <see cref="DataSourceOptions"/>
+        /// <inheritdoc cref="DataSourceOptions"/>
         /// </summary>
         public DataSourceOptions? Options { get; set; } = new();
 
@@ -27,7 +29,7 @@
         public override object Clone()
         {
             var clone = (DataSource)MemberwiseClone();
-            clone.Options = (DataSourceOptions?)Options?.Clone();
+            clone.Options = Options?.Clone() as DataSourceOptions;
             return clone;
         }
     }
@@ -104,8 +106,9 @@
 
         /// <summary>
         /// A specified property name to be used as a feature ID (for feature state).
+        /// This can either be a property name or an object in the form `[{sourceLayer}: {propertyName}]`.
         /// </summary>
-        public string? PromoteId { get; set; }
+        public object? PromoteId { get; set; }
 
         /// <summary>
         /// An expression for filtering features prior to processing them for rendering.

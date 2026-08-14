@@ -1,4 +1,6 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 {
     /// <summary>
     /// <inheritdoc cref="LayerType.Polygon"/>

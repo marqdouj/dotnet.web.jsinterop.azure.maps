@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 
 namespace Sandbox.UI.Models
 {
@@ -64,7 +65,7 @@ namespace Sandbox.UI.Models
     /// ViewModel for working with a layer.
     /// </summary>
     /// <param name="layer"></param>
-    public class MapLayerViewModel<TOptions, TSource>(ILayer<TOptions, TSource> layer) : IMapLayerViewModel where TOptions : LayerOptionsBase where TSource : LayerSourceBase, new()
+    public class MapLayerViewModel<TOptions, TSource>(ILayer<TOptions, TSource> layer) : IMapLayerViewModel where TOptions : LayerOptionsBase where TSource : MapSource, new()
     {
         /// <summary>
         /// Gets the underlying layer for this view model.
