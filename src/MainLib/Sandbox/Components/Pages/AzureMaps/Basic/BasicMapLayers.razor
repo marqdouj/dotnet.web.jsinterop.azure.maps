@@ -82,10 +82,10 @@
                 {
                     await maps!.AddBasicMapLayer(mapId, MapDataService, activeRow);
 
-                    if (activeRow.Source.Type == LayerType.HeatMap)
+                    if (activeRow.Layer.Type == LayerType.HeatMap)
                     {
                         var url = await MapDataService.GetHeatMapLayerUrl();
-                        await maps!.Sources.ImportDataFromUrl(mapId, activeRow.Source.LayerSource.Id, url);
+                        await maps!.Sources.ImportDataFromUrl(mapId, activeRow.Layer.Source.Id, url);
                     }
                 }
 

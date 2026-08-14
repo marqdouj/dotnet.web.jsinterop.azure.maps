@@ -6,7 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Tile"/>
     /// </summary>
-    public class TileLayer : LayerBase<TileLayerOptions, DataSource>
+    public class TileLayer : LayerBase<TileLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

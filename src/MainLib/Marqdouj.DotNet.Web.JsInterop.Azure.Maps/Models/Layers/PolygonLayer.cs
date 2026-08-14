@@ -5,7 +5,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Polygon"/>
     /// </summary>
-    public class PolygonLayer : LayerBase<PolygonLayerOptions, DataSource>
+    public class PolygonLayer : LayerBase<PolygonLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

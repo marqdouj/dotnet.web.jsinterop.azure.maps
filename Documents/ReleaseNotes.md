@@ -12,6 +12,12 @@
 	- `DataSource`.
 	  - `Url` property has been removed. Use the `IAzureMapsInterop.Sources.ImportDataFromUrl` method to set the URL for the data source.
 	- `VectorTileSource`. New data source for accessing vector tile data.
+  - `ILayer`. 
+	- `DataSource` property has been renamed to `Source`.
+	- `Constructor` for `Layers` has been updated to require a `MapSource`.
+  - `Sandbox`. Demo updates.
+	- `Basic/Elevation Tile Layer` page added.
+	- `Basic/Vector Tile Layer` page added.
 - `11.0.0-Preview-2`: 
   - `NPM Packages`.
 	- Updated to use Azure Maps Web SDK version 4.0.0-preview.2.

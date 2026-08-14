@@ -10,7 +10,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Symbol"/>
     /// </summary>
-    public class SymbolLayer : LayerBase<SymbolLayerOptions, DataSource>
+    public class SymbolLayer : LayerBase<SymbolLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

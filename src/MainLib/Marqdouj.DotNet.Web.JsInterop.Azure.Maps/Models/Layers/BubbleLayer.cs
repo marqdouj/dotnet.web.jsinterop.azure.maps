@@ -7,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Bubble"/>
     /// </summary>
-    public class BubbleLayer : LayerBase<BubbleLayerOptions, DataSource>
+    public class BubbleLayer : LayerBase<BubbleLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

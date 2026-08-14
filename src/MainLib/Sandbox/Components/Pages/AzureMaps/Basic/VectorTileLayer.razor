@@ -29,6 +29,7 @@
     private IAzureMapsInterop? maps;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
+    private readonly MapOptions mapOptions = MapExtensions.GetDefaultMapOptions(new Position(-74, 40.723));
 
     #region Map Provider Handlers
 
@@ -38,7 +39,7 @@
         {
             maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
             if (maps != null)
-                await maps.CreateDefaultMap(mapId, Logger, ToastService);
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
         }
         catch (Exception ex)
         {
@@ -55,6 +56,32 @@
     private async Task OnMapEventReady(MapEventArgs args)
     {
         mapReady = !(await args.HasPayloadError(Logger, ToastService));
+
+        try
+        {
+            if (mapReady && maps != null)
+            {
+                // var layer = new LineLayer
+                // {
+                //     DataSource = new VectorTileSource
+                //     {
+                        
+                //     },
+                // };
+                // var source = new VectorTileSource
+                // {
+
+                // };
+
+
+                // await maps.Layers.Add(mapId);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
     }
 
     # endregion
@@ -65,7 +92,7 @@
     {
         if (mapReady)
         {
-            await maps!.ResetMap(mapId, Logger, ToastService);
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
         }
     }
 

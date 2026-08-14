@@ -5,7 +5,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.HeatMap"/>
     /// </summary>
-    public class HeatMapLayer : LayerBase<HeatMapLayerOptions, DataSource>
+    public class HeatMapLayer : LayerBase<HeatMapLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

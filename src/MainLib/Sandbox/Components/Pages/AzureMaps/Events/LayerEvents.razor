@@ -67,9 +67,9 @@
             items = viewModels.GetModels();
 
             //These layers do not support the events.
-            items.Remove(items.First(e => e.Source.Type == LayerType.HeatMap));
-            items.Remove(items.First(e => e.Source.Type == LayerType.Image));
-            items.Remove(items.First(e => e.Source.Type == LayerType.Tile));
+            items.Remove(items.First(e => e.Layer.Type == LayerType.HeatMap));
+            items.Remove(items.First(e => e.Layer.Type == LayerType.Image));
+            items.Remove(items.First(e => e.Layer.Type == LayerType.Tile));
         }
         catch (Exception ex)
         {
@@ -101,7 +101,7 @@
             {
                 if (!activeRow.IsLoaded)
                 {
-                    var options = activeRow.Source.GetOptions();
+                    var options = activeRow.Layer.GetOptions();
                     await maps!.AddBasicMapLayer(mapId, MapDataService, activeRow);
                 }
 

@@ -164,7 +164,7 @@
                 }
             };
 
-            await maps!.Features.Add(mapId, feature, layers.LineLayer.DataSource.Id!);
+            await maps!.Features.Add(mapId, feature, layers.LineLayer.Source.Id!);
             await MoveCar();
             isTracking = true;
         }
@@ -239,17 +239,17 @@
         {
             if (currentCar == 0)
             {
-                await maps!.Features.Add(mapId, car, layers.SymbolLayer.DataSource.Id!, true);
+                await maps!.Features.Add(mapId, car, layers.SymbolLayer.Source.Id!, true);
             }
             else
             {
                 if (useAnimations)
                 {
-                    await maps!.Animations.AnimateShape(mapId, new ShapeAnimationOptions(car, layers.SymbolLayer.DataSource.Id!));
+                    await maps!.Animations.AnimateShape(mapId, new ShapeAnimationOptions(car, layers.SymbolLayer.Source.Id!));
                 }
                 else
                 {
-                    await maps!.Features.Update(mapId, car, layers.SymbolLayer.DataSource.Id!);
+                    await maps!.Features.Update(mapId, car, layers.SymbolLayer.Source.Id!);
                 }
             }
         }
@@ -333,7 +333,7 @@
 
         public async Task ClearLayers(IAzureMapsInterop maps)
         {
-            await maps.Sources.Clear(MapId, [LineLayer.DataSource, SymbolLayer.DataSource]);
+            await maps.Sources.Clear(MapId, [LineLayer.Source, SymbolLayer.Source]);
             LayersAdded = false;
         }
     }

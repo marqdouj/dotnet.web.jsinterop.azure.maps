@@ -2,7 +2,7 @@ import * as atlas from "azure-maps-control"
 import { Helpers, Logger, LogLevel } from "./common/"
 import { Events, MapEvent } from "./Events";
 import { Factory, MapReference } from "./Factory";
-import { DataSource, SourceHelper, Sources } from "./Sources";
+import { DataSource, ElevationTileSource, VectorTileSource, SourceHelper, Sources } from "./Sources";
 import { Popups, PopupDef } from "./Popups";
 
 export class Layers {
@@ -50,7 +50,7 @@ export class Layers {
         }
 
         let src: atlas.source.Source | undefined;
-        let dsDef: DataSource = def.dataSource;
+        let dsDef: DataSource | ElevationTileSource | VectorTileSource = def.source;
         const dsId = dsDef.id;
 
         if (dsDef && Helpers.isNotEmptyOrNull(dsId)) {
@@ -110,8 +110,8 @@ export class Layers {
         if (removeDataSource) {
             idList = [];
             layers.forEach((layerDef) => {
-                if (layerDef.dataSource && Helpers.isNotEmptyOrNull(layerDef.dataSource.id)) {
-                    idList.push(layerDef.dataSource.id);
+                if (layerDef.source && Helpers.isNotEmptyOrNull(layerDef.source.id)) {
+                    idList.push(layerDef.source.id);
                 }
             });
 
@@ -306,7 +306,7 @@ interface LayerGroup {
 interface Layer {
     id: string;
     type: 'Bubble' | 'HeatMap' | 'Image' | 'Line' | 'Polygon' | 'PolygonExtrusion' | 'Symbol' | 'Tile';
-    dataSource: DataSource;
+    source: DataSource;
     before?: string;
     options?: any;
 }

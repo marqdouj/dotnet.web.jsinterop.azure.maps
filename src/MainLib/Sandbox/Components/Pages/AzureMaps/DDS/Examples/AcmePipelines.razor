@@ -101,7 +101,7 @@
         };
 
         //Enable line metrics on the leader layer. This is needed to enable support for strokeGradient.
-        var ds = (DataSource)leaderLayer.LayerSource;
+        var ds = (DataSource)leaderLayer.Source;
         ds.Options!.LineMetrics = true;
 
         pipelines = await DataService.GetAcmePipelines();
@@ -139,7 +139,7 @@
             {
                 foreach (var part in vpm.Parts)
                 {
-                    await maps!.Sources.ImportDataFromUrl(mapId, pipelinesLayer.LayerSource.Id, part);
+                    await maps!.Sources.ImportDataFromUrl(mapId, pipelinesLayer.Source.Id, part);
                 }
 
                 vpm.IsLoaded = true;

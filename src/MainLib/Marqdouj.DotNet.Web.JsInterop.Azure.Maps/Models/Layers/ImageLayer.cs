@@ -7,7 +7,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
     /// <summary>
     /// <inheritdoc cref="LayerType.Image"/>
     /// </summary>
-    public class ImageLayer : LayerBase<ImageLayerOptions, DataSource>
+    public class ImageLayer : LayerBase<ImageLayerOptions>
     {
         /// <summary>
         /// <inheritdoc cref="LayerType"/>

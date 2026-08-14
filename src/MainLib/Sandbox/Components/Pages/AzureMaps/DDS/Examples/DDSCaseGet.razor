@@ -122,7 +122,7 @@
             }
 
             await maps!.Layers.Add(mapId, bubbleLayer);
-            await maps!.Features.Add(mapId, points, bubbleLayer.DataSource.Id);
+            await maps!.Features.Add(mapId, points, bubbleLayer.Source.Id);
             
             mapOptions.Camera!.Center = data[1];
             await maps!.Configuration.ZoomTo(mapId, mapOptions.Camera!.Center, mapOptions.Camera.Zoom);

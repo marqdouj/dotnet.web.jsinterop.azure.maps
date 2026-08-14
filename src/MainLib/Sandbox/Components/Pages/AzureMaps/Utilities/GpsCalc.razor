@@ -166,9 +166,9 @@
             if (maps is null || gpsFromPosition is null || gpsToPosition is null)
                 return;
 
-            await maps.Sources.Clear(mapId, gpsLayer.LayerSource);
+            await maps.Sources.Clear(mapId, gpsLayer.Source);
             var lineDef = new MapFeature(new LineString([gpsFromPosition, gpsToPosition]));
-            await maps.Features.Add(mapId, lineDef, gpsLayer.LayerSource.Id);
+            await maps.Features.Add(mapId, lineDef, gpsLayer.Source.Id);
         }
         catch (Exception ex)
         {
@@ -221,7 +221,7 @@
     {
         if (!mapReady) return;
 
-        await maps!.Sources.Clear(mapId, gpsLayer.LayerSource);
+        await maps!.Sources.Clear(mapId, gpsLayer.Source);
         await maps.ResetMap(mapId, Logger, ToastService, mapOptions);
     }
 
