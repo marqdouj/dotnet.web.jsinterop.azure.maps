@@ -9,6 +9,9 @@
 	- `LayerSourceType` has been renamed to `MapSourceType`.
 	  - `LayerSourceType.DataSource` has been renamed to `MapSourceType.Data`.
 	- `ElevationTileSource`. New data source for accessing elevation (raster DEM) tile data.
+	  - `Configuration`. This source is used with these new methods:
+		- `DisableElevation`
+		- `EnableElevation`.
 	- `DataSource`.
 	  - `Url` property has been removed. Use the `IAzureMapsInterop.Sources.ImportDataFromUrl` method to set the URL for the data source.
 	- `VectorTileSource`. New data source for accessing vector tile data.
@@ -19,7 +22,6 @@
 	- `Constructor` for `Layers` has been updated to require a `MapSource`.
   - `StepStyleBuilder` New DDSBuilder for creating step expressions. See `Vector Tile Layer` demo in Sandbox for example usage.
   - `Sandbox`. Demo updates.
-	- `Basic/Elevation Tile Layer` page added.
 	- `Basic/Vector Tile Layer` page added.
 - `11.0.0-Preview-2`: 
   - `NPM Packages`.

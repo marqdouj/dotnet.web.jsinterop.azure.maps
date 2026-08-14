@@ -2,17 +2,20 @@
 @inject AppConfiguration AppConfig
 
 <FluentNav Id="main-menu" UseSingleExpanded="true" Width="265px">
+@*  
     @if (AppConfig.IsDevelopment)
     {
         <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
-    }
+    } 
+*@
+
     <FluentNavItem Href="/" IconRest="@((new Icons.Regular.Size20.Home()))">Home</FluentNavItem>
 
     <FluentNavCategory Title="Basic" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
         <FluentNavItem Href="map-atlas-global" IconRest="@((new Icons.Regular.Size20.Globe()))">Atlas Global</FluentNavItem>
         <FluentNavItem Href="map-basic-map" IconRest="@((new Icons.Regular.Size20.Map()))">Basic Map</FluentNavItem>
         <FluentNavItem Href="map-basic-layers" IconRest="@(new Icons.Regular.Size20.Layer())">Basic Map (Layers)</FluentNavItem>
-        <FluentNavItem Href="map-basic-elevation-tile-layer" IconRest="@(new Icons.Regular.Size20.Layer())">Basic Map (Elevation Tile Layer)</FluentNavItem>
+        @* <FluentNavItem Href="map-basic-elevation-tile-layer" IconRest="@(new Icons.Regular.Size20.Layer())">Basic Map (Elevation Tile Layer)</FluentNavItem> *@
         <FluentNavItem Href="map-basic-vector-tile-layer" IconRest="@(new Icons.Regular.Size20.Layer())">Basic Map (Vector Tile Layer)</FluentNavItem>
         <FluentNavItem Href="map-basic-multi" IconRest="@(new Icons.Regular.Size20.Multiplier2x())">Basic Map (Multiple)</FluentNavItem>
     </FluentNavCategory>
