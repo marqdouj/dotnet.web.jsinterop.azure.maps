@@ -22,7 +22,7 @@
             <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.Person())" Title="User Interaction Settings" OnClick="@(() => ShowSettings(MapSettingsDisplay.UserInteraction))" />
         </Toolbar>
 
-        <MapControl MapId="@mapId" />
+        <MapContainer MapId="@mapId" />
 
         <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
             <FluentSpinner />

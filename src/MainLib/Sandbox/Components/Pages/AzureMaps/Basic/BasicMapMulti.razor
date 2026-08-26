@@ -15,7 +15,7 @@
                         <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset A" OnClick="@(() => ResetMap(mapIdA))" />
                     </Toolbar>
 
-                    <MapControl MapId="@mapIdA" Height="400px" />
+                    <MapContainer MapId="@mapIdA" Height="400px" />
                 </FluentCard>
             </FluentGridItem>
 
@@ -25,7 +25,7 @@
                         <FluentButton Disabled="@mapNotReady" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset B" OnClick="@(() => ResetMap(mapIdB))" />
                     </Toolbar>
 
-                    <MapControl MapId="@mapIdB" Height="400px" />
+                    <MapContainer MapId="@mapIdB" Height="400px" />
                 </FluentCard>
             </FluentGridItem>
         </FluentGrid>
