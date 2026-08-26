@@ -73,6 +73,17 @@ export class Logger {
 }
 
 export class Helpers {
+    //Extract a specific number of elements from an array.
+    static getFirstNItems<T>(arr: T[], n: number): T[] {
+        if (!Array.isArray(arr)) {
+            throw new Error("Input must be an array.");
+        }
+        if (n < 0) {
+            throw new Error("Number of items must be non-negative.");
+        }
+        return arr.slice(0, n);
+    }
+
     // Type-safe property access helper
     static getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
         return obj[key]

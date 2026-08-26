@@ -101,6 +101,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsSources Sources { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAzureMapsSpatial"/>
+        /// </summary>
+        IAzureMapsSpatial Spatial { get; }
+
+        /// <summary>
         /// Sets the log level for the browser console during JSInterop.
         /// </summary>
         /// <param name="logLevel"><see cref="LogLevel"/></param>
@@ -165,6 +170,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
             Mercators = new AzMercators(moduleTask);
             Popups = new AzPopups(moduleTask);
             Sources = new AzSources(moduleTask);
+            Spatial = new AzSpatial(moduleTask);
         }
 
         public IAzureMapsAnimations Animations { get; }
@@ -194,6 +200,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         public IAzureMapsPopups Popups { get; }
 
         public IAzureMapsSources Sources { get; }
+
+        public IAzureMapsSpatial Spatial { get; }
 
         public async ValueTask<CreateMapResult> CreateMap(string mapId, MapOptions? options = null, IEnumerable<ControlBase>? controls = null, IEnumerable<MapEvent>? events = null)
         {

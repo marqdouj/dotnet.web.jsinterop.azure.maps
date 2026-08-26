@@ -1,0 +1,205 @@
+﻿@page "/map-examples-simple-dl-options"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<SimpleDLOptions> Logger
+@inject INotificationService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Example (Simple Data Layer Options)">
+    <SummaryContent>
+        <FluentText>
+            This example shows how the different options of the simple data layer affect rendering..
+            <br />
+            Based on this <a href="@sourceUrl" target="_blank">article</a>
+            <br />
+            Article source code: <a href="@codeUrl" target="_blank">article</a>
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Map())" Title="Choropleth 3D" OnClick="() => LoadDataset(SpatialGetReadUrl.Choropleth_3D)">Extruded KML Polygons</FluentButton>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Map())" Title="Sample GeoRSS" OnClick="() => LoadDataset(SpatialGetReadUrl.SampleGeoRSS)">Sample GeoRSS</FluentButton>
+        </Toolbar>
+
+        <FluentStack Height="100%">
+            <FluentListbox Items="options"
+                           TOption="OptionInfo"
+                           TValue="OptionInfo"
+                           OptionText="@(i => i.Name)" 
+                           SelectedItems="selectedOptions"
+                           SelectedItemsChanged="OnSelectedItemsChanged"
+                           Multiple="true"/>
+            <MapContainer MapId="@mapId" />
+        </FluentStack>
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string sourceUrl = "https://samples.azuremaps.com/spatial-io-module/simple-data-layer-options";
+    private const string codeUrl = "https://github.com/Azure-Samples/AzureMapsCodeSamples/blob/main/Samples/Spatial%20IO%20Module/Simple%20data%20layer%20options/Simple%20data%20layer%20options.html";
+    private readonly string mapId = "mapSimpleDLOptions";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private readonly SimpleDataLayer layer = new() { Options = new() { AllowExtrusions = true, EnablePopups = true, ShowPointTitles = false, Visible = true } };
+    private readonly List<OptionInfo> options = new();
+    private List<OptionInfo> selectedOptions = new();
+
+    protected override void OnInitialized()
+    {
+        options.Add(new OptionInfo("Allow Extrusions", nameof(SimpleDataLayerOptions.AllowExtrusions)));
+        options.Add(new OptionInfo("Enable Popups", nameof(SimpleDataLayerOptions.EnablePopups)));
+        options.Add(new OptionInfo("Show Point Titles", nameof(SimpleDataLayerOptions.ShowPointTitles)));
+        options.Add(new OptionInfo("Visible", nameof(SimpleDataLayerOptions.Visible)));
+
+        selectedOptions = options.Where(e => e.Value != nameof(SimpleDataLayerOptions.ShowPointTitles)).ToList();
+    }
+
+    private async Task OnSelectedItemsChanged(IEnumerable<OptionInfo> options)
+    {
+        try
+        {
+            layer.Options!.AllowExtrusions = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.AllowExtrusions));
+            layer.Options!.EnablePopups = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.EnablePopups));
+            layer.Options!.ShowPointTitles = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.ShowPointTitles));
+            layer.Options!.Visible = GetOptionInfoValue(options, nameof(SimpleDataLayerOptions.Visible));
+
+            await maps!.Spatial.Layers.SetOptions(mapId, layer.Id, layer.Options);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private static bool GetOptionInfoValue(IEnumerable<OptionInfo> options, string value)
+    {
+        var info = options.FirstOrDefault(e => e.Value == value);
+
+        return info != null ? true : false;
+    }
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                var controls = new List<ControlBase> 
+                { 
+                    MapControlType.Pitch.GetDefaultControl(new PitchControlOptions{ Style = MapControlStyle.dark }),
+                    MapControlType.Style.GetDefaultControl(new StyleControlOptions
+                        {
+                            Style = MapControlStyle.dark,
+                            MapStyles = Enum.GetValues<MapStyle>().ToList() //All styles
+                        }
+                    )
+                };
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions, controls);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+
+        if (mapReady)
+        {
+            try
+            {
+                ShowOverlay(true);
+
+                var result = await maps!.Spatial.Layers.Add(mapId, layer);
+
+                var newOptions = await maps.Spatial.Layers.GetOptions(mapId, layer.Id);
+                layer.Options = newOptions ?? new();
+
+                await LoadDataset(SpatialGetReadUrl.Choropleth_3D);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                ShowOverlay(false);
+            }
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    private async Task LoadDataset(SpatialGetReadUrl readUrl)
+    {
+        try
+        {
+            var url = await MapDataService.Examples.Spatial.GetReadUrl(readUrl);
+            var results = await maps!.Spatial.Sources.Read(mapId, new SpatialReadParameters(layer.Source.Id, url, SpatialReadAction.SetShapes));
+
+            if (results?.Bbox != null)
+            {
+                var options = await maps.Configuration.GetMapOptions(mapId, new MapOptionsArgs(camera: true));
+                if (options?.Camera != null)
+                    mapOptions.Camera = options!.Camera;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    #endregion
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    private class OptionInfo(string name, string value)
+    {
+        public string Name { get; } = name;
+        public string Value { get; } = value;
+    }
+}

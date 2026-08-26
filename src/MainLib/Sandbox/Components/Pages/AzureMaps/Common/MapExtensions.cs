@@ -100,18 +100,18 @@ namespace Sandbox.Components.Pages.AzureMaps.Common
             return controls;
         }
 
-        public static ControlBase GetDefaultControl(this MapControlType controlType)
+        public static ControlBase GetDefaultControl(this MapControlType controlType, OptionsBase? options = null)
         {
             return controlType switch
             {
-                MapControlType.Compass => new CompassControl(),
-                MapControlType.Fullscreen => new FullscreenControl(),
-                MapControlType.Pitch => new PitchControl(),
-                MapControlType.Scale => new ScaleControl(),
-                MapControlType.Style => new StyleControl(),
-                MapControlType.Traffic => new TrafficControl(),
-                MapControlType.TrafficLegend => new TrafficLegendControl(),
-                MapControlType.Zoom => new ZoomControl(),
+                MapControlType.Compass => new CompassControl(options: options as CompassControlOptions),
+                MapControlType.Fullscreen => new FullscreenControl(options: options as FullscreenControlOptions),
+                MapControlType.Pitch => new PitchControl(options: options as PitchControlOptions),
+                MapControlType.Scale => new ScaleControl(options: options as ScaleControlOptions),
+                MapControlType.Style => new StyleControl(options: options as StyleControlOptions),
+                MapControlType.Traffic => new TrafficControl(options: options as TrafficControlOptions),
+                MapControlType.TrafficLegend => new TrafficLegendControl(options: options as TrafficLegendControlOptions),
+                MapControlType.Zoom => new ZoomControl(options: options as ZoomControlOptions),
                 _ => throw new ArgumentOutOfRangeException(nameof(controlType)),
             };
 

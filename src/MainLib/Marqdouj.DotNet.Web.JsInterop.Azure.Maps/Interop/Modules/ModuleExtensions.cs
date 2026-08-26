@@ -19,6 +19,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         Mercators,
         Popups,
         Sources,
+        SpatialLayers,
+        SpatialSources,
     }
 
     internal static class ModuleExtensions

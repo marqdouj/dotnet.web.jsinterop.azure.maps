@@ -10,6 +10,12 @@
 	  - `Class`. Parameter to set the CSS class for the map container div.
 	  - `Style`. Parameter to set the CSS style for the map container div.
 		- Default is "border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);".
+  - `Spatial`. New namespace in support of `azure-maps-spatial-io` operations.
+  - `Intl`. New namespace in support of JavaScript's internationalization operations.
+  - `IAzureMapsAnimations`.
+	- `ExtractRoutePoints`. New method to extract points from a shape or feature that form a time based route.
+  - `Sandbox`.
+	- `Spatial Examples`. New demos for working with spatial data (see Menu/Examples/Spatial IO).
 - `11.0.0-Preview-2.1`:
   - `BREAKING CHANGES`!
   - `Map Sources`. Major update/refactoring for managing map sources.

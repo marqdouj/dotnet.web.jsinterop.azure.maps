@@ -15,6 +15,50 @@ namespace Sandbox.Services
         Task<List<Position>> GetSymbolLayerData();
         Task<List<TemperatureInfo>> GetTemperatureLayerData();
         Task<string> GetTileLayerUrl();
+
+        IMapDataExamples Examples { get; }
+    }
+
+    public interface IMapDataExamples
+    {
+        ISpatialExamples Spatial { get; }
+    }
+
+    public enum SpatialGetReadUrl
+    {
+        Choropleth_3D,
+        SampleGeoRSS,
+        SimpleRead,
+    }
+
+    public interface ISpatialExamples
+    {
+        Task<string> GetReadUrl(SpatialGetReadUrl url);
+    }
+
+    internal class MapDataExamples : IMapDataExamples
+    {
+        public ISpatialExamples Spatial { get; } = new SpatialExamples();
+    }
+
+    internal class SpatialExamples : ISpatialExamples
+    {
+        public async Task<string> GetReadUrl(SpatialGetReadUrl url)
+        {
+            await Task.CompletedTask;
+
+            switch (url)
+            {
+                case SpatialGetReadUrl.Choropleth_3D:
+                    return "examples/Choropleth3D.xml";
+                case SpatialGetReadUrl.SampleGeoRSS:
+                    return "examples/SampleGeoRSS.xml";
+                case SpatialGetReadUrl.SimpleRead:
+                    return "examples/Route66Attractions.xml";
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 
     /// <summary>
@@ -22,6 +66,8 @@ namespace Sandbox.Services
     /// </summary>
     internal class DataService : IMapDataService
     {
+        public IMapDataExamples Examples { get; } = new MapDataExamples();
+
         public async Task<List<AcmePipelineInfo>> GetAcmePipelines()
         {
             await Task.CompletedTask;

@@ -18,6 +18,7 @@ module.exports = {
     externalsType: 'var',
     externals: {
         "azure-maps-control": "atlas",
-        "azure-maps-animations": "atlas"
+        "azure-maps-animations": "atlas",
+        "azure-maps-spatial-io": "atlas",
     },
 };
