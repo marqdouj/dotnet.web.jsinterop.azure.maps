@@ -2,7 +2,14 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-2.2`:
-  - `TBD`.
+  - `Components`. New namespace.
+	- `MapProvider`. Component has been moved from `Interop` to the `Components` namespace.
+	- `MapContainer`. New razor component to hold the map instance. Use is not required, but recommended for simple control of the map container div.
+	  - `Height` and `Width`. Parameters to set the height and width for the map container div. These parameters are combined into the `Style` parameter.
+	    - Default is "height:{Height ?? "100%"};width:{Width ?? "100%"};
+	  - `Class`. Parameter to set the CSS class for the map container div.
+	  - `Style`. Parameter to set the CSS style for the map container div.
+		- Default is "border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);".
 - `11.0.0-Preview-2.1`:
   - `BREAKING CHANGES`!
   - `Map Sources`. Major update/refactoring for managing map sources.
