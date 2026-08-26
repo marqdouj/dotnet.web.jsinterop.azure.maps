@@ -69,19 +69,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers.Images
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="templateName"></param>
-        public ImageTemplate(string templateName)
+        /// <param name="id">The image's id. If the specified id matches the id of a previously added image the new image will be ignored.</param>
+        /// <param name="templateName"><see cref="TemplateName"/></param>
+        public ImageTemplate(string id, string templateName)
         {
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(id);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(templateName);
+            Id = id;
             TemplateName = templateName;
         }
 
         /// <summary>
-        /// <see cref="ImageTemplate(string)"/>
+        /// <inheritdoc cref="ImageTemplate(string, string)"/>
         /// </summary>
-        /// <param name="templateName"></param>
-        public ImageTemplate(ImageTemplateName templateName) 
-            : this(templateName.ToString().Replace("_", "-")) { }
+        /// <param name="id">The image's id. If the specified id matches the id of a previously added image the new image will be ignored.</param>
+        /// <param name="templateName"><see cref="TemplateName"/></param>
+        public ImageTemplate(string id, ImageTemplateName templateName)
+            : this(id, templateName.ToString().Replace("_", "-")) { }
 
         /// <summary>
         /// Specifies which image template to use.

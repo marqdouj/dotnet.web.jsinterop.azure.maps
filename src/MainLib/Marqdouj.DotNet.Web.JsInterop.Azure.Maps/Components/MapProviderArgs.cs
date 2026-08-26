@@ -1,4 +1,6 @@
-﻿namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop;
+
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Components
 {
     /// <summary>
     /// 

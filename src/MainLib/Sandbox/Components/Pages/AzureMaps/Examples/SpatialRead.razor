@@ -1,0 +1,122 @@
+﻿@page "/map-examples-spatial-read"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@inject ILogger<SpatialRead> Logger
+@inject INotificationService ToastService
+@inject IMapDataService MapDataService
+
+<MapPage Title="Example (Spatial Read)">
+    <SummaryContent>
+        <FluentText>
+            This example shows how to read an XML file into a datasource for a SimpleDataLayer.
+            <br />
+            Based on this <a href="@sourceUrl" target="_blank">article</a>
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+        </Toolbar>
+
+        <MapContainer MapId="@mapId" />
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string sourceUrl = "https://learn.microsoft.com/en-us/azure/azure-maps/how-to-use-spatial-io-module";
+    private readonly string mapId = "mapSpatialRead";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        mapReady = !(await args.HasPayloadError(Logger, ToastService));
+
+        if (mapReady)
+        {
+            try
+            {
+                ShowOverlay(true);
+
+                var layer = new SimpleDataLayer();
+                var result = await maps!.Spatial.Layers.Add(mapId, layer);
+
+                var newOptions = await maps.Spatial.Layers.GetOptions(mapId, layer.Id);
+                if (newOptions != null)
+                    layer.Options = newOptions;
+
+                var url = await MapDataService.Examples.Spatial.GetReadUrl(SpatialGetReadUrl.SimpleRead);
+                var results = await maps!.Spatial.Sources.Read(mapId, new SpatialReadParameters(layer.Source.Id, url, SpatialReadAction.Add));
+
+                if(results?.Bbox != null)
+                {
+                    var options = await maps.Configuration.GetMapOptions(mapId, new MapOptionsArgs(camera: true));
+                    if (options?.Camera != null)
+                        mapOptions.Camera = options!.Camera;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "");
+                await ToastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                ShowOverlay(false);
+            }
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    #endregion
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+}

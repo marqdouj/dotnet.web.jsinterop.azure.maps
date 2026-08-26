@@ -14,4 +14,5 @@ export { Markers } from "./modules/Markers";
 export { Mercators } from "./modules/Mercators";
 export { Popups } from "./modules/Popups";
 export { Sources } from "./modules/Sources"
-
+export { SpatialLayers } from "./modules/SpatialLayers"
+export { SpatialSources } from "./modules/SpatialSources"
