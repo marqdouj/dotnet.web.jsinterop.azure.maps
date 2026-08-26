@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2.2`:
+  - `TBD`.
 - `11.0.0-Preview-2.1`:
   - `BREAKING CHANGES`!
   - `Map Sources`. Major update/refactoring for managing map sources.
