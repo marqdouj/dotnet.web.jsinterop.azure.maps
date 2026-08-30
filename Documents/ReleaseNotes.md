@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2.3`:
+  - - `Sandbox`. Demo updates.
 - `11.0.0-Preview-2.2`:
   - `Components`. New namespace.
 	- `Breaking Change (Minor)`. `MapProvider` component has been moved from `Interop` to the `Components` namespace.
