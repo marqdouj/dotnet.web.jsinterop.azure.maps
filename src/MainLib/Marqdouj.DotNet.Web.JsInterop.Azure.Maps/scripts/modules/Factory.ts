@@ -177,6 +177,7 @@ export class MapReference {
     #map: atlas.Map | undefined;
     #mapId: string | undefined;
     #eventsMap: EventsMap | undefined;
+    #animations: Map<string, object> | undefined = new Map<string, object>();
 
     constructor(dotNetRef: any, mapId: string, azMap: atlas.Map) {
         this.#dotNetRef = dotNetRef;
@@ -190,6 +191,10 @@ export class MapReference {
     get mapId(): string { return this.#mapId! }
     get map(): atlas.Map { return this.#map! }
 
+    getAnimation(id: string): any { return this.#animations?.get(id); }
+    setAnimation(id: string, value: object) { this.#animations?.set(id, value); }
+    removeAnimation(id: string) { this.#animations?.delete(id); }
+
     clear() {
         this.#dotNetRef = null;
         this.#mapId = undefined;
@@ -197,6 +202,8 @@ export class MapReference {
         this.#map = undefined;
         this.#eventsMap?.clear();
         this.#eventsMap = undefined;
+        this.#animations?.clear();
+        this.#animations = undefined;
     }
 }
 

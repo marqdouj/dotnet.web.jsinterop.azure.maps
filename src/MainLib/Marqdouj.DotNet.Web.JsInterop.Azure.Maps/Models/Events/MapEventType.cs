@@ -45,6 +45,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
         ZoomEnd,
         ZoomStart,
 
+        //Animations
+        OnComplete,
+        OnFrame,
+        OnProgress,
+
         //Config
         MapConfigurationChanged,
 
@@ -195,6 +200,17 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
         TouchEnd = MapEventType.TouchEnd,
         TouchMove = MapEventType.TouchMove,
         TouchStart = MapEventType.TouchStart,
+    }
+
+    /// <summary>
+    /// Subset of MapEventType that applies to animations. Castable to MapEventType.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter<MapEventTypeAnimation>))]
+    public enum MapEventTypeAnimation
+    {
+        OnComplete = MapEventType.OnComplete,
+        OnFrame = MapEventType.OnFrame,
+        OnProgress = MapEventType.OnProgress,
     }
 
     /// <summary>

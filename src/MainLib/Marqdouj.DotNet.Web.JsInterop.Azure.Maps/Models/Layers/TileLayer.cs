@@ -1,5 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
-using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 {

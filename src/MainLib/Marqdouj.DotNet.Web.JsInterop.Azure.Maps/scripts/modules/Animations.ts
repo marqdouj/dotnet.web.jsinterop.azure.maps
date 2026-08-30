@@ -59,7 +59,7 @@ export class Animations {
 
         const ds = map.sources.getById(options.dataSourceId);
         if (!ds) {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found.`, options);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found.`, options);
             return;
         }
 
@@ -68,7 +68,7 @@ export class Animations {
         if (SourceHelper.isDataSource(ds)) {
             let shape = ds.getShapeById(featureId);
             if (!shape) {
-                Logger.logMessage(mapId, LogLevel.Error, `${eventName}: Shape not found where shapeId = '${featureId}'.`, options);
+                Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Shape not found where shapeId = '${featureId}'.`, options);
                 return;
             }
 
@@ -76,7 +76,7 @@ export class Animations {
             if (options.shape.properties)
                 shape.addProperty("heading", options.shape.properties["heading"]);
         } else {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where id = '${options.dataSourceId}'.`, options);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where id = '${options.dataSourceId}'.`, options);
         }
     }
 
@@ -85,7 +85,7 @@ export class Animations {
             return false;
         }
         else {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: atlas.animations module not found.`);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: atlas.animations module not found.`);
             return true;
         }
     }
@@ -101,7 +101,7 @@ export class Animations {
 
         const ds = map.sources.getById(dataSourceId) as atlas.source.DataSource;
         if (!ds) {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where Id = '${dataSourceId}'`,);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where Id = '${dataSourceId}'`,);
             return;
         }
 
@@ -110,14 +110,96 @@ export class Animations {
     }
 
     public static extractRoutePointsFromShape(shape: any, length: number, timestampProperty?: string): atlas.data.Feature<atlas.data.Point, any>[] | undefined {
-        if (!shape)
+        const eventName = "Animations.extractRoutePointsFromShape";
+        if (!shape) {
+            Logger.logMessage("Animations", LogLevel.Error, `${eventName}: shape is undefined.`);
             return;
+        }
 
         if (length == 0 || length < -1)
             return [];
 
         var route = anims.animations.extractRoutePoints(shape, timestampProperty);
         return length == -1 ? route : Helpers.getFirstNItems(route, length);
+    }
+
+    public static moveAlongRoute(mapId: string, args: MoveAlongRouteArgs) {
+        const eventName = "Animations.moveAlongRoute";
+       
+        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, args);
+        args = Helpers.removeNullish(args);
+        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: nullish args.`, args);
+
+        if (Animations.#animationsNotFound(mapId, eventName))
+            return;
+
+        if (Helpers.isEmptyOrNull(args.animationId)) {
+            throw new Error(`${eventName}: missing animationId.`);
+        }
+
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        let animation = mapRef.getAnimation(args.animationId);
+
+        if (animation) {
+            Events.animations.remove(mapRef, args.events);
+            mapRef.removeAnimation(args.animationId);
+            animation.dispose();
+        }
+
+        const dsRoute = SourceHelper.getDataSource(mapRef, args.routeSourceId);
+        if (!dsRoute) {
+            throw new Error(`${eventName}: DataSource not found where id = '${args.routeSourceId}'.`);
+        }
+
+        const dsShape = SourceHelper.getDataSource(mapRef, args.shapeSourceId);
+        if (!dsShape) {
+            throw new Error(`${eventName}: ShapeSource not found where id = '${args.shapeSourceId}'.`);
+        }
+
+        const routeShapes = dsRoute.getShapeById(args.routeShapeId) ?? dsRoute.getShapes();
+        if (!routeShapes) {
+            if (Helpers.isNotEmptyOrNull(args.routeShapeId)) {
+                throw new Error(`${eventName}: route shape not found where id = '${args.routeShapeId}'.`);
+            }
+            else {
+                throw new Error(`${eventName}: route shape not found where routeSourceId = '${args.routeSourceId}'.`);
+            }
+        }
+
+        const shape = dsShape.getShapeById(args.shapeId)
+        if (!shape) {
+            throw new Error(`${eventName}: shape not found where id = '${args.shapeId}'.`);
+        }
+
+        const route = this.extractRoutePointsFromShape(routeShapes, -1, args.timestampProperty);
+
+        if (route) {
+            Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: route was found`, route);
+
+            if (args.follow) {
+                args.options ?? {};
+                args.options.map = mapRef.map as any;
+            }
+
+            try {
+                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: attempting to create animation`, route, shape, args.options);
+                animation = anims.animations.moveAlongRoute(route, shape as any, args.options);
+            } catch (e) {
+                Logger.logMapMessage(mapId, LogLevel.Error, "create animation failed", e);
+            }
+
+            if (animation) {
+                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation was created`, animation);
+                mapRef.setAnimation(args.animationId, animation);
+                Events.animations.add(mapRef, args.events);
+            }
+        }
+        else {
+            throw new Error(`${eventName}: route shape not found where id = '${args.routeShapeId}'.`);
+        }
     }
 }
 
@@ -132,4 +214,16 @@ interface AnimateShapeArgs {
     shape: MapFeature;
     dataSourceId: string;
     animationOptions: anims.PlayableAnimationOptions;
+}
+
+interface MoveAlongRouteArgs {
+    animationId: string;
+    routeSourceId: string;
+    routeShapeId: string;
+    shapeSourceId: string;
+    shapeId: string;
+    events?: MapEvent[];
+    options: any;
+    timestampProperty?: string;
+    follow: boolean;
 }

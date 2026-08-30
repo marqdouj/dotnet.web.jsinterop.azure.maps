@@ -6,6 +6,11 @@
     public class MapEventArgsPayload
     {
         /// <summary>
+        /// <inheritdoc cref="MapEventAnimationPayload"/>
+        /// </summary>
+        public MapEventAnimationPayload? Animation { get; set; }
+
+        /// <summary>
         /// <inheritdoc cref="MapEventConfigPayload"/>
         /// </summary>
         public MapEventConfigPayload? Config { get; set; }

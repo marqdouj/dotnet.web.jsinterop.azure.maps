@@ -83,8 +83,9 @@
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private List<DatasetInfo> datasets = [];
     private DatasetInfo? value => datasets.FirstOrDefault();
-    private readonly SimpleDataLayer dataLayer = new();
+    private readonly SimpleDataLayer routeLayer = new();
     private readonly SymbolLayer pinLayer = new();
+    private MapFeature<Point>? pinShape;
     private readonly ImageTemplate image = new ImageTemplate("arrow-icon", ImageTemplateName.marker_arrow) { Color = "teal", SecondaryColor = "#fff" };
     private PanelInfo panelInfo = new();
     private readonly List<double> speeds = [0.5, 1, 2, 5, 15, 30, 60, 100, 3600];
@@ -99,8 +100,8 @@
         datasets = [
             new DatasetInfo("GPS Trace (GeoJSON)", "examples/GpsTrace.json"){ TimestampProperty = "time" },
             new DatasetInfo("Hurricane Barry track (csv)", "examples/hurricane_barry_track.csv") { TimestampProperty = "Date" },
-            new DatasetInfo("Kuhkopfsteig trail (GPX)", "examples/kuhkopfsteig-fv.xml") { ValueInterpolations =  [ new ValueInterpolation( "ele") ] },
-            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new ValueInterpolation( "ele") ] },
+            new DatasetInfo("Kuhkopfsteig trail (GPX)", "examples/kuhkopfsteig-fv.xml") { ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ] },
+            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ] },
     ];
     }
 
@@ -197,10 +198,10 @@
 
             panelInfo = new();
 
-            await maps!.Sources.ClearById(mapId, [dataLayer.Source.Id, pinLayer.Source.Id]);
+            await maps!.Sources.ClearById(mapId, [routeLayer.Source.Id, pinLayer.Source.Id]);
             var results = await maps!.Spatial.Sources.Read(mapId, 
                 new SpatialReadParameters(
-                    dataLayer.Source.Id, 
+                    routeLayer.Source.Id,
                     info.Url, 
                     SpatialReadAction.Add, 
                     new SpatialDataReadOptions { CapturePathWaypoints = true }
@@ -217,14 +218,18 @@
             if (results?.Route != null && results.Route.Count > 0)
             {
                 var shape = results.Route[0];
-                var pinShape = new MapFeature<Point>(shape.Geometry!);
+                pinShape = new MapFeature<Point>(shape.Geometry!);
                 await maps.Features.Add(mapId, pinShape, pinLayer.Source.Id);
-                if (shape.Properties?.ContainsKey("time") ?? false)
-                    panelInfo.UpdateTime(shape.Properties?["time"]?.ToString());
-                else if (shape.Properties?.ContainsKey("_timestamp") ?? false)
-                    panelInfo.UpdateTime(shape.Properties?["_timestamp"]);
-                else
-                    panelInfo.UpdateTime("");
+                var events = new List<MapEvent> { new MapEvent(MapEventType.OnProgress, MapEventTarget.animation) { TargetId = animationId } };
+                var pathOptions = new RoutePathAnimationOptions(){ CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info.ValueInterpolations, Pitch = 45, Zoom = 15 };
+                var moveArgs = new MoveAlongRouteParameters(animationId, routeLayer.Source.Id, null, pinLayer.Source.Id, pinShape.Id, events, pathOptions, info.TimestampProperty);
+                await maps.Animations.MoveAlongRoute(mapId, moveArgs);
+                // if (shape.Properties?.ContainsKey("time") ?? false)
+                //     panelInfo.UpdateTime(shape.Properties?["time"]?.ToString());
+                // else if (shape.Properties?.ContainsKey("_timestamp") ?? false)
+                //     panelInfo.UpdateTime(shape.Properties?["_timestamp"]);
+                // else
+                //     panelInfo.UpdateTime("");
             }
         }
         catch (Exception ex)
@@ -290,7 +295,7 @@
                 await maps!.Sprites.CreateFromTemplate(mapId, image);
                 //The order the layers are added is important.
                 //We need the pin to display above the data so dataLayer must be added first.
-                await maps.Spatial.Layers.Add(mapId, dataLayer);
+                await maps.Spatial.Layers.Add(mapId, routeLayer);
                 await maps.Layers.Add(mapId, pinLayer);
                 await LoadGPSTrace(datasets[0]);
             }
@@ -376,11 +381,6 @@
         public string DisplayName { get; } = displayName;
         public string Url { get; } = url;
         public string? TimestampProperty { get; set; }
-        public List<ValueInterpolation>? ValueInterpolations { get; set; }
-    }
-
-    private class ValueInterpolation(string propertyPath)
-    {
-        public string PropertyPath { get; set; } = propertyPath;
+        public List<PointPairValueInterpolation>? ValueInterpolations { get; set; }
     }
 }
