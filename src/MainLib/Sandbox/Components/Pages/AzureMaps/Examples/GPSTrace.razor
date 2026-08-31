@@ -12,8 +12,6 @@
             This sample shows how to smoothly animate a symbol along a route path taking into 
             consideration timestamps for each point in the route path.
             <br />
-            NOTE: This example is <span style="color:yellow;">under construction</span> and is not finished.
-            <br />
             Based on this <a href="@sourceUrl" target="_blank">article</a>
             <br />
             Article source code: <a href="@codeUrl" target="_blank">article</a>
@@ -85,11 +83,10 @@
     private DatasetInfo? value => datasets.FirstOrDefault();
     private readonly SimpleDataLayer routeLayer = new();
     private readonly SymbolLayer pinLayer = new();
-    private MapFeature<Point>? pinShape;
     private readonly ImageTemplate image = new ImageTemplate("arrow-icon", ImageTemplateName.marker_arrow) { Color = "teal", SecondaryColor = "#fff" };
     private PanelInfo panelInfo = new();
     private readonly List<double> speeds = [0.5, 1, 2, 5, 15, 30, 60, 100, 3600];
-    private double speed = 0.5;
+    private double speed = 15;
     private bool follow = true;
     private DotNetObjectReference<GPSTrace>? dotNetRef;
     private const string animationId = "gpsTrace";
@@ -110,12 +107,11 @@
         await LoadGPSTrace(info);
     }
 
-    private async Task OnSpeedChanged(double value)
+    private async Task OnOptionsChanged()
     {
         try
         {
-            speed = value;
-            await ToastService.ShowError($"Speed Changed: {speed}x");
+            await maps!.Animations.SetOptions(mapId, animationId, new RoutePathAnimationOptions { SpeedMultiplier = speed, MapId = follow ? mapId : "" });
         }
         catch (Exception ex)
         {
@@ -124,25 +120,23 @@
         }
     }
 
+    private async Task OnSpeedChanged(double value)
+    {
+        speed = value;
+        await OnOptionsChanged();
+    }
+
     private async Task OnFollowChanged(bool value)
     {
-        try
-        {
-            follow = value;
-            await ToastService.ShowError($"Follow Changed: {follow}");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "");
-            await ToastService.ShowError(ex.Message);
-        }
+        follow = value;
+        await OnOptionsChanged();
     }
 
     private async Task PlayAnimation()
     {
         try
         {
-            await ToastService.ShowError("Play Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "play");
         }
         catch (Exception ex)
         {
@@ -155,7 +149,7 @@
     {
         try
         {
-            await ToastService.ShowError("Pause Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "pause");
         }
         catch (Exception ex)
         {
@@ -168,7 +162,7 @@
     {
         try
         {
-            await ToastService.ShowError("Stop Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "stop");
         }
         catch (Exception ex)
         {
@@ -181,7 +175,8 @@
     {
         try
         {
-            await ToastService.ShowError("Reset Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "reset");
+            await Reset();
         }
         catch (Exception ex)
         {
@@ -198,15 +193,21 @@
 
             panelInfo = new();
 
-            await maps!.Sources.ClearById(mapId, [routeLayer.Source.Id, pinLayer.Source.Id]);
-            var results = await maps!.Spatial.Sources.Read(mapId, 
-                new SpatialReadParameters(
-                    routeLayer.Source.Id,
-                    info.Url, 
-                    SpatialReadAction.Add, 
-                    new SpatialDataReadOptions { CapturePathWaypoints = true }
-                ){ RouteLength = 1, RouteTimestamp = info.TimestampProperty }
-            );
+            var events = new List<MapEvent> { new MapEvent(MapEventType.OnProgress, MapEventTarget.animation) { TargetId = animationId } };
+            var readOptions = new SpatialDataReadOptions { CapturePathWaypoints = true };
+            var pathOptions = new RoutePathAnimationOptions() { CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info.ValueInterpolations, Pitch = 45, Zoom = 15 };
+            var args = new LoadGPSTraceParameters(animationId, routeLayer.Source.Id, pinLayer.Source.Id, info.Url, info.TimestampProperty, readOptions, pathOptions, events, follow);
+            var results = await maps!.Spatial.Sources.LoadGPSTrace(mapId, args);
+
+            // await maps!.Sources.ClearById(mapId, [routeLayer.Source.Id, pinLayer.Source.Id]);
+            // var results = await maps!.Spatial.Sources.Read(mapId, 
+            //     new SpatialReadParameters(
+            //         routeLayer.Source.Id,
+            //         info.Url, 
+            //         SpatialReadAction.Add, 
+            //         new SpatialDataReadOptions { CapturePathWaypoints = true }
+            //     ){ RouteLength = 1, RouteTimestamp = info.TimestampProperty }
+            // );
 
             if (results?.Bbox != null)
             {
@@ -215,22 +216,22 @@
                     mapOptions.Camera = options!.Camera;
             }
 
-            if (results?.Route != null && results.Route.Count > 0)
-            {
-                var shape = results.Route[0];
-                pinShape = new MapFeature<Point>(shape.Geometry!);
-                await maps.Features.Add(mapId, pinShape, pinLayer.Source.Id);
-                var events = new List<MapEvent> { new MapEvent(MapEventType.OnProgress, MapEventTarget.animation) { TargetId = animationId } };
-                var pathOptions = new RoutePathAnimationOptions(){ CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info.ValueInterpolations, Pitch = 45, Zoom = 15 };
-                var moveArgs = new MoveAlongRouteParameters(animationId, routeLayer.Source.Id, null, pinLayer.Source.Id, pinShape.Id, events, pathOptions, info.TimestampProperty);
-                await maps.Animations.MoveAlongRoute(mapId, moveArgs);
-                // if (shape.Properties?.ContainsKey("time") ?? false)
-                //     panelInfo.UpdateTime(shape.Properties?["time"]?.ToString());
-                // else if (shape.Properties?.ContainsKey("_timestamp") ?? false)
-                //     panelInfo.UpdateTime(shape.Properties?["_timestamp"]);
-                // else
-                //     panelInfo.UpdateTime("");
-            }
+            // if (results?.Route != null && results.Route.Count > 0)
+            // {
+            //     var shape = results.Route[0];
+            //     pinShape = new MapFeature<Point>(shape.Geometry!);
+            //     await maps.Features.Add(mapId, pinShape, pinLayer.Source.Id);
+            //     var events = new List<MapEvent> { new MapEvent(MapEventType.OnProgress, MapEventTarget.animation) { TargetId = animationId } };
+            //     var pathOptions = new RoutePathAnimationOptions(){ CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info.ValueInterpolations, Pitch = 45, Zoom = 15 };
+            //     var moveArgs = new MoveAlongRouteParameters(animationId, routeLayer.Source.Id, null, pinLayer.Source.Id, pinShape.Id, events, pathOptions, info.TimestampProperty);
+            //     await maps.Animations.MoveAlongRoute(mapId, moveArgs);
+            //     // if (shape.Properties?.ContainsKey("time") ?? false)
+            //     //     panelInfo.UpdateTime(shape.Properties?["time"]?.ToString());
+            //     // else if (shape.Properties?.ContainsKey("_timestamp") ?? false)
+            //     //     panelInfo.UpdateTime(shape.Properties?["_timestamp"]);
+            //     // else
+            //     //     panelInfo.UpdateTime("");
+            // }
         }
         catch (Exception ex)
         {

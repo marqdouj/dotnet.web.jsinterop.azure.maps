@@ -28,6 +28,11 @@ export class Logger {
         return `Map with Id '${mapId}'`;
     }
 
+    static logMapMessageAndThrow(mapId: string, message: string, ...optionalParams: any[]) {
+        this.logMapMessage(mapId, LogLevel.Error, message, optionalParams);
+        throw new Error(message);
+    }
+
     static logMapMessage(mapId: string, level: LogLevel, message: string, ...optionalParams: any[]): void {
         if (level < this.currentLevel)
             return;

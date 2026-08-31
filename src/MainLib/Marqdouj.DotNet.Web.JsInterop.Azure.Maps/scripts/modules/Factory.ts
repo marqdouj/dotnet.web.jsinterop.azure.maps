@@ -191,7 +191,13 @@ export class MapReference {
     get mapId(): string { return this.#mapId! }
     get map(): atlas.Map { return this.#map! }
 
-    getAnimation(id: string): any { return this.#animations?.get(id); }
+    getAnimation(id: string, logWarn: boolean = false): any {
+        const animation = this.#animations?.get(id);
+        if (!animation && logWarn) {
+            Logger.logMessage("MapReference.getAnimation", LogLevel.Warn, `animation not found where id = '${id}'`);
+        }
+        return animation;
+    }
     setAnimation(id: string, value: object) { this.#animations?.set(id, value); }
     removeAnimation(id: string) { this.#animations?.delete(id); }
 
