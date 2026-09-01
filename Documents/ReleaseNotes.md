@@ -2,7 +2,13 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-2.3`:
-  - - `Sandbox`. Demo updates.
+  - `IAzureMapsAnimations`.
+	- `SetOptions`. New method to set animation options.
+	- `UpdateAnimation`. New method to update animation. with 'play', 'pause', 'stop', or 'reset'.
+  - `IAzureMapsSpatialSources`.
+	- `LoadGPSTrace`. New method to Load a GPS trace route, for animating a symbol along a route path using timestamps for each point in the route path.
+  - `Sandbox`. Demo updates.
+	- `GPS Trace`.
 - `11.0.0-Preview-2.2`:
   - `Components`. New namespace.
 	- `Breaking Change (Minor)`. `MapProvider` component has been moved from `Interop` to the `Components` namespace.
