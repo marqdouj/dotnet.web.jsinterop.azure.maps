@@ -124,7 +124,7 @@ export class Animations {
     }
 
     public static updateAnimation(mapId: string, animationId: string, action: string) {
-        const eventName = "Animations.updateAnimation";
+        //const eventName = "Animations.updateAnimation";
         //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, action);
 
         const mapRef = Factory.getMapReference(mapId);

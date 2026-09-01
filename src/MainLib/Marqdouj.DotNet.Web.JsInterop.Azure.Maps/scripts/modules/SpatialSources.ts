@@ -10,7 +10,6 @@ import { Animations } from "./Animations";
 export class SpatialSources {
     public static async loadGPSTrace(mapId: string, parameters: LoadGPSTraceParameters): Promise<LoadGPSTraceResults> {
         const eventName = "SpatialSources.loadGPSTrace";
-        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entering.`, parameters);
 
         var result: LoadGPSTraceResults = { success: false };
 
@@ -19,7 +18,6 @@ export class SpatialSources {
             return result;
 
         parameters = Helpers.removeNullish(parameters);
-        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: removeNullish.`, parameters);
 
         if (Helpers.isEmptyOrNull(parameters.animationId)) {
             throw new Error(`${eventName}: missing animationId.`);
@@ -50,8 +48,6 @@ export class SpatialSources {
         if (Helpers.isNotEmptyOrNull(parameters.url)) {
             await this.#readUrl(mapId, parameters.url, parameters.readOptions)
                 .then(r => {
-                    //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: await readUrl ok.`, r);
-
                     if (r) {
                         dsRoute.add(r);
 
@@ -82,7 +78,6 @@ export class SpatialSources {
                             }
 
                             try {
-                                //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: attempting to create animation`, route, pin, pathOptions);
                                 animation = anims.animations.moveAlongRoute(route, pin as any, pathOptions);
 
                                 if (animation) {
@@ -119,8 +114,6 @@ export class SpatialSources {
         const eventName = "SpatialSources.read";
         var result: SpatialReadResults = { success: false };
 
-        //Logger.logMapMessage(mapId, LogLevel.Trace, eventName, parameters);
-
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)
             return result;
@@ -145,8 +138,6 @@ export class SpatialSources {
                         setshapes: () => "SetShapes",
                     }, () => "");
 
-                    //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: dsAction.`, dsAction);
-                    
                     switch (dsAction) {
                         case "Add":
                             src!.add(r);
@@ -160,7 +151,6 @@ export class SpatialSources {
 
                     if (parameters.routeLength > 0) {
                         result.route = Animations.extractRoutePointsFromShape(r, parameters.routeLength, parameters.routeTimestamp);
-                        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: extractRoutePointsFromShape`, result.route);
                     }
                     //If bounding box information is known for data, set the map view to it.
                     if (r.bbox) {
@@ -169,7 +159,6 @@ export class SpatialSources {
                             padding: parameters.padding
                         });
 
-                        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: setting result.`, r.bbox, result);
                         result.bbox = r.bbox;
                     }
                     
@@ -185,19 +174,15 @@ export class SpatialSources {
             }
         );
 
-        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: result.`, result);
         return result;
     }
 
     static #readUrl(mapId: string, url: string, options?: any): Promise<spatial.SpatialDataSet | undefined> {
         const eventName = "SpatialSources.#readUrl";
-        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: begin.`, url);
 
         return new Promise((resolve, reject) => {
             try {
-                //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: begin read.`);
                 spatial.io.read(url, options).then(r => {
-                    //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: read ok.`, url);
                     resolve(r);
                 }).catch(err => {
                     Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: read failed.`, url, err);
