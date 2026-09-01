@@ -57,8 +57,7 @@
         <FluentStack Height="100%">
             @if (panelInfo.HasPayload)
             {
-                <div style="padding:3px;width:300px;">
-                    @* Fluent UI Blazor does not currently support a table component, so we are using a simple HTML table to display the event details. *@
+                <div style="padding:3px;width:260px;">
                     @if (panelInfo.HasPayload)
                     {
                         <b>Timestamp:</b>
@@ -72,7 +71,8 @@
                             <tr><td>progress</td><td>@panelInfo.Progress</td></tr>
                             <tr><td>easingProgress</td><td>@panelInfo.EasingProgress</td></tr>
                             <tr><td>heading</td><td>@panelInfo.Heading</td></tr>
-                            <tr><td>speed</td><td>@panelInfo.Speed (km/hr)</td></tr>
+                            <tr><td>speed (m/s)</td><td>@panelInfo.Speed</td></tr>
+                            <tr><td>speed (km/hr)</td><td>@panelInfo.SpeedInKph</td></tr>
                             <tr><td>position</td><td>@panelInfo.PositionDisplay</td></tr>
                         </table>
                     }
@@ -320,10 +320,6 @@
             Logger.LogError(ex, "");
             await ToastService.ShowError(ex.Message);
         }
-        finally
-        {
-            // StateHasChanged();
-        }
     }
     # endregion
 
@@ -354,16 +350,19 @@
     {
         public void Update(PlayableAnimationEvent? payload)
         {
+            HasPayload = payload != null;
+
             Type = payload?.Type ?? "";
-            Progress = Math.Round(payload?.Progress ?? 0, 5);
-            EasingProgress = Math.Round(payload?.EasingProgress ?? 0, 5);
-            Heading = Math.Round(payload?.Heading ?? 0, 5);
-            Speed = Math.Round(payload?.Speed ?? 0, 5);
+            Progress = Math.Round(payload?.Progress ?? 0, 8);
+            EasingProgress = Math.Round(payload?.EasingProgress ?? 0, 8);
+            Heading = Math.Round(payload?.Heading ?? 0, 6);
+            Speed = Math.Round(payload?.Speed ?? 0, 8);
+            SpeedInKph = Math.Round(payload?.SpeedInKph ?? 0, 8);
             Position = payload?.Position;
             Timestamp = payload?.Timestamp;
 
-            PositionDisplay = this.Position is not null ? $"[{Position.Longitude:F5}, {Position.Latitude:F5}]" : null;
-            HasPayload = payload != null;
+            PositionDisplay = this.Position is not null ? $"[{Position.Longitude:F6}, {Position.Latitude:F6}]" : null;
+            
         }
 
         public string? PositionDisplay { get; private set; }

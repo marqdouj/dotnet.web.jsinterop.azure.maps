@@ -23,9 +23,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Animations
         public string? Timestamp { get; set; }
 
         /// <summary>
-        /// Speed in km/hr of the animation at the current frame. This is only returned by path animations.
+        /// Speed in 'metersPerSecond' of the animation at the current frame. This is only returned by path animations.
         /// </summary>
         public double? Speed { get; set; }
+
+        /// <summary>
+        /// Speed in 'kilometersPerHour' of the animation at the current frame. This is only returned by path animations.
+        /// </summary>
+        public double? SpeedInKph { get; set; }
 
         /// <summary>
         /// Progress of the animation where 0 is the start and 1 is the end.

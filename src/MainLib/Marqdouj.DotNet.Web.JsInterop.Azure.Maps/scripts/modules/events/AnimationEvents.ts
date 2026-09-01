@@ -1,6 +1,6 @@
 import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
-import { Helpers, Logger, LogLevel } from "../common/";
+import { Helpers, LogLevel } from "../common/";
 import { EventsLogger } from "./EventsLogger";
 import { EventsHelper } from "./EventsHelper";
 import { EventNotification, MapEvent } from "../Events";
@@ -100,7 +100,8 @@ export class AnimationEvents {
             animationId: event.targetId!,
             type: event.type,
             timestamp: ts != null ? new Date(ts).toUTCString() : undefined,
-            speed: sp != null ? Math.round(atlas.math.convertSpeed(sp, 'metersPerSecond', 'kilometersPerHour') * 100) / 100 : undefined,
+            speed: sp,
+            speedInKph: sp != null ? Math.round(atlas.math.convertSpeed(sp, 'metersPerSecond', 'kilometersPerHour') * 100) / 100 : undefined,
             progress: callback.progress,
             easingProgress: callback.easingProgress,
             position: callback.position,
@@ -190,6 +191,7 @@ interface PlayableAnimationEventPayload {
     animationId: string;
     timestamp?: string;
     speed?: number;
+    speedInKph?: number;
     progress: number;
     easingProgress: number;
     position?: atlas.data.Position;
