@@ -1,4 +1,4 @@
-import { JSInterop, Logger, LogLevel } from "./common/"
+import { JSInterop } from "./common/"
 import { Factory } from "./Factory";
 import { LayerEvents } from "./events/LayerEvents";
 import { MarkerEvents } from "./events/MarkerEvents";
@@ -7,6 +7,7 @@ import { PopupEvents } from "./events/PopupEvents";
 import { SourceEvents } from "./events/SourceEvents";
 import { StyleControlEvents } from "./events/StyleControlEvents";
 import { ShapeEvents } from "./events/ShapeEvents";
+import { AnimationEvents } from "./events/AnimationEvents";
 
 export class Events {
     static readonly maps: MapEvents = new MapEvents();
@@ -16,6 +17,7 @@ export class Events {
     static readonly shapes: ShapeEvents = new ShapeEvents();
     static readonly sources: SourceEvents = new SourceEvents();
     static readonly styleControls: StyleControlEvents = new StyleControlEvents();
+    static readonly animations: AnimationEvents = new AnimationEvents();
 
 
     static add(mapId: string, events: MapEvent[]) {
@@ -34,6 +36,7 @@ export class Events {
         Events.shapes.add(mapRef, events);
         Events.sources.add(mapRef, events);
         Events.styleControls.add(mapRef, events);
+        Events.animations.add(mapRef, events);
     }
 
     public static remove(mapId: string, events: MapEvent[]): void {
@@ -50,10 +53,11 @@ export class Events {
         Events.shapes.remove(mapRef, events);
         Events.sources.remove(mapRef, events);
         Events.styleControls.remove(mapRef, events);
+        Events.animations.remove(mapRef, events);
     }
 }
 
-type EventTarget = 'map' | 'datasource' | 'htmlmarker' | 'layer' | 'shape' | 'stylecontrol' | 'popup';
+type EventTarget = 'map' | 'datasource' | 'htmlmarker' | 'layer' | 'shape' | 'stylecontrol' | 'popup' | 'animation';
 
 export type MapEventArgs = {
     mapId: string;

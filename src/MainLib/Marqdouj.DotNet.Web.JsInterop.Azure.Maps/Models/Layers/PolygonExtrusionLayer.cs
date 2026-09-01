@@ -1,5 +1,4 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Sources;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers
 {

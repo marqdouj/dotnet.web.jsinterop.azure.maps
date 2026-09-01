@@ -168,7 +168,7 @@ export class LayerEvents {
     #notifyMapEventLayer = (callback: atlas.layer.Layer, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildLayerEventPayload(callback), callback);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #NotifyMapEventLayerTouch = (callback: atlas.MapTouchEvent, mapRef: MapReference, event: MapEvent,) => {
@@ -176,7 +176,7 @@ export class LayerEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildTouchEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #notifyMapEventLayerMouse = (callback: atlas.MapMouseEvent, mapRef: MapReference, event: MapEvent) => {
@@ -184,7 +184,7 @@ export class LayerEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildMouseEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #notifyMapEventLayerWheel = (callback: atlas.MapMouseWheelEvent, mapRef: MapReference,  event: MapEvent) => {
@@ -192,7 +192,7 @@ export class LayerEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildWheelEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 }
 

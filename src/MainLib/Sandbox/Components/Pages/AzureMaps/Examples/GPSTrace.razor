@@ -12,7 +12,11 @@
             This sample shows how to smoothly animate a symbol along a route path taking into 
             consideration timestamps for each point in the route path.
             <br />
-            NOTE: This example is <span style="color:yellow;">under construction</span> and is not finished.
+            <br />
+            NOTE: The source GPS was downloaded from the Azure Maps Samples website, however some of the data does not display well and appears to be corrupted
+            (which is how it appears in the azure maps sample as well).
+            However, the sample still demonstrates how to animate a symbol along a route path using timestamps for each point in the route path.
+            <br />
             <br />
             Based on this <a href="@sourceUrl" target="_blank">article</a>
             <br />
@@ -51,12 +55,29 @@
         </Toolbar>
 
         <FluentStack Height="100%">
-            <div style="padding:3px;">
-                <FluentText Nowrap="true">
-                    @panelInfo.Time
-                    <br />
-                </FluentText>
-            </div>
+            @if (panelInfo.HasPayload)
+            {
+                <div style="padding:3px;width:260px;">
+                    @if (panelInfo.HasPayload)
+                    {
+                        <b>Timestamp:</b>
+                        <br />
+                        @panelInfo.Timestamp
+                        <br /><br />
+                        <b>Event details:</b>
+                        <br />
+                        <table>
+                            <tr><td>type</td><td>@panelInfo.Type</td></tr>
+                            <tr><td>progress</td><td>@panelInfo.Progress</td></tr>
+                            <tr><td>easingProgress</td><td>@panelInfo.EasingProgress</td></tr>
+                            <tr><td>heading</td><td>@panelInfo.Heading</td></tr>
+                            <tr><td>speed (m/s)</td><td>@panelInfo.Speed</td></tr>
+                            <tr><td>speed (km/hr)</td><td>@panelInfo.SpeedInKph</td></tr>
+                            <tr><td>position</td><td>@panelInfo.PositionDisplay</td></tr>
+                        </table>
+                    }
+                </div>
+            }
 
             <MapContainer MapId="@mapId" />
         </FluentStack>
@@ -68,6 +89,7 @@
 </MapPage>
 
 <MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEvent="@OnMapEvent"
              OnMapEventError="@OnMapEventError"
              OnMapEventReady="@OnMapEventReady" />
 
@@ -83,12 +105,12 @@
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private List<DatasetInfo> datasets = [];
     private DatasetInfo? value => datasets.FirstOrDefault();
-    private readonly SimpleDataLayer dataLayer = new();
+    private readonly SimpleDataLayer routeLayer = new();
     private readonly SymbolLayer pinLayer = new();
     private readonly ImageTemplate image = new ImageTemplate("arrow-icon", ImageTemplateName.marker_arrow) { Color = "teal", SecondaryColor = "#fff" };
-    private PanelInfo panelInfo = new();
+    private readonly PanelInfo panelInfo = new();
     private readonly List<double> speeds = [0.5, 1, 2, 5, 15, 30, 60, 100, 3600];
-    private double speed = 0.5;
+    private double speed = 15;
     private bool follow = true;
     private DotNetObjectReference<GPSTrace>? dotNetRef;
     private const string animationId = "gpsTrace";
@@ -99,8 +121,8 @@
         datasets = [
             new DatasetInfo("GPS Trace (GeoJSON)", "examples/GpsTrace.json"){ TimestampProperty = "time" },
             new DatasetInfo("Hurricane Barry track (csv)", "examples/hurricane_barry_track.csv") { TimestampProperty = "Date" },
-            new DatasetInfo("Kuhkopfsteig trail (GPX)", "examples/kuhkopfsteig-fv.xml") { ValueInterpolations =  [ new ValueInterpolation( "ele") ] },
-            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new ValueInterpolation( "ele") ] },
+            new DatasetInfo("Kuhkopfsteig trail (GPX)", "examples/kuhkopfsteig-fv.xml") { ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ] },
+            new DatasetInfo("Bike race GPS trace (GPX)", "examples/race-gps-trace.xml"){ ValueInterpolations =  [ new PointPairValueInterpolation( "ele") ] },
     ];
     }
 
@@ -109,12 +131,11 @@
         await LoadGPSTrace(info);
     }
 
-    private async Task OnSpeedChanged(double value)
+    private async Task OnOptionsChanged()
     {
         try
         {
-            speed = value;
-            await ToastService.ShowError($"Speed Changed: {speed}x");
+            await maps!.Animations.SetOptions(mapId, animationId, new RoutePathAnimationOptions { SpeedMultiplier = speed, MapId = follow ? mapId : "" });
         }
         catch (Exception ex)
         {
@@ -123,25 +144,23 @@
         }
     }
 
+    private async Task OnSpeedChanged(double value)
+    {
+        speed = value;
+        await OnOptionsChanged();
+    }
+
     private async Task OnFollowChanged(bool value)
     {
-        try
-        {
-            follow = value;
-            await ToastService.ShowError($"Follow Changed: {follow}");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "");
-            await ToastService.ShowError(ex.Message);
-        }
+        follow = value;
+        await OnOptionsChanged();
     }
 
     private async Task PlayAnimation()
     {
         try
         {
-            await ToastService.ShowError("Play Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "play");
         }
         catch (Exception ex)
         {
@@ -154,7 +173,7 @@
     {
         try
         {
-            await ToastService.ShowError("Pause Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "pause");
         }
         catch (Exception ex)
         {
@@ -167,7 +186,7 @@
     {
         try
         {
-            await ToastService.ShowError("Stop Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "stop");
         }
         catch (Exception ex)
         {
@@ -180,7 +199,9 @@
     {
         try
         {
-            await ToastService.ShowError("Reset Animation");
+            await maps!.Animations.UpdateAnimation(mapId, animationId, "reset");
+            panelInfo.Update(null);
+            await Reset();
         }
         catch (Exception ex)
         {
@@ -194,37 +215,19 @@
         try
         {
             ShowOverlay(true);
+            panelInfo.Update(null);
 
-            panelInfo = new();
-
-            await maps!.Sources.ClearById(mapId, [dataLayer.Source.Id, pinLayer.Source.Id]);
-            var results = await maps!.Spatial.Sources.Read(mapId, 
-                new SpatialReadParameters(
-                    dataLayer.Source.Id, 
-                    info.Url, 
-                    SpatialReadAction.Add, 
-                    new SpatialDataReadOptions { CapturePathWaypoints = true }
-                ){ RouteLength = 1, RouteTimestamp = info.TimestampProperty }
-            );
+            var events = new List<MapEvent> { new MapEvent(MapEventType.OnProgress, MapEventTarget.animation) { TargetId = animationId } };
+            var readOptions = new SpatialDataReadOptions { CapturePathWaypoints = true };
+            var pathOptions = new RoutePathAnimationOptions() { CaptureMetadata = true, SpeedMultiplier = speed, ValueInterpolations = info.ValueInterpolations, Pitch = 45, Zoom = info.Zoom };
+            var args = new LoadGPSTraceParameters(animationId, routeLayer.Source.Id, pinLayer.Source.Id, info.Url, info.TimestampProperty, readOptions, pathOptions, events, follow);
+            var results = await maps!.Spatial.Sources.LoadGPSTrace(mapId, args);
 
             if (results?.Bbox != null)
             {
                 var options = await maps.Configuration.GetMapOptions(mapId, new MapOptionsArgs(camera: true));
                 if (options?.Camera != null)
                     mapOptions.Camera = options!.Camera;
-            }
-
-            if (results?.Route != null && results.Route.Count > 0)
-            {
-                var shape = results.Route[0];
-                var pinShape = new MapFeature<Point>(shape.Geometry!);
-                await maps.Features.Add(mapId, pinShape, pinLayer.Source.Id);
-                if (shape.Properties?.ContainsKey("time") ?? false)
-                    panelInfo.UpdateTime(shape.Properties?["time"]?.ToString());
-                else if (shape.Properties?.ContainsKey("_timestamp") ?? false)
-                    panelInfo.UpdateTime(shape.Properties?["_timestamp"]);
-                else
-                    panelInfo.UpdateTime("");
             }
         }
         catch (Exception ex)
@@ -290,7 +293,7 @@
                 await maps!.Sprites.CreateFromTemplate(mapId, image);
                 //The order the layers are added is important.
                 //We need the pin to display above the data so dataLayer must be added first.
-                await maps.Spatial.Layers.Add(mapId, dataLayer);
+                await maps.Spatial.Layers.Add(mapId, routeLayer);
                 await maps.Layers.Add(mapId, pinLayer);
                 await LoadGPSTrace(datasets[0]);
             }
@@ -306,6 +309,18 @@
         }
     }
 
+    private async Task OnMapEvent(MapEventArgs args)
+    {
+        try
+        {
+            panelInfo.Update(args.Payload?.Animation?.PlayableEvent);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
     # endregion
 
     #region MapsInterop
@@ -331,44 +346,28 @@
         StateHasChanged();
     }
 
-    private class PanelInfo
+    private class PanelInfo : PlayableAnimationEvent
     {
-        public string? Time { get; private set; }
-
-        internal void UpdateTime(object? timestamp)
+        public void Update(PlayableAnimationEvent? payload)
         {
-            var time = "";
-            var t = timestamp?.GetType();
+            HasPayload = payload != null;
 
-            if (timestamp is JsonElement jsonElement)
-            {
-                // var value = jsonElement.GetDateTime();
-                // time = value.ToString();
-                switch (jsonElement.ValueKind)
-                {
-                    case JsonValueKind.String:
-                        time = jsonElement.GetString();
-                        break;
-                    case JsonValueKind.Number:
-                        time = $"Timestamp: {jsonElement.GetInt64()}";
-                        // var value = jsonElement.GetInt64();
-                        // var ts = new TimeSpan(value);
-                        // time = ts.ToString();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (t == typeof(string))
-            {
-                time = timestamp?.ToString();
-            }
+            Type = payload?.Type ?? "";
+            Progress = Math.Round(payload?.Progress ?? 0, 8);
+            EasingProgress = Math.Round(payload?.EasingProgress ?? 0, 8);
+            Heading = Math.Round(payload?.Heading ?? 0, 6);
+            Speed = Math.Round(payload?.Speed ?? 0, 8);
+            SpeedInKph = Math.Round(payload?.SpeedInKph ?? 0, 8);
+            Position = payload?.Position;
+            Timestamp = payload?.Timestamp;
 
-            if (DateTime.TryParse(time, out var date))
-                Time = $"{date.ToUniversalTime()} (UTC)";
-            else
-                Time = time;
+            PositionDisplay = this.Position is not null ? $"[{Position.Longitude:F6}, {Position.Latitude:F6}]" : null;
+            
         }
+
+        public string? PositionDisplay { get; private set; }
+
+        public bool HasPayload { get; private set; }
     }
 
     private class DatasetInfo(string displayName, string url)
@@ -376,11 +375,7 @@
         public string DisplayName { get; } = displayName;
         public string Url { get; } = url;
         public string? TimestampProperty { get; set; }
-        public List<ValueInterpolation>? ValueInterpolations { get; set; }
-    }
-
-    private class ValueInterpolation(string propertyPath)
-    {
-        public string PropertyPath { get; set; } = propertyPath;
+        public List<PointPairValueInterpolation>? ValueInterpolations { get; set; }
+        public double Zoom { get; set; } = 15;
     }
 }

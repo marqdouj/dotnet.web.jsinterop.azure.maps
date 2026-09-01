@@ -14,6 +14,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events
         [Display(Name = "Map")]
         map,
 
+        [Display(Name = "Animation")]
+        animation,
+
         [Display(Name = "Datasource")]
         datasource,
 

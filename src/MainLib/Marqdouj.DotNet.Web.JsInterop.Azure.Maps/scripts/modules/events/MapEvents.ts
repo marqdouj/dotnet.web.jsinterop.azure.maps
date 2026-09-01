@@ -107,7 +107,7 @@ export class MapEvents {
     #notifyNotifyMapEventConfig = (callback: atlas.MapConfiguration, mapRef: MapReference, event: MapEvent) => {
         const result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { config: { ...callback } });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
     // #endregion
 
@@ -170,7 +170,7 @@ export class MapEvents {
     #notifyMapEventData = (callback: atlas.MapDataEvent, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, this.#buildMapDataEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #buildMapDataEventPayload(dataEvent: atlas.MapDataEvent) {
@@ -245,7 +245,7 @@ export class MapEvents {
     #notifyMapEventGeneral = (callback: atlas.MapEvent, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
     // #endregion
 
@@ -308,7 +308,7 @@ export class MapEvents {
     #notifyMapEventLayer = (callback: atlas.layer.Layer, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildLayerEventPayload(callback), callback);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
     // #endregion
 
@@ -372,7 +372,7 @@ export class MapEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildMouseEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     // #endregion
@@ -437,7 +437,7 @@ export class MapEvents {
         let payload = { source: { id: callback.getId() } };
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { source: { id: callback.getId() } }, callback);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     }
     // #endregion
 
@@ -508,7 +508,7 @@ export class MapEvents {
     #notifyMapEventStyle(style: string, mapRef: MapReference, event: MapEvent) {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { style: { style: style } });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     }
     // #endregion
 
@@ -573,7 +573,7 @@ export class MapEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildTouchEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     // #endregion
@@ -639,7 +639,7 @@ export class MapEvents {
             callback.preventDefault();
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, EventsHelper.buildWheelEventPayload(callback));
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     // #endregion

@@ -146,7 +146,7 @@ export class MarkerEvents {
     #notifyMapHtmlMarkerEvent = (callback: atlas.TargetedEvent, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { htmlMarker: { type: callback.type } });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #notifyMapHtmlMarkerKeyboardEvent = (callback: KeyboardEvent, mapRef: MapReference, event: MapEvent) => {
@@ -155,7 +155,7 @@ export class MarkerEvents {
         }
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { htmlMarker: { type: callback.type, ...EventsHelper.buildKeyboardEventPayload(callback) } });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 }
 

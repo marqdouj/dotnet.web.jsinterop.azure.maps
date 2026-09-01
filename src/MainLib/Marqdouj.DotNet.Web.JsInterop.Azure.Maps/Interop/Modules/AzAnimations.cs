@@ -26,7 +26,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="mapId">The map id.</param>
         /// <param name="shapeId">The shape id which contains the time based route.</param>
         /// <param name="length">The number of elements to return. -1 returns all elements.</param>
-        /// <param name="timestampProperty">the property name that contains timestamp information.  If not specified, `_timestamp` will be used.</param>
+        /// <param name="timestampProperty">The property name that contains timestamp information.  If not specified, `_timestamp` will be used.</param>
         ValueTask<List<Feature<Point, object?>[]>?> ExtractRoutePoints(string mapId, string shapeId, int length, string? timestampProperty);
 
         /// <summary>
@@ -35,6 +35,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="mapId"></param>
         /// <returns></returns>
         ValueTask<List<string>> GetEasingNames(string mapId);
+
+        /// <summary>
+        /// Set the options for the animation.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="animationId"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        ValueTask SetOptions(string mapId, string animationId, object options);
+
+        /// <summary>
+        /// Action to perform with the animation. 'play', 'pause', 'stop', or 'reset'.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="animationId"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        ValueTask UpdateAnimation(string mapId, string animationId, string action);
     }
 
     internal class AzAnimations(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsAnimations
@@ -57,6 +75,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<string>>(GetJsInteropMethod(), mapId);
+        }
+        
+        public async ValueTask SetOptions(string mapId, string animationId, object options)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, animationId, options);
+        }
+
+        public async ValueTask UpdateAnimation(string mapId, string animationId, string action)
+        {
+            var module = await moduleTask.Value;
+            await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, animationId, action.ToLower());
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

@@ -133,14 +133,14 @@ export class SourceEvents {
     #NotifyMapDataSourceEvent_Updated = (callback: atlas.source.DataSource, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { dataSource: { id: callback.getId() } }, callback);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #NotifyMapDataSourceEvent = (callback: atlas.Shape[], mapRef: MapReference, event: MapEvent) => {
         let payload = { dataSource: { shapes: Helpers.buildShapeResults(callback) } };
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, payload);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type, result);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type, result);
     };
     // #endregion
 }

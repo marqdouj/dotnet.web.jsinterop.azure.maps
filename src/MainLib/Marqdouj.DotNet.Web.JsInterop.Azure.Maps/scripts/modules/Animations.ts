@@ -16,7 +16,7 @@ export class Animations {
 
     public static async animateShape(mapId: string, args: AnimateShapeArgs): Promise<void> {
         const eventName = "Animations.animateShape";
-        Logger.logMapMessage(mapId, LogLevel.Trace, eventName, args);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, eventName, args);
 
         const editAction = Helpers.switchCaseInsensitive(args.editAction, {
             replace: () => EditAction.Replace,
@@ -59,7 +59,7 @@ export class Animations {
 
         const ds = map.sources.getById(options.dataSourceId);
         if (!ds) {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found.`, options);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found.`, options);
             return;
         }
 
@@ -68,7 +68,7 @@ export class Animations {
         if (SourceHelper.isDataSource(ds)) {
             let shape = ds.getShapeById(featureId);
             if (!shape) {
-                Logger.logMessage(mapId, LogLevel.Error, `${eventName}: Shape not found where shapeId = '${featureId}'.`, options);
+                Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: Shape not found where shapeId = '${featureId}'.`, options);
                 return;
             }
 
@@ -76,7 +76,7 @@ export class Animations {
             if (options.shape.properties)
                 shape.addProperty("heading", options.shape.properties["heading"]);
         } else {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where id = '${options.dataSourceId}'.`, options);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where id = '${options.dataSourceId}'.`, options);
         }
     }
 
@@ -85,7 +85,7 @@ export class Animations {
             return false;
         }
         else {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: atlas.animations module not found.`);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: atlas.animations module not found.`);
             return true;
         }
     }
@@ -101,7 +101,7 @@ export class Animations {
 
         const ds = map.sources.getById(dataSourceId) as atlas.source.DataSource;
         if (!ds) {
-            Logger.logMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where Id = '${dataSourceId}'`,);
+            Logger.logMapMessage(mapId, LogLevel.Error, `${eventName}: DataSource not found where Id = '${dataSourceId}'`,);
             return;
         }
 
@@ -110,14 +110,57 @@ export class Animations {
     }
 
     public static extractRoutePointsFromShape(shape: any, length: number, timestampProperty?: string): atlas.data.Feature<atlas.data.Point, any>[] | undefined {
-        if (!shape)
+        const eventName = "Animations.extractRoutePointsFromShape";
+        if (!shape) {
+            Logger.logMessage("Animations", LogLevel.Error, `${eventName}: shape is undefined.`);
             return;
+        }
 
         if (length == 0 || length < -1)
             return [];
 
         var route = anims.animations.extractRoutePoints(shape, timestampProperty);
         return length == -1 ? route : Helpers.getFirstNItems(route, length);
+    }
+
+    public static updateAnimation(mapId: string, animationId: string, action: string) {
+        //const eventName = "Animations.updateAnimation";
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, action);
+
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const animation = mapRef.getAnimation(animationId, true);
+
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation was retrieved`, animation);
+
+        if (animation && animation[action]) {
+            //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation actioned`, action);
+            animation[action]();``
+        }
+    }
+
+    public static setOptions(mapId: string, animationId: string, options: any) {
+        const eventName = "Animations.setOptions";
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, options);
+
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const animation = mapRef.getAnimation(animationId, true);
+
+        if (animation) {
+            options = Helpers.removeNullish(options);
+            if (!options) {
+                Logger.logMapMessage(mapId, LogLevel.Warn, `${eventName}: options are missing.`, options);
+                return;
+            }
+            options.map = Helpers.isNotEmptyOrNull(options.mapId) ? mapRef.map : null;
+            animation.setOptions(options);
+        }
+
     }
 }
 

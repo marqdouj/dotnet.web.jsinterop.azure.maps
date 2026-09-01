@@ -107,7 +107,7 @@ export class ShapeEvents {
     #NotifyMapShapeEvent = (callback: atlas.Shape, mapRef: MapReference, event: MapEvent) => {
         let result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, Helpers.getShapeResult(callback), callback);
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
-        EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
+        //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 }
 
