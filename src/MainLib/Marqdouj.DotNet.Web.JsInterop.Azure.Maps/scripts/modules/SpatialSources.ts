@@ -10,7 +10,7 @@ import { Animations } from "./Animations";
 export class SpatialSources {
     public static async loadGPSTrace(mapId: string, parameters: LoadGPSTraceParameters): Promise<LoadGPSTraceResults> {
         const eventName = "SpatialSources.loadGPSTrace";
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entering.`, parameters);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entering.`, parameters);
 
         var result: LoadGPSTraceResults = { success: false };
 
@@ -19,7 +19,7 @@ export class SpatialSources {
             return result;
 
         parameters = Helpers.removeNullish(parameters);
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: removeNullish.`, parameters);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: removeNullish.`, parameters);
 
         if (Helpers.isEmptyOrNull(parameters.animationId)) {
             throw new Error(`${eventName}: missing animationId.`);
@@ -50,7 +50,7 @@ export class SpatialSources {
         if (Helpers.isNotEmptyOrNull(parameters.url)) {
             await this.#readUrl(mapId, parameters.url, parameters.readOptions)
                 .then(r => {
-                    Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: await readUrl ok.`, r);
+                    //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: await readUrl ok.`, r);
 
                     if (r) {
                         dsRoute.add(r);
@@ -82,7 +82,7 @@ export class SpatialSources {
                             }
 
                             try {
-                                Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: attempting to create animation`, route, pin, pathOptions);
+                                //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: attempting to create animation`, route, pin, pathOptions);
                                 animation = anims.animations.moveAlongRoute(route, pin as any, pathOptions);
 
                                 if (animation) {

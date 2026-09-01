@@ -1,5 +1,6 @@
+import * as atlas from "azure-maps-control"
 import * as anims from "azure-maps-animations"
-import { Helpers } from "../common/";
+import { Helpers, Logger, LogLevel } from "../common/";
 import { EventsLogger } from "./EventsLogger";
 import { EventsHelper } from "./EventsHelper";
 import { EventNotification, MapEvent } from "../Events";
@@ -45,9 +46,11 @@ export class AnimationEvents {
 
             if (callback) {
                 if (value.once) {
+                    EventsLogger.logMessage(mapRef.mapId, LogLevel.Trace, `Adding event ${value.type} for animation ${value.targetId} with once=true`);
                     mapRef.map.events.addOnce(value.type as any, animation, callback);
                 }
                 else {
+                    EventsLogger.logMessage(mapRef.mapId, LogLevel.Trace, `Adding event ${value.type} for animation ${value.targetId} with once=false`);
                     mapRef.map.events.add(value.type as any, animation, callback);
                 }
                 wasAdded = true;
@@ -90,13 +93,43 @@ export class AnimationEvents {
     }
 
     #notifyNotifyMapEventPlayableAnimation = (callback: anims.PlayableAnimationEvent, mapRef: MapReference, event: MapEvent) => {
-        const result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { playableEvent: { ...callback } });
+        var ts = (callback as any).timestamp;
+        var sp = (callback as any).speed;
+
+        const payload: PlayableAnimationEventPayload = {
+            animationId: event.targetId!,
+            type: event.type,
+            timestamp: ts != null ? new Date(ts).toUTCString() : undefined,
+            speed: sp != null ? Math.round(atlas.math.convertSpeed(sp, 'metersPerSecond', 'kilometersPerHour') * 100) / 100 : undefined,
+            progress: callback.progress,
+            easingProgress: callback.easingProgress,
+            position: callback.position,
+            heading: callback.heading
+        };
+        const eventPayload: AnimationEventPayload = {
+            type: event.type,
+            playableEvent: payload
+        };
+
+        const result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { animation: eventPayload });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
         //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
 
     #notifyNotifyMapEventFrameEvent = (callback: anims.FrameBasedAnimationEvent, mapRef: MapReference, event: MapEvent) => {
-        const result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { frameEvent: { ...callback } });
+        var ts = (callback as any).timestamp;
+        const payload: FrameBasedAnimationEventPayload = {
+            animationId: event.targetId!,
+            type: event.type,
+            timestamp: ts != null ? new Date(ts).toUTCString() : undefined,
+            frameIdx: callback.frameIdx,
+            numFrames: callback.numFrames
+        };
+        const eventPayload: AnimationEventPayload = {
+            type: event.type,
+            frameEvent: payload
+        };
+        const result = EventsHelper.buildMapEventArgs(mapRef.mapId, event, { animation: eventPayload });
         mapRef.dotNetRef.invokeMethodAsync(EventNotification.NotifyMapEvent, result);
         //EventsLogger.logNotifyFired(mapRef.mapId, EventNotification.NotifyMapEvent, event.type);
     };
@@ -150,4 +183,29 @@ enum MapAnimationEvent {
     OnComplete = 'oncomplete',
     OnFrame = 'onframe',
     OnProgress = 'onprogress',
+}
+
+interface PlayableAnimationEventPayload {
+    type: string;
+    animationId: string;
+    timestamp?: string;
+    speed?: number;
+    progress: number;
+    easingProgress: number;
+    position?: atlas.data.Position;
+    heading?: number;
+}
+
+interface FrameBasedAnimationEventPayload {
+    type: string;
+    animationId: string;
+    timestamp?: string;
+    frameIdx?: number;
+    numFrames?: number;
+}
+
+interface AnimationEventPayload {
+    type: string;
+    frameEvent?: FrameBasedAnimationEventPayload;
+    playableEvent?: PlayableAnimationEventPayload;
 }

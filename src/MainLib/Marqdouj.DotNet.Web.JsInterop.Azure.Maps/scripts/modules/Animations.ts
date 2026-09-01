@@ -16,7 +16,7 @@ export class Animations {
 
     public static async animateShape(mapId: string, args: AnimateShapeArgs): Promise<void> {
         const eventName = "Animations.animateShape";
-        Logger.logMapMessage(mapId, LogLevel.Trace, eventName, args);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, eventName, args);
 
         const editAction = Helpers.switchCaseInsensitive(args.editAction, {
             replace: () => EditAction.Replace,
@@ -125,7 +125,7 @@ export class Animations {
 
     public static updateAnimation(mapId: string, animationId: string, action: string) {
         const eventName = "Animations.updateAnimation";
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, action);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, action);
 
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)
@@ -133,17 +133,17 @@ export class Animations {
 
         const animation = mapRef.getAnimation(animationId, true);
 
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation was retrieved`, animation);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation was retrieved`, animation);
 
         if (animation && animation[action]) {
-            Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation actioned`, action);
+            //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: animation actioned`, action);
             animation[action]();``
         }
     }
 
     public static setOptions(mapId: string, animationId: string, options: any) {
         const eventName = "Animations.setOptions";
-        Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, options);
+        //Logger.logMapMessage(mapId, LogLevel.Trace, `${eventName}: entered.`, animationId, options);
 
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)

@@ -28,7 +28,7 @@ export class EventsLogger {
     }
 
     static logNotifyFired(mapId: string, name: string, ...optionalParams: any[]) {
-        //Logger.logMessage(mapId, LogLevel.Trace, `${name}: event was fired.`, optionalParams);
+        Logger.logMessage(mapId, LogLevel.Trace, `${name}: event was fired.`, optionalParams);
     }
 
     static logMessage(mapId: string, level: LogLevel, message: string, ...optionalParams: any[]) {

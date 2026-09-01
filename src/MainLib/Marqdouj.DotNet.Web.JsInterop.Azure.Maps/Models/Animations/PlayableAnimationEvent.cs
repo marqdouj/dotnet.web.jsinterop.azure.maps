@@ -1,12 +1,11 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
-using Microsoft.JSInterop;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Animations
 {
     /// <summary>
     /// Playable animation event argument.
     /// </summary>
-    public sealed class PlayableAnimationEvent :IAsyncDisposable
+    public class PlayableAnimationEvent
     {
         /// <summary>
         /// The event type.
@@ -14,14 +13,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Animations
         public string Type { get; set; } = default!;
 
         /// <summary>
-        /// The animation the event occurred on (PlayableAnimation).
+        /// The animation the event occurred on.
         /// </summary>
-        public IJSObjectReference? Animation { get; set; }
+        public string AnimationId { get; set; } = default!;
+
+        /// <summary>
+        /// Timestamp of the event in UTC format.
+        /// </summary>
+        public string? Timestamp { get; set; }
+
+        /// <summary>
+        /// Speed in km/hr of the animation at the current frame. This is only returned by path animations.
+        /// </summary>
+        public double? Speed { get; set; }
 
         /// <summary>
         /// Progress of the animation where 0 is the start and 1 is the end.
         /// </summary>
-        public double? Progress { get; set; }
+        public double Progress { get; set; }
 
         /// <summary>
         /// The progress of the animation after being passed through an easing function.
@@ -37,15 +46,5 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Animations
         /// The focal heading of an animation frame. Returned by path animations.
         /// </summary>
         public double? Heading { get; set; }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
-        public async ValueTask DisposeAsync()
-        {
-            if (Animation != null)
-                await Animation.DisposeAsync();
-        }
     }
 }
