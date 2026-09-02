@@ -1,6 +1,9 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-2.4`:
+  - `Sandbox`. Demo updates.
+	- `GPS Trace`.
 - `11.0.0-Preview-2.3`:
   - `IAzureMapsAnimations`.
 	- `SetOptions`. New method to set animation options.
