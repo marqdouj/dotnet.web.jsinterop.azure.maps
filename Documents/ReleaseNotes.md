@@ -2,8 +2,17 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-2.4`:
+  - `IAzureMapsInterop.Math`. New module for azure maps math operations.
+  - `Interop.Models.Atlas`. New namespace.
+	- `Enums`:
+	  - `AccelerationUnits`
+	  - `AreaUnits`
+	  - `DistanceUnits`
+	  - `SpeedUnits`
+	  - `TimeUnits`
+	- `Models`:
+	  - `AffineTransform`.
   - `Sandbox`. Demo updates.
-	- `GPS Trace`.
 - `11.0.0-Preview-2.3`:
   - `IAzureMapsAnimations`.
 	- `SetOptions`. New method to set animation options.

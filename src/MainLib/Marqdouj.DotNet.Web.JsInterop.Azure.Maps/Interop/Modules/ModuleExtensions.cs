@@ -13,6 +13,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         Factory,
         Features,
         Geolocations,
+        Math,
         Sprites,
         Layers,
         Markers,

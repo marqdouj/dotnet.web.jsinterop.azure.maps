@@ -11,6 +11,7 @@ export { Geolocations } from "./modules/Geolocations";
 export { Sprites } from "./modules/Sprites";
 export { Layers } from "./modules/Layers"
 export { Markers } from "./modules/Markers";
+export { Math } from "./modules/Math";
 export { Mercators } from "./modules/Mercators";
 export { Popups } from "./modules/Popups";
 export { Sources } from "./modules/Sources"
