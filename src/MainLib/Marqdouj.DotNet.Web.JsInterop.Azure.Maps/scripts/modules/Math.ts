@@ -48,4 +48,24 @@ export class Math {
     public static getRegularPolygonPaths(origin: atlas.data.Position | atlas.data.Point, radius: number, numberOfPositions: number, units?: string, offset?: number): atlas.data.Position[][] {
         return atlas.math.getRegularPolygonPaths(origin, radius, numberOfPositions, units, offset);
     }
+
+    public static interpolate(origin: atlas.data.Position | atlas.data.Point, destination: atlas.data.Position | atlas.data.Point, fraction?: number): atlas.data.Position {
+        return atlas.math.interpolate(origin, destination, fraction);
+    }
+
+    public static normalizeLatitude(lat: number): number {
+        return atlas.math.normalizeLatitude(lat);
+    }
+
+    public static normalizeLongitude(lng: number): number {
+        return atlas.math.normalizeLongitude(lng);
+    }
+
+    public static rotatePositions(positions: atlas.data.Position[], origin: atlas.data.Position | atlas.data.Point, angle: number): atlas.data.Position[] {
+        return atlas.math.rotatePositions(positions, origin, angle);
+    }
+
+    public static getPixelHeading(origin: atlas.data.Position | atlas.data.Point, destination: atlas.data.Position | atlas.data.Point): number {
+        return atlas.math.getPixelHeading(origin, destination);
+    }
 } 

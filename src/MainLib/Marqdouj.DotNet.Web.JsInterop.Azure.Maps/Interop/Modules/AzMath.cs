@@ -251,6 +251,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetLengthOfPath(IJSObjectReference path, string? units = null);
 
         /// <summary>
+        /// Calculates the pixel accurate heading from one position to another based on the Mercator map projection. This heading is visually accurate.
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        ValueTask<double> GetPixelHeading(Position origin, Position destination);
+
+        /// <summary>
+        /// Calculates the pixel accurate heading from one position to another based on the Mercator map projection. This heading is visually accurate.
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <param name="destination"></param>
+        /// <returns></returns>
+        ValueTask<double> GetPixelHeading(Point origin, Point destination);
+
+        /// <summary>
         /// Calculates a position along a path defined by a JS object reference for a LineString or list of Positions at a specified distance from the start of the path.
         /// </summary>
         /// <param name="path">The path for which to calculate the position.</param>
@@ -396,6 +412,48 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <returns>A list of lists of positions that form the regular polygon. 
         /// Comparing to getRegularPolygonPath, sub-paths will always contain longitude in -180 to 180 range</returns>
         ValueTask<List<List<Position>>> GetRegularPolygonPaths(Point origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null);
+
+        /// <summary>
+        /// Calculates a position along a path defined by an origin and destination 
+        /// at a specified fraction of the distance between the two positions.
+        /// </summary>
+        /// <param name="origin">The origin position.</param>
+        /// <param name="destination">The destination position.</param>
+        /// <param name="fraction">The fraction of the distance between the two positions. Default 0.5.</param>
+        /// <returns>The interpolated position.</returns>
+        ValueTask<Position> Interpolate(Position origin, Position destination, double? fraction = null);
+
+        /// <summary>
+        /// Normalizes a latitude value to be within the range of -90 to 90 degrees.
+        /// </summary>
+        /// <param name="lat">The latitude value to normalize.</param>
+        /// <returns>The normalized latitude value.</returns>
+        ValueTask<double> NormalizeLatitude(double lat);
+
+        /// <summary>
+        /// Normalizes a longitude value to be within the range of -180 to 180 degrees.
+        /// </summary>
+        /// <param name="lng">The longitude value to normalize.</param>
+        /// <returns>The normalized longitude value.</returns>
+        ValueTask<double> NormalizeLongitude(double lng);
+
+        /// <summary>
+        /// Rotates a list of positions around a specified origin by a given angle in degrees.
+        /// </summary>
+        /// <param name="positions">The list of positions to rotate.</param>
+        /// <param name="origin">The origin around which to rotate.</param>
+        /// <param name="angle">The amount to rotate in degrees clockwise.</param>
+        /// <returns>The list of rotated positions.</returns>
+        ValueTask<List<Position>> RotatePositions(List<Position> positions, Position origin, double angle);
+
+        /// <summary>
+        /// Rotates a list of positions around a specified origin by a given angle in degrees.
+        /// </summary>
+        /// <param name="positions">The list of positions to rotate.</param>
+        /// <param name="origin">The origin around which to rotate.</param>
+        /// <param name="angle">The amount to rotate in degrees clockwise.</param>
+        /// <returns>The list of rotated positions.</returns>
+        ValueTask<List<Position>> RotatePositions(List<Position> positions, Point origin, double angle);
     }
 
     internal class AzMath(Lazy<Task<IJSObjectReference>> moduleTask) : IAzMath
@@ -635,7 +693,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #endregion
 
-        #region getRegularPolygonPath
+        #region GetRegularPolygonPath
         
         public async ValueTask<List<Position>> GetRegularPolygonPath(Position origin, double radius, int numberOfPositions, string? units = null, double? offset = null)
         {
@@ -687,6 +745,56 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
+        }
+
+        #endregion
+
+        public async ValueTask<Position> Interpolate(Position origin, Position destination, double? fraction = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, destination, fraction);
+        }
+
+        public async ValueTask<double> NormalizeLatitude(double lat)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), lat);
+        }
+
+        public async ValueTask<double> NormalizeLongitude(double lng)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), lng);
+        }
+
+        #region RotatePositions
+
+        public async ValueTask<List<Position>> RotatePositions(List<Position> positions, Position origin, double angle)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
+        }
+
+        public async ValueTask<List<Position>> RotatePositions(List<Position> positions, Point origin, double angle)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
+        }
+
+        #endregion
+
+        #region GetPixelHeading
+
+        public async ValueTask<double> GetPixelHeading(Position origin, Position destination)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
+        }
+
+        public async ValueTask<double> GetPixelHeading(Point origin, Point destination)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
         }
 
         #endregion
