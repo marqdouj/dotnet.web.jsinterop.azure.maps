@@ -68,4 +68,16 @@ export class Math {
     public static getPixelHeading(origin: atlas.data.Position | atlas.data.Point, destination: atlas.data.Position | atlas.data.Point): number {
         return atlas.math.getPixelHeading(origin, destination);
     }
+
+    public static mercatorPixelsToPositions(pixels: atlas.Pixel[], zoom: number): atlas.data.Position[] {
+        return atlas.math.mercatorPixelsToPositions(pixels, zoom);
+    }
+
+    public static mercatorPositionsToPixels(positions: atlas.data.Position[], zoom: number): atlas.Pixel[] {
+        return atlas.math.mercatorPositionsToPixels(positions, zoom);
+    }
+
+    public static convertAcceleration(acceleration: number, fromUnits: string, toUnits: string, decimals?: number): number {
+        return atlas.math.convertAcceleration(acceleration, fromUnits, toUnits, decimals);
+    }
 } 

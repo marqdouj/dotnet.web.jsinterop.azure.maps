@@ -1,4 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Atlas;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
@@ -23,6 +24,28 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="boundingBox">The BoundingBox to convert to a Polygon</param>
         /// <returns></returns>
         ValueTask<BoundingBox> BoundingBoxToPolygon(BoundingBox boundingBox);
+
+        /// <summary>
+        /// Converts an acceleration from one acceleration units to another. 
+        /// Supported units: <see cref="AccelerationUnits"/>
+        /// </summary>
+        /// <param name="acceleration">The acceleration value to convert.</param>
+        /// <param name="fromUnits">The units to convert from.</param>
+        /// <param name="toUnits">The units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration value convertered from one unit to another.</returns>
+        ValueTask<double> ConvertAcceleration(double acceleration, string fromUnits, string toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts an acceleration from one acceleration units to another. 
+        /// Supported units: <see cref="AccelerationUnits"/>
+        /// </summary>
+        /// <param name="acceleration">The acceleration value to convert.</param>
+        /// <param name="fromUnits">The units to convert from.</param>
+        /// <param name="toUnits">The units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration value convertered from one unit to another.</returns>
+        ValueTask<double> ConvertAcceleration(double acceleration, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Converts a distance from one distance units to another. Supported units: miles, nauticalMiles, yards, meters, kilometers, feet
@@ -424,6 +447,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<Position> Interpolate(Position origin, Position destination, double? fraction = null);
 
         /// <summary>
+        /// Converts an array of global Mercator pixel coordinates into an array of geospatial positions at a specified zoom level.
+        /// Global pixel coordinates are relative to the top left corner of the map [-180, 90].
+        /// </summary>
+        /// <param name="pixels">The list of pixels to convert.</param>
+        /// <param name="zoom">The zoom level.</param>
+        /// <returns>The list of converted positions.</returns>
+        ValueTask<List<Position>> MercatorPixelsToPositions(List<Pixel> pixels, double zoom);
+
+        /// <summary>
+        /// Converts an array of positions into an array of global Mercator pixel coordinates at a specified zoom level.
+        /// </summary>
+        /// <param name="positions">The list of positions to convert.</param>
+        /// <param name="zoom">The zoom level.</param>
+        /// <returns>The list of converted global Mercator pixels.</returns>
+        ValueTask<List<Pixel>> MercatorPositionsToPixels(List<Position> positions, double zoom);
+
+        /// <summary>
         /// Normalizes a latitude value to be within the range of -90 to 90 degrees.
         /// </summary>
         /// <param name="lat">The latitude value to normalize.</param>
@@ -798,6 +838,35 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         }
 
         #endregion
+
+        public async ValueTask<List<Position>> MercatorPixelsToPositions(List<Pixel> pixels, double zoom)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), pixels, zoom);
+        }
+
+        public async ValueTask<List<Pixel>> MercatorPositionsToPixels(List<Position> positions, double zoom)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod(), positions, zoom);
+        }
+
+        #region ConvertAcceleration
+
+        public async ValueTask<double> ConvertAcceleration(double acceleration, string fromUnits, string toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), acceleration, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<double> ConvertAcceleration(double acceleration, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), acceleration, fromUnits, toUnits, decimals);
+        }
+
+        #endregion
+
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Math.GetJsModuleMethod(name);
