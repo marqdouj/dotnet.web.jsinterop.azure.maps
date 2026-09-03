@@ -1,7 +1,7 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
-- `11.0.0-Preview-2.4`:
+- `11.0.0-Preview-3.0`:
   - `IAzureMapsInterop.Math`. New module for azure maps math operations.
   - `Interop.Models.Atlas`. New namespace.
 	- `Enums`:
