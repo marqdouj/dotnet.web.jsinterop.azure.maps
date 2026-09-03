@@ -80,4 +80,28 @@ export class Math {
     public static convertAcceleration(acceleration: number, fromUnits: string, toUnits: string, decimals?: number): number {
         return atlas.math.convertAcceleration(acceleration, fromUnits, toUnits, decimals);
     }
+
+    public static convertArea(area: number, fromUnits: string, toUnits: string, decimals?: number): number {
+        return atlas.math.convertArea(area, fromUnits, toUnits, decimals);
+    }
+
+    public static convertSpeed(speed: number, fromUnits: string, toUnits: string, decimals?: number): number {
+        return atlas.math.convertSpeed(speed, fromUnits, toUnits, decimals);
+    }
+
+    public static convertTimespan(timespan: number, fromUnits: string, toUnits: string, decimals?: number): number {
+        return atlas.math.convertTimespan(timespan, fromUnits, toUnits, decimals);
+    }
+
+    public static getAcceleration(initialSpeed: number, distance: number, timespan: number, speedUnits?: string, distanceUnits?: string, timeUnits?: string, accelerationUnits?: string, decimals?: number): number {
+        return atlas.math.getAcceleration(initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
+    }
+
+    public static getAccelerationFromSpeeds(initialSpeed: number, finalSpeed: number, timespan: number, speedUnits?: string, timeUnits?: string, accelerationUnits?: string, decimals?: number): number {
+        return atlas.math.getAccelerationFromSpeeds(initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
+    }
+
+    public static getAccelerationFromFeatures(origin: atlas.data.Feature<atlas.data.Point, any>, destination: atlas.data.Feature<atlas.data.Point, any>, timestampProperty: string, speedProperty?: string, speedUnits?: string, accelerationUnits?: string, decimals?: number): number {
+        return atlas.math.getAccelerationFromFeatures(origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+    }
 } 

@@ -2,8 +2,8 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-3.0`:
-  - `IAzureMapsInterop.Math`. New module for azure maps math operations.
-  - `Interop.Models.Atlas`. New namespace.
+  - `IAzureMapsInterop.Math`. New interop module based on the `azure-maps-control` Math class.
+  - `Interop.Models.Atlas`. New namespace for models/enums etc. in support of the `azure-maps-control` Math class.
 	- `Enums`:
 	  - `AccelerationUnits`
 	  - `AreaUnits`

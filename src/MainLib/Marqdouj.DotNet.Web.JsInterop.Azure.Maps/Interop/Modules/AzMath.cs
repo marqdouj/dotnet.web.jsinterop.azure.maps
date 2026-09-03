@@ -46,6 +46,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
         /// <returns>An acceleration value convertered from one unit to another.</returns>
         ValueTask<double> ConvertAcceleration(double acceleration, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null);
+        
+        /// <summary>
+        /// Converts an area from one area units to another. Supported units: <see cref="AreaUnits"/>
+        /// </summary>
+        /// <param name="area">The area value to convert.</param>
+        /// <param name="fromUnits">The units to convert from.</param>
+        /// <param name="toUnits">The units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An area value converted from one unit to another.</returns>
+        ValueTask<double> ConvertArea(double area, string fromUnits, string toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts an area from one area units to another. Supported units: <see cref="AreaUnits"/>
+        /// </summary>
+        /// <param name="area">The area value to convert.</param>
+        /// <param name="fromUnits">The units to convert from.</param>
+        /// <param name="toUnits">The units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An area value converted from one unit to another.</returns>
+        ValueTask<double> ConvertArea(double area, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Converts a distance from one distance units to another. Supported units: miles, nauticalMiles, yards, meters, kilometers, feet
@@ -86,6 +106,164 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
         /// <returns></returns>
         ValueTask<List<double>> ConvertDistances(List<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts a speed from one speed units to another. Supported units: <see cref="SpeedUnits"/>
+        /// </summary>
+        /// <param name="speed">The speed value to convert.</param>
+        /// <param name="fromUnits">The speed units to convert from.</param>
+        /// <param name="toUnits">The speed units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>A speed value convertered from one unit to another.</returns>
+        ValueTask<double> ConvertSpeed(double speed, string fromUnits, string toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts a speed from one speed units to another. Supported units: <see cref="SpeedUnits"/>
+        /// </summary>
+        /// <param name="speed">The speed value to convert.</param>
+        /// <param name="fromUnits">The speed units to convert from.</param>
+        /// <param name="toUnits">The speed units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>A speed value convertered from one unit to another.</returns>
+        ValueTask<double> ConvertSpeed(double speed, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts a timespan from one time units to another. Supported units: <see cref="TimeUnits"/>
+        /// </summary>
+        /// <param name="timespan">The timespan value to convert.</param>
+        /// <param name="fromUnits">The time units to convert from.</param>
+        /// <param name="toUnits">The time units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>A timespan value converted from one unit to another.</returns>
+        ValueTask<double> ConvertTimeSpan(double timespan, string fromUnits, string toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts a timespan from one time units to another. Supported units: <see cref="TimeUnits"/>
+        /// </summary>
+        /// <param name="timespan">The timespan value to convert.</param>
+        /// <param name="fromUnits">The time units to convert from.</param>
+        /// <param name="toUnits">The time units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>A timespan value converted from one unit to another.</returns>
+        ValueTask<double> ConvertTimeSpan(double timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the acceleration based on an initial speed, distance, and timespan. The result can be returned in different acceleration units.
+        /// </summary>
+        /// <param name="initialSpeed">The initial speed.</param>
+        /// <param name="distance">The distance.</param>
+        /// <param name="timespan">The timespan.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="distanceUnits">The units for the distance. If not specified meters are used.</param>
+        /// <param name="timeUnits">The units for the timespan. If not specified seconds are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated acceleration.</returns>
+        ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, string? speedUnits = null, string? distanceUnits = null, string? timeUnits = null, string? accelerationUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the acceleration based on an initial speed, distance, and timespan. The result can be returned in different acceleration units.
+        /// </summary>
+        /// <param name="initialSpeed">The initial speed.</param>
+        /// <param name="distance">The distance.</param>
+        /// <param name="timespan">The timespan.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="distanceUnits">The units for the distance. If not specified meters are used.</param>
+        /// <param name="timeUnits">The units for the timespan. If not specified seconds are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated acceleration.</returns>
+        ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, SpeedUnits? speedUnits = null, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates an acceleration between two point features that have a timestamp property and optionally a speed property.
+        /// If speeds are provided, ignore distance between points as the path may not have been straight and calculate: a = (v2 - v1)/(t2 - t1).
+        /// If speeds are not provided or only provided on first point, calculate straight line distance between points and calculate: a = 2*(d - v*t)/t^2.
+        /// </summary>
+        /// <param name="origin">The initial point in which the acceleration is calculated from. Must be Feature{Point, P?}.</param>
+        /// <param name="destination">The destination point for which the acceleration is calculated. Must be Feature{Point, P?}</param>
+        /// <param name="timestampProperty">The property name for the timestamp.</param>
+        /// <param name="speedProperty">The property name for the speed.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration between two point features that have a timestamp property and optionally a speed property. 
+        /// Returns NaN if unable to parse timestamp.</returns>
+        ValueTask<double> GetAccelerationFromFeatures(IJSObjectReference origin, IJSObjectReference destination, string timestampProperty, string? speedProperty = null, string? speedUnits = null, string? accelerationUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates an acceleration between two point features that have a timestamp property and optionally a speed property.
+        /// If speeds are provided, ignore distance between points as the path may not have been straight and calculate: a = (v2 - v1)/(t2 - t1).
+        /// If speeds are not provided or only provided on first point, calculate straight line distance between points and calculate: a = 2*(d - v*t)/t^2.
+        /// </summary>
+        /// <param name="origin">The initial point in which the acceleration is calculated from. Must be Feature{Point, P?}.</param>
+        /// <param name="destination">The destination point for which the acceleration is calculated. Must be Feature{Point, P?}</param>
+        /// <param name="timestampProperty">The property name for the timestamp.</param>
+        /// <param name="speedProperty">The property name for the speed.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration between two point features that have a timestamp property and optionally a speed property. 
+        /// Returns NaN if unable to parse timestamp.</returns>
+        ValueTask<double> GetAccelerationFromFeatures(IJSObjectReference origin, IJSObjectReference destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates an acceleration between two point features that have a timestamp property and optionally a speed property.
+        /// If speeds are provided, ignore distance between points as the path may not have been straight and calculate: a = (v2 - v1)/(t2 - t1).
+        /// If speeds are not provided or only provided on first point, calculate straight line distance between points and calculate: a = 2*(d - v*t)/t^2.
+        /// </summary>
+        /// <param name="origin">The initial point in which the acceleration is calculated from.</param>
+        /// <param name="destination">The destination point for which the acceleration is calculated.</param>
+        /// <param name="timestampProperty">The property name for the timestamp.</param>
+        /// <param name="speedProperty">The property name for the speed.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration between two point features that have a timestamp property and optionally a speed property. 
+        /// Returns NaN if unable to parse timestamp.</returns>
+        ValueTask<double> GetAccelerationFromFeatures<P>(Feature<Point, P?> origin, Feature<Point, P?> destination, string timestampProperty, string? speedProperty = null, string? speedUnits = null, string? accelerationUnits = null, int? decimals = null) where P : class;
+
+        /// <summary>
+        /// Calculates an acceleration between two point features that have a timestamp property and optionally a speed property.
+        /// If speeds are provided, ignore distance between points as the path may not have been straight and calculate: a = (v2 - v1)/(t2 - t1).
+        /// If speeds are not provided or only provided on first point, calculate straight line distance between points and calculate: a = 2*(d - v*t)/t^2.
+        /// </summary>
+        /// <param name="origin">The initial point in which the acceleration is calculated from.</param>
+        /// <param name="destination">The destination point for which the acceleration is calculated.</param>
+        /// <param name="timestampProperty">The property name for the timestamp.</param>
+        /// <param name="speedProperty">The property name for the speed.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified m/s are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>An acceleration between two point features that have a timestamp property and optionally a speed property. 
+        /// Returns NaN if unable to parse timestamp.</returns>
+        ValueTask<double> GetAccelerationFromFeatures<P>(Feature<Point, P?> origin, Feature<Point, P?> destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null) where P : class;
+
+        /// <summary>
+        /// Calculates the acceleration based on an initial speed, final speed, and timespan. The result can be returned in different acceleration units.
+        /// </summary>
+        /// <param name="initialSpeed">The initial speed.</param>
+        /// <param name="finalSpeed">The final speed.</param>
+        /// <param name="timespan">The timespan.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified meters are used.</param>
+        /// <param name="timeUnits">The units for the timespan. If not specified seconds are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated acceleration.</returns>
+        ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, string? speedUnits = null, string? timeUnits = null, string? accelerationUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the acceleration based on an initial speed, final speed, and timespan. The result can be returned in different acceleration units.
+        /// </summary>
+        /// <param name="initialSpeed">The initial speed.</param>
+        /// <param name="finalSpeed">The final speed.</param>
+        /// <param name="timespan">The timespan.</param>
+        /// <param name="speedUnits">The units for the speed. If not specified meters are used.</param>
+        /// <param name="timeUnits">The units for the timespan. If not specified seconds are used.</param>
+        /// <param name="accelerationUnits">The units for the acceleration. If not specified m/s^2 are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated acceleration.</returns>
+        ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, SpeedUnits? speedUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
 
         /// <summary>
         /// Calculates an array of positions that form a cardinal spline between the specified array of positions.
@@ -867,6 +1045,114 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #endregion
 
+        #region ConvertArea
+
+        public async ValueTask<double> ConvertArea(double area, string fromUnits, string toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), area, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<double> ConvertArea(double area, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), area, fromUnits, toUnits, decimals);
+        }
+
+        #endregion
+
+        #region ConvertSpeed
+
+        public async ValueTask<double> ConvertSpeed(double speed, string fromUnits, string toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), speed, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<double> ConvertSpeed(double speed, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), speed, fromUnits, toUnits, decimals);
+        }
+
+        #endregion
+
+        #region ConvertTimeSpan
+
+        public async ValueTask<double> ConvertTimeSpan(double timespan, string fromUnits, string toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<double> ConvertTimeSpan(double timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
+        }
+
+        #endregion
+
+        #region GetAcceleration
+
+        public async ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, string? speedUnits = null, string? distanceUnits = null, string? timeUnits = null, string? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, SpeedUnits? speedUnits = null, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
+        }
+
+        #endregion
+
+        #region GetAccelerationFromSpeeds
+
+        public async ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, string? speedUnits = null, string? timeUnits = null, string? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, SpeedUnits? speedUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
+        }
+
+        #endregion
+
+
+        #region GetAccelerationFromFeatures
+
+        public async ValueTask<double> GetAccelerationFromFeatures(IJSObjectReference origin, IJSObjectReference destination, string timestampProperty, string? speedProperty = null, string? speedUnits = null, string? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetAccelerationFromFeatures(IJSObjectReference origin, IJSObjectReference destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetAccelerationFromFeatures<P>(Feature<Point, P?> origin, Feature<Point, P?> destination, string timestampProperty, string? speedProperty = null, string? speedUnits = null, string? accelerationUnits = null, int? decimals = null) where P : class
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetAccelerationFromFeatures<P>(Feature<Point, P?> origin, Feature<Point, P?> destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null) where P : class
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+        }
+
+        #endregion
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Math.GetJsModuleMethod(name);
