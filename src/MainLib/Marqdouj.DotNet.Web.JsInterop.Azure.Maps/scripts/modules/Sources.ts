@@ -187,6 +187,17 @@ export class Sources {
     }
     // #endregion
 
+    public static getShapeById(mapId: string, id: string, shapeId: string) : any {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const ds = SourceHelper.getSource(mapRef, id);
+        if (ds) {
+            return (ds as any).getShapeById(shapeId);
+        }
+    }
+
     public static getShapes(mapId: string, id: string) {
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)

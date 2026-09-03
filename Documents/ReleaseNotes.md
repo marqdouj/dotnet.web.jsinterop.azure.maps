@@ -12,6 +12,8 @@
 	  - `TimeUnits`
 	- `Models`:
 	  - `AffineTransform`.
+  - `IAzureMapsSources`
+	- `GetShapeById`. New method to get an IJSObjectReference for a shape.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-2.3`:
   - `IAzureMapsAnimations`.

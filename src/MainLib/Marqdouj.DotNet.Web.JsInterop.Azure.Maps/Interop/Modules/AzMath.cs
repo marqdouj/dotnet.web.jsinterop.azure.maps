@@ -266,6 +266,60 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, SpeedUnits? speedUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
 
         /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Geometry, Feature{Geometry, P} or Shape for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea(IJSObjectReference data, string? areaUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Geometry for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea(Geometry data, string? areaUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Feature{Geometry, P} for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea<P>(Feature<Geometry, P?> data, string? areaUnits = null, int? decimals = null) where P : class;
+
+        /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Geometry, Feature{Geometry, P} or Shape for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea(IJSObjectReference data, AreaUnits? areaUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Geometry for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea(Geometry data, AreaUnits? areaUnits = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the approximate area of a geometry in the specified units.
+        /// </summary>
+        /// <param name="data">The Feature{Geometry, P} for which to calculate the area.</param>
+        /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>The calculated area.</returns>
+        ValueTask<double> GetArea<P>(Feature<Geometry, P?> data, AreaUnits? areaUnits = null, int? decimals = null) where P : class;
+
+        /// <summary>
         /// Calculates an array of positions that form a cardinal spline between the specified array of positions.
         /// </summary>
         /// <param name="positions">The positions to calculate the spline through</param>
@@ -613,6 +667,60 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <returns>A list of lists of positions that form the regular polygon. 
         /// Comparing to getRegularPolygonPath, sub-paths will always contain longitude in -180 to 180 range</returns>
         ValueTask<List<List<Position>>> GetRegularPolygonPaths(Point origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null);
+
+        /// <summary>
+        /// Calculates the average speed of travel between two points based on the provided amount of time.
+        /// </summary>
+        /// <param name="origin">The initial point in which the speed is calculated from. 
+        /// Must be a Position, Point, or Feature{Point, P?} or an IJSObjectReference to one.</param>
+        /// <param name="destination">The final point in which the speed is calculated to. 
+        /// Must be a Position, Point, or Feature{Point, P?} or an IJSObjectReference to one.</param>
+        /// <param name="timespan">The time span over which the speed is calculated.</param>
+        /// <param name="timeUnits">The units for the time span. Default: seconds</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The average speed of travel between the two points.</returns>
+        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference;
+
+        /// <summary>
+        /// Calculates the average speed of travel between two points based on the provided amount of time.
+        /// </summary>
+        /// <param name="origin">The initial point in which the speed is calculated from. 
+        /// Must be a Position, Point, or Feature{Point, P?} or an IJSObjectReference to one.</param>
+        /// <param name="destination">The final point in which the speed is calculated to. 
+        /// Must be a Position, Point, or Feature{Point, P?} or an IJSObjectReference to one.</param>
+        /// <param name="timespan">The time span over which the speed is calculated.</param>
+        /// <param name="timeUnits">The units for the time span. Default: seconds</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The average speed of travel between the two points.</returns>
+        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference;
+
+        /// <summary>
+        /// Calculates the average speed of travel between two features based on the timestamp property of each feature.
+        /// </summary>
+        /// <typeparam name="T"> Feature{Point, P?} or IJSObjectReference to one.</typeparam>
+        /// <typeparam name="P">Feature{Point, P?}</typeparam>
+        /// <param name="origin">The initial point in which the speed is calculated from.</param>
+        /// <param name="destination">The final point in which the speed is calculated to.</param>
+        /// <param name="timestampProperty">The property name for the timestamp values.</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The speed in the specified units or NaN if valid timestamps are not found.</returns>
+        ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, string? speedUnits = null, int? decimals = null) where T : Feature<Point, P?>, IJSObjectReference;
+
+        /// <summary>
+        /// Calculates the average speed of travel between two features based on the timestamp property of each feature.
+        /// </summary>
+        /// <typeparam name="T"> Feature{Point, P?} or IJSObjectReference to one.</typeparam>
+        /// <typeparam name="P">Feature{Point, P?}</typeparam>
+        /// <param name="origin">The initial point in which the speed is calculated from.</param>
+        /// <param name="destination">The final point in which the speed is calculated to.</param>
+        /// <param name="timestampProperty">The property name for the timestamp values.</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The speed in the specified units or NaN if valid timestamps are not found.</returns>
+        ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null) where T : Feature<Point, P?>, IJSObjectReference;
 
         /// <summary>
         /// Calculates a position along a path defined by an origin and destination 
@@ -1125,7 +1233,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #endregion
 
-
         #region GetAccelerationFromFeatures
 
         public async ValueTask<double> GetAccelerationFromFeatures(IJSObjectReference origin, IJSObjectReference destination, string timestampProperty, string? speedProperty = null, string? speedUnits = null, string? accelerationUnits = null, int? decimals = null)
@@ -1150,6 +1257,79 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
+        }
+
+        #endregion
+
+        #region GetArea
+
+        //getArea (data: atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape, areaUnits?: AreaUnits, decimals?: number): number
+        public async ValueTask<double> GetArea(IJSObjectReference data, string? areaUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        public async ValueTask<double> GetArea(Geometry data, string? areaUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        public async ValueTask<double> GetArea<P>(Feature<Geometry, P?> data, string? areaUnits = null, int? decimals = null) where P : class
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        public async ValueTask<double> GetArea(IJSObjectReference data, AreaUnits? areaUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        public async ValueTask<double> GetArea(Geometry data, AreaUnits? areaUnits = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        public async ValueTask<double> GetArea<P>(Feature<Geometry, P?> data, AreaUnits? areaUnits = null, int? decimals = null) where P : class
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+        }
+
+        #endregion
+
+        #region GetSpeed
+
+        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
+        }
+
+        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
+        }
+
+        #endregion
+
+        #region GetSpeedFromFeatures
+
+        public async ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, string? speedUnits = null, int? decimals = null) where T : Feature<Point, P?>, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedUnits, decimals);
+        }
+
+        public async ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null) where T : Feature<Point, P?>, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedUnits, decimals);
         }
 
         #endregion

@@ -104,4 +104,16 @@ export class Math {
     public static getAccelerationFromFeatures(origin: atlas.data.Feature<atlas.data.Point, any>, destination: atlas.data.Feature<atlas.data.Point, any>, timestampProperty: string, speedProperty?: string, speedUnits?: string, accelerationUnits?: string, decimals?: number): number {
         return atlas.math.getAccelerationFromFeatures(origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
     }
+
+    public static getArea(data: atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape, areaUnits?: atlas.math.AreaUnits, decimals?: number): number {
+        return atlas.math.getArea(data, areaUnits, decimals);
+    }
+
+    public static getSpeed(origin: atlas.data.Position | atlas.data.Point | atlas.data.Feature<atlas.data.Point, any>, destination: atlas.data.Position | atlas.data.Point | atlas.data.Feature<atlas.data.Point, any>, timespan: number, timeUnits?: string | atlas.math.TimeUnits, speedUnits?: string | atlas.math.SpeedUnits, decimals?: number): number {
+        return atlas.math.getSpeed(origin, destination, timespan, timeUnits, speedUnits, decimals);
+    }
+
+    public static getSpeedFromFeatures(origin: atlas.data.Feature<atlas.data.Point, any>, destination: atlas.data.Feature<atlas.data.Point, any>, timestampProperty: string, speedUnits?: string | atlas.math.SpeedUnits, decimals?: number): number {
+        return atlas.math.getSpeedFromFeatures(origin, destination, timestampProperty, speedUnits, decimals);
+    }
 } 
