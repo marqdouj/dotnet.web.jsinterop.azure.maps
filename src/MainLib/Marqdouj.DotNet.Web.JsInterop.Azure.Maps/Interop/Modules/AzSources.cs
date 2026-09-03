@@ -48,13 +48,30 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask ClearById(string mapId, IEnumerable<string> sourceIds);
 
         /// <summary>
-        /// Retrieves a shape from a specific source on the specified map by its ID.
+        /// Retrieves a shape from a specific source on the specified map as JS object reference.
         /// </summary>
         /// <param name="mapId"></param>
         /// <param name="sourceId"></param>
         /// <param name="shapeId"></param>
         /// <returns></returns>
-        ValueTask<IJSObjectReference?> GetShapeById(string mapId, string sourceId, string shapeId);
+        ValueTask<IJSObjectReference?> GetJSShapeById(string mapId, string sourceId, string shapeId);
+
+        /// <summary>
+        /// Retrieves shapes from a specific source on the specified map as JS object references by their IDs.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="sourceId"></param>
+        /// <param name="shapeIds"></param>
+        /// <returns></returns>
+        ValueTask<List<IJSObjectReference>> GetJSShapesById(string mapId, string sourceId, IEnumerable<string> shapeIds);
+
+        /// <summary>
+        /// Retrieves the shapes from a specific source on the specified map as JS object references.
+        /// </summary>
+        /// <param name="mapId"></param>
+        /// <param name="sourceId"></param>
+        /// <returns></returns>
+        ValueTask<List<IJSObjectReference>> GetJSShapes(string mapId, string sourceId);
 
         /// <summary>
         /// Retrieves the shapes from a specific source on the specified map.
@@ -150,10 +167,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             await module.InvokeVoidAsync(GetJsInteropMethod(), mapId, sourceIds);
         }
 
-        public async ValueTask<IJSObjectReference?> GetShapeById(string mapId, string sourceId, string shapeId)
+        public async ValueTask<IJSObjectReference?> GetJSShapeById(string mapId, string sourceId, string shapeId)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<IJSObjectReference?>(GetJsInteropMethod(), mapId, sourceId, shapeId);
+        }
+
+        public async ValueTask<List<IJSObjectReference>> GetJSShapesById(string mapId, string sourceId, IEnumerable<string> shapeIds)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<IJSObjectReference>?>(GetJsInteropMethod(), mapId, sourceId, shapeIds) ?? [];
+        }
+
+        public async ValueTask<List<IJSObjectReference>> GetJSShapes(string mapId, string sourceId)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<IJSObjectReference>?>(GetJsInteropMethod(), mapId, sourceId) ?? [];
         }
 
         public async ValueTask<List<MapEventShape>> GetShapes(string mapId, string sourceId)

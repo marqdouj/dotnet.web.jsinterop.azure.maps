@@ -116,4 +116,24 @@ export class Math {
     public static getSpeedFromFeatures(origin: atlas.data.Feature<atlas.data.Point, any>, destination: atlas.data.Feature<atlas.data.Point, any>, timestampProperty: string, speedUnits?: string | atlas.math.SpeedUnits, decimals?: number): number {
         return atlas.math.getSpeedFromFeatures(origin, destination, timestampProperty, speedUnits, decimals);
     }
+
+    public static getTimespan(startTime: Date | string | number, endTime: Date | string | number, units?: atlas.math.TimeUnits, decimals?: number): number {
+        return atlas.math.getTimespan(startTime, endTime, units, decimals);
+    }
+
+    public static getTravelDistance(distanceUnits: string, timespan: number, speed: number, acceleration?: number, timeUnits?: string | atlas.math.TimeUnits, speedUnits?: string | atlas.math.SpeedUnits, accelerationUnits?: string, decimals?: number): number {
+        return atlas.math.getTravelDistance(distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
+    }
+
+    public static parseTimestamp(timestamp: Date | string | number): Date {
+        return atlas.math.parseTimestamp(timestamp);
+    }
+
+    public static getConvexHull(data: atlas.data.Position[] | atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.data.FeatureCollection | atlas.data.GeometryCollection | atlas.data.Geometry[] | Array<atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape> | atlas.Shape): atlas.data.Polygon {
+        return atlas.math.getConvexHull(data);
+    }
+
+    public static getPositions(data: atlas.data.Position[] | atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.data.FeatureCollection | atlas.data.GeometryCollection | atlas.data.Geometry[] | Array<atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape> | atlas.Shape): atlas.data.Position[] {
+        return atlas.math.getPositions(data);
+    }
 } 

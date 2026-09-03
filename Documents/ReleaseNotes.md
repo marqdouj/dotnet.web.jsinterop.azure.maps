@@ -13,7 +13,9 @@
 	- `Models`:
 	  - `AffineTransform`.
   - `IAzureMapsSources`
-	- `GetShapeById`. New method to get an IJSObjectReference for a shape.
+	- `GetJSShapeById`. New method to get an IJSObjectReference for a shape in the source.
+	- `GetJSShapesById`. New method to get a list of IJSObjectReferences for the shapes in a source by shape id.
+	- `GetJSShapes`. New method to get a list of IJSObjectReferences for the shapes in a source.
   - `Sandbox`. Demo updates.
 - `11.0.0-Preview-2.3`:
   - `IAzureMapsAnimations`.

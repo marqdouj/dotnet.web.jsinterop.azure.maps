@@ -330,6 +330,50 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<List<Position>> GetCardinalSpline(List<Position> positions, double? tension = null, double? nodeSize = null, bool? close = null);
 
         /// <summary>
+        /// Calculates the convex hull of a set of positions or geometries. 
+        /// The convex hull is the smallest polygon that contains all the points in the input data.
+        /// </summary>
+        /// <param name="data">
+        /// The input data for which to calculate the convex hull.
+        /// Formats supported include:
+        /// Position[] | Geometry | Feature{Geometry, any} | FeatureCollection | GeometryCollection | Geometry[] | Feature{atlas.data.Geometry, any}[] | Shape[] | Shape.
+        /// </param>
+        /// <returns>The convex hull as a polygon.</returns>
+        ValueTask<Polygon> GetConvexHull(IJSObjectReference data);
+
+        /// <summary>
+        /// Calculates the convex hull of a geometry. 
+        /// The convex hull is the smallest polygon that contains all the points in the input data.
+        /// </summary>
+        /// <param name="data">
+        /// The input data for which to calculate the convex hull.
+        /// Formats supported include:
+        /// IGeometry
+        /// </param>
+        /// <returns>The convex hull as a polygon.</returns>
+        ValueTask<Polygon> GetConvexHull(IGeometry data);
+
+        /// <summary>
+        /// Calculates the convex hull of a set of positions. 
+        /// The convex hull is the smallest polygon that contains all the points in the input data.
+        /// </summary>
+        /// <param name="data">
+        /// The input data for which to calculate the convex hull.
+        /// </param>
+        /// <returns>The convex hull as a polygon.</returns>
+        ValueTask<Polygon> GetConvexHull(List<Position> data);
+
+        /// <summary>
+        /// Calculates the convex hull of a set of geometries. 
+        /// The convex hull is the smallest polygon that contains all the points in the input data.
+        /// </summary>
+        /// <param name="data">
+        /// The input data for which to calculate the convex hull.
+        /// </param>
+        /// <returns>The convex hull as a polygon.</returns>
+        ValueTask<Polygon> GetConvexHull(List<IGeometry> data);
+
+        /// <summary>
         /// Calculates a destination position based on a starting position, a heading, a distance, and a distance unit type.
         /// </summary>
         /// <param name="origin">Position that the destination is relative to.</param>
@@ -680,7 +724,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns>The average speed of travel between the two points.</returns>
-        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference;
+        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : IGeometry, IJSObjectReference;
 
         /// <summary>
         /// Calculates the average speed of travel between two points based on the provided amount of time.
@@ -694,7 +738,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns>The average speed of travel between the two points.</returns>
-        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference;
+        ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : IGeometry, IJSObjectReference;
 
         /// <summary>
         /// Calculates the average speed of travel between two features based on the timestamp property of each feature.
@@ -721,6 +765,56 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns>The speed in the specified units or NaN if valid timestamps are not found.</returns>
         ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null) where T : Feature<Point, P?>, IJSObjectReference;
+
+        /// <summary>
+        /// Calculates the time span between two DateTime objects in the specified units.
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="endTime">The end time.</param>
+        /// <param name="units">The units for the time span. Default: seconds</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The time span in the specified units or NaN if valid times are not found.</returns>
+        ValueTask<double> GetTimeSpan(DateTime startTime, DateTime endTime, string? units = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the time span between two DateTime objects in the specified units.
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="endTime">The end time.</param>
+        /// <param name="units">The units for the time span. Default: seconds</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The time span in the specified units or NaN if valid times are not found.</returns>
+        ValueTask<double> GetTimeSpan(DateTime startTime, DateTime endTime, TimeUnits? units = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the distance traveled based on a given time span, speed, and optional acceleration.
+        /// Formula: d = v*t + 0.5*a*t^2
+        /// </summary>
+        /// <param name="timespan">The timespan to calculate the distance for.</param>
+        /// <param name="speed">The speed at which the distance is traveled.</param>
+        /// <param name="distanceUnits">The units for the distance. Default: meters</param>
+        /// <param name="timeUnits">The units for the time span. Default: seconds</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="accelerationUnits">The units for the acceleration. Default: meters/second^2</param>
+        /// <param name="acceleration">The acceleration during the travel. Default: 0</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The calculated travel distance.</returns>
+        ValueTask<double> GetTravelDistance(double timespan, double speed, string? distanceUnits = null, string? timeUnits = null, string? speedUnits = null, string? accelerationUnits = null, double? acceleration = null, int? decimals = null);
+
+        /// <summary>
+        /// Calculates the distance traveled based on a given time span, speed, and optional acceleration.
+        /// Formula: d = v*t + 0.5*a*t^2
+        /// </summary>
+        /// <param name="timespan">The timespan to calculate the distance for.</param>
+        /// <param name="speed">The speed at which the distance is traveled.</param>
+        /// <param name="distanceUnits">The units for the distance. Default: meters</param>
+        /// <param name="timeUnits">The units for the time span. Default: seconds</param>
+        /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
+        /// <param name="accelerationUnits">The units for the acceleration. Default: meters/second^2</param>
+        /// <param name="acceleration">The acceleration during the travel. Default: 0</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns>The calculated travel distance.</returns>
+        ValueTask<double> GetTravelDistance(double timespan, double speed, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, double? acceleration = null, int? decimals = null);
 
         /// <summary>
         /// Calculates a position along a path defined by an origin and destination 
@@ -762,6 +856,32 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="lng">The longitude value to normalize.</param>
         /// <returns>The normalized longitude value.</returns>
         ValueTask<double> NormalizeLongitude(double lng);
+
+        /// <summary>
+        /// Parses a timestamp into a ISO 8601 UTC DateTime object.
+        /// </summary>
+        /// <param name="timestamp">The DateTime to parse. Will be converted to UTC before passing to the JavaScript module.</param>
+        /// <returns>DateTime in ISO 8601 UTC</returns>
+        ValueTask<DateTime> ParseTimestamp(DateTime timestamp);
+
+        /// <summary>
+        /// Parses a timestamp into a ISO 8601 UTC DateTime object.
+        /// </summary>
+        /// <param name="timestamp">The timestamp to parse.
+        /// Format can be any of the following:
+        /// ISO8601 date format (i.e. 2012-04-23T18:25:43.511Z), 
+        /// RFC282 / IETF date syntax (section 3.3),
+        /// OData Date string (i.e. "/Date(1235764800000)/")
+        /// </param>
+        /// <returns>DateTime in ISO 8601 UTC</returns>
+        ValueTask<DateTime> ParseTimestamp(string timestamp);
+
+        /// <summary>
+        /// Parses a timestamp into a ISO 8601 UTC DateTime object.
+        /// </summary>
+        /// <param name="timestamp">The Unix timestamp in milliseconds to parse.</param>
+        /// <returns>DateTime in ISO 8601 UTC</returns>
+        ValueTask<DateTime> ParseTimestamp(long timestamp);
 
         /// <summary>
         /// Rotates a list of positions around a specified origin by a given angle in degrees.
@@ -1304,13 +1424,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #region GetSpeed
 
-        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference
+        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, string? timeUnits = null, string? speedUnits = null, int? decimals = null) where T : IGeometry, IJSObjectReference
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
         }
 
-        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : class, IJSObjectReference
+        public async ValueTask<double> GetSpeed<T>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) where T : IGeometry, IJSObjectReference
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
@@ -1334,8 +1454,87 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #endregion
 
+        #region GetTimeSpan
 
+        public async ValueTask<double> GetTimeSpan(DateTime startTime, DateTime endTime, string? units = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), startTime, endTime, units, decimals);
+        }
 
+        public async ValueTask<double> GetTimeSpan(DateTime startTime, DateTime endTime, TimeUnits? units = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), startTime, endTime, units, decimals);
+        }
+
+        #endregion
+
+        #region GetTravelDistance
+
+        public async ValueTask<double> GetTravelDistance(double timespan, double speed, string? distanceUnits = null, string? timeUnits = null, string? speedUnits = null, string? accelerationUnits = null, double? acceleration = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double> GetTravelDistance(double timespan, double speed, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, double? acceleration = null, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double>(GetJsInteropMethod(), distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
+        }
+
+        #endregion
+
+        #region ParseTimestamp
+
+        public async ValueTask<DateTime> ParseTimestamp(DateTime timestamp)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<DateTime>(GetJsInteropMethod(), timestamp.Kind == DateTimeKind.Utc ? timestamp : timestamp.ToUniversalTime());
+        }
+
+        public async ValueTask<DateTime> ParseTimestamp(string timestamp)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<DateTime>(GetJsInteropMethod(), timestamp);
+        }
+
+        public async ValueTask<DateTime> ParseTimestamp(long timestamp)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<DateTime>(GetJsInteropMethod(), timestamp);
+        }
+
+        #endregion
+
+        #region GetConvexHull
+
+        public async ValueTask<Polygon> GetConvexHull(IJSObjectReference data)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+        }
+
+        public async ValueTask<Polygon> GetConvexHull(IGeometry data)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+        }
+
+        public async ValueTask<Polygon> GetConvexHull(List<IGeometry> data)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+        }
+
+        public async ValueTask<Polygon> GetConvexHull(List<Position> data)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+        }
+
+        #endregion
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Math.GetJsModuleMethod(name);
