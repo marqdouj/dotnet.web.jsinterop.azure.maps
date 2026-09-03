@@ -1334,6 +1334,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         #endregion
 
+
+
+
         private static string GetJsInteropMethod([CallerMemberName] string name = "")
             => JsModule.Math.GetJsModuleMethod(name);
     }
