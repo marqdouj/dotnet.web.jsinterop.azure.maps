@@ -136,4 +136,12 @@ export class Math {
     public static getPositions(data: atlas.data.Position[] | atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.data.FeatureCollection | atlas.data.GeometryCollection | atlas.data.Geometry[] | Array<atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape> | atlas.Shape): atlas.data.Position[] {
         return atlas.math.getPositions(data);
     }
+
+    public static getPosition(data: atlas.data.Position | atlas.data.Point | atlas.data.Feature<atlas.data.Point, any> | atlas.Shape): atlas.data.Position {
+        return atlas.math.getPosition(data);
+    }
+
+    public static getPositionsAlongPath(path: atlas.data.LineString | atlas.data.Position[], numPositions: number): atlas.data.Position[] {
+        return atlas.math.getPositionsAlongPath(path, numPositions);
+    }
 } 

@@ -566,6 +566,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetPixelHeading(Point origin, Point destination);
 
         /// <summary>
+        /// Gets the position of an object that is a position, point, point feature, or circle. If it is a circle, its center coordinate will be returned.
+        /// For <see cref="IJSObjectReference"/> you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/>
+        /// </summary>
+        /// <typeparam name="T">Position, IGeometry, IJSObjectReference</typeparam>
+        /// <param name="data">The data object to extract the position from. Must be a position, point, point feature, or circle.</param>
+        /// <returns></returns>
+        ValueTask<Position> GetPosition<T>(T data) where T : Position, IGeometry, IJSObjectReference;
+
+        /// <summary>
         /// Calculates a position along a path defined by a JS object reference for a LineString or list of Positions at a specified distance from the start of the path.
         /// </summary>
         /// <param name="path">The path for which to calculate the position.</param>
@@ -619,6 +628,43 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="units">Unit of distance measurement. Default: meters</param>
         /// <returns>The position along the path at the specified distance.</returns>
         ValueTask<Position> GetPositionAlongPath(List<Position> path, double distance, DistanceUnits? units = null);
+
+        /// <summary>
+        /// Retrieves a list of all positions in the provided geometry, feature or array of geometries/features or shapes/shape.
+        /// For <see cref="IJSObjectReference"/> you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/>
+        /// </summary>
+        /// <typeparam name="T">Position, IGeometry, IJSObjectReference</typeparam>
+        /// <param name="data">The data from which to extract positions. Must be a Position, IGeometry, or an IJSObjectReference to them.</param>
+        /// <returns>A list of positions.</returns>
+        ValueTask<List<Position>> GetPositions<T>(T data) where T : Position, IGeometry, IJSObjectReference;
+
+        /// <summary>
+        /// Retrieves a list of all positions in the provided geometry, feature or array of geometries/features or shapes/shape.
+        /// For <see cref="IJSObjectReference"/> you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/>
+        /// </summary>
+        /// <typeparam name="T">Position, IGeometry, IJSObjectReference</typeparam>
+        /// <param name="data">The data from which to extract positions. Must be a Position, IGeometry, or an IJSObjectReference to them.</param>
+        /// <returns>A list of positions.</returns>
+        ValueTask<List<Position>> GetPositions<T>(List<T> data) where T : Position, IGeometry, IJSObjectReference;
+        //getPositionsAlongPath (path: atlas.data.LineString | atlas.data.Position[], numPositions: number): atlas.data.Position[]
+
+        /// <summary>
+        /// Gets an array of evenly spaced positions along a path.
+        /// For <see cref="IJSObjectReference"/> you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/>
+        /// </summary>
+        /// <typeparam name="T">LineString, or an IJSObjectReference to a LineString or array of Positions</typeparam>
+        /// <param name="path">The path to get the positions from.</param>
+        /// <param name="numPositions">The number of positions to get.</param>
+        /// <returns></returns>
+        ValueTask<List<Position>> GetPositionsAlongPath<T>(T path, long numPositions) where T : LineString, IJSObjectReference;
+
+        /// <summary>
+        /// Gets an array of evenly spaced positions along a path.
+        /// </summary>
+        /// <param name="path">The path to get the positions from.</param>
+        /// <param name="numPositions">The number of positions to get.</param>
+        /// <returns></returns>
+        ValueTask<List<Position>> GetPositionsAlongPath(IEnumerable<Position> path, long numPositions);
 
         /// <summary>
         /// Calculates a list of positions that form a regular polygon around a specified origin position.
@@ -1532,6 +1578,48 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
+        }
+
+        #endregion
+
+        #region GetPositions
+
+        public async ValueTask<List<Position>> GetPositions<T>(T data) where T : Position, IGeometry, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data);
+        }
+
+        public async ValueTask<List<Position>> GetPositions<T>(List<T> data) where T : Position, IGeometry, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data);
+        }
+
+        #endregion
+
+        #region GetPosition
+
+        public async ValueTask<Position> GetPosition<T>(T data) where T : Position, IGeometry, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Position>(GetJsInteropMethod(), data);
+        }
+
+        #endregion
+
+        #region GetPositionsAlongPath
+
+        public async ValueTask<List<Position>> GetPositionsAlongPath<T>(T data, long numPositions) where T : LineString, IJSObjectReference
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data, numPositions);
+        }
+
+        public async ValueTask<List<Position>> GetPositionsAlongPath(IEnumerable<Position> data, long numPositions)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data, numPositions);
         }
 
         #endregion
