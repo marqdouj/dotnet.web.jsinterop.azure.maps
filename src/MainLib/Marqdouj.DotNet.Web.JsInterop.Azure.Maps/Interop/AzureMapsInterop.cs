@@ -71,9 +71,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsGeolocations Geolocations { get; }
 
         /// <summary>
-        /// <inheritdoc cref="IAzMath"/>
+        /// <inheritdoc cref="IAzureMapsMath"/>
         /// </summary>
-        IAzMath Math { get; }
+        IAzureMapsMath Math { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsSprites"/>
@@ -195,7 +195,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
 
         public IAzureMapsGeolocations Geolocations { get; }
 
-        public IAzMath Math { get; }
+        public IAzureMapsMath Math { get; }
 
         public IAzureMapsSprites Sprites { get; }
 
