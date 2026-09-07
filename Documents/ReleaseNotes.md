@@ -3,15 +3,6 @@
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-3.0`:
   - `IAzureMapsInterop.Math`. New interop module based on the `azure-maps-control` Math class.
-  - `Interop.Models.Atlas`. New namespace for models/enums etc. in support of the `azure-maps-control` Math class.
-	- `Enums`:
-	  - `AccelerationUnits`
-	  - `AreaUnits`
-	  - `DistanceUnits`
-	  - `SpeedUnits`
-	  - `TimeUnits`
-	- `Models`:
-	  - `AffineTransform`.
   - `IAzureMapsSources`
 	- `GetJSShapeById`. New method to get an IJSObjectReference for a shape in the source.
 	- `GetJSShapesById`. New method to get a list of IJSObjectReferences for the shapes in a source by shape id.

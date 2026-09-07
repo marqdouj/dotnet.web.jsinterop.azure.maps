@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Atlas
+namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
 {
     /// <summary>
     /// Units of measurement for areas.

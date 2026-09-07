@@ -1,4 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Atlas;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
