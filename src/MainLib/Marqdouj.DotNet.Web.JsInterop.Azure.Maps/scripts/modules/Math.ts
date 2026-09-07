@@ -37,6 +37,16 @@ export class Math {
         return atlas.math.getAccelerationFromSpeeds(initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
     }
 
+    public static getAffineTransformToSource(source: number[][], target: number[][], targetPoints: number[][], decimals?: number): number[][] {
+        const at = new atlas.math.AffineTransform(source, target);
+        return at.toSource(targetPoints, decimals);
+    }
+
+    public static getAffineTransformToTarget(source: number[][], target: number[][], sourcePoints: number[][], decimals?: number): number[][] {
+        const at = new atlas.math.AffineTransform(source, target);
+        return at.toTarget(sourcePoints, decimals);
+    }
+
     public static getArea(data: atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape, areaUnits?: atlas.math.AreaUnits, decimals?: number): number {
         return atlas.math.getArea(data, areaUnits, decimals);
     }

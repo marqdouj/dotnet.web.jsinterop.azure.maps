@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
@@ -107,6 +108,26 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetAccelerationFromFeatures<T, P>(T origin, T destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
             where T : IJSObjectReference, IFeature<Point, P>
             where P : class;
+
+        /// <summary>
+        /// Converts an array of points from the target reference system to the source reference system.
+        /// </summary>
+        /// <param name="source">A set of reference points from the source reference system to transform from.</param>
+        /// <param name="target">A set of reference points from the target reference system to transform to.</param>
+        /// <param name="targetPoints">An array of points from the target reference system to transform.</param>
+        /// <param name="decimals">Number of decimal places to round the results off to.</param>
+        /// <returns>An array of points that have been transformed to the source reference system.</returns>
+        ValueTask<double[][]> GetAffineTransformToSource(double[][] source, double[][] target, double[][] targetPoints, int? decimals = null);
+
+        /// <summary>
+        /// Converts an array of points from the source reference system to the target reference system.
+        /// </summary>
+        /// <param name="source">A set of reference points from the source reference system to transform from.</param>
+        /// <param name="target">A set of reference points from the target reference system to transform to.</param>
+        /// <param name="sourcePoints">An array of points from the source reference system to transform.</param>
+        /// <param name="decimals">Number of decimal places to round the results off to.</param>
+        /// <returns>An array of points that have been transformed to the target reference system.</returns>
+        ValueTask<double[][]> GetAffineTransformToTarget(double[][] source, double[][] target, double[][] sourcePoints, int? decimals = null);
 
         /// <summary>
         /// Calculates the acceleration based on an initial speed, final speed, and timespan.
@@ -513,6 +534,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
+        }
+
+        public async ValueTask<double[][]> GetAffineTransformToSource(double[][] source, double[][] target, double[][] targetPoints, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double[][]>(GetJsInteropMethod(), source, target, targetPoints, decimals);
+        }
+
+        public async ValueTask<double[][]> GetAffineTransformToTarget(double[][] source, double[][] target, double[][] sourcePoints, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<double[][]>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
         }
 
         public async ValueTask<double> GetArea<T, P>(T data, AreaUnits? areaUnits = null, int? decimals = null)
