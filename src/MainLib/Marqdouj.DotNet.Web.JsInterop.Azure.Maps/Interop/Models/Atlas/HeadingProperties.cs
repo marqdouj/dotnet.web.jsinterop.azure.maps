@@ -4,8 +4,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Atlas
 {
     /// <summary>
     /// The properties object returned by
-    /// <see cref="IAzureMapsMath.GetPointWithHeadingAlongPath{T}(T, double, DistanceUnits?)"/> —
-    /// the TypeScript inline type <c>{ heading: number }</c>.
+    /// <see cref="IAzureMapsMath.GetPointWithHeadingAlongPath{T}(T, double, DistanceUnits?)"/>
     /// </summary>
     public class HeadingProperties
     {

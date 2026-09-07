@@ -141,6 +141,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<List<Position>> GetCardinalSpline<T>(T positions, double? tension = null, double? nodeSize = null, bool? close = null) where T: IJSObjectReference, IEnumerable<Position>;
 
         /// <summary>
+        /// Calculates the closest point on the edge of a geometry to a specified point or position.
+        /// </summary>
+        /// <typeparam name="TPoint"></typeparam>
+        /// <typeparam name="TGeom"></typeparam>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="pt"><see cref="Position"/>, <see cref="Point"/>, Feature{Point, P?}. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="geom"><see cref="IGeometry"/> or Feature{Geometry, P?}. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="units">Unit of distance measurement. Default is meters.</param>
+        /// <param name="decimals">The number of decimal places to round the result to.</param>
+        /// <returns></returns>
+        ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry<TPoint, TGeom, P>(TPoint pt, TGeom geom, DistanceUnits? units, double? decimals)
+            where TPoint : IPosition, IPoint, IFeature<Point, P?>
+            where TGeom : IGeometry, IFeature<Geometry, P?>
+            where P : class;
+
+        /// <summary>
         /// Calculates the convex hull of a set of positions or geometries. 
         /// The convex hull is the smallest polygon that contains all the points in the input data.
         /// </summary>
@@ -218,6 +234,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetLengthOfPath<T>(T path, DistanceUnits? units = null) where T: IJSObjectReference, IEnumerable<Position>, ILineString;
 
         /// <summary>
+        /// Denormalizes path on antimeridian, this makes lines with coordinates on the opposite side of the antimeridian to always cross it.
+        /// Note that the path crossing antimeridian will contain longitude outside of -180 to 180 range.
+        /// See <see cref="IAzureMapsMath.GetPathSplitByAntimeridian{T}(T)"/> when this is not desired.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path">List of position objects or linestring to denormalize. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <returns>A denormalized list of position objects, path crossing antimeridian will contain longitude outside of -180 to 180 range.</returns>
+        ValueTask<List<Position>> GetPathDenormalizedAtAntimerian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+
+        /// <summary>
+        /// Split path on antimeridian into multiple paths.
+        /// See <see cref="IAzureMapsMath.GetPathDenormalizedAtAntimerian{T}(T)"/> when this is not desired.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path">>List of position objects or linestring to split. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <returns>A path split into multiple paths by antimeridian.</returns>
+        ValueTask<List<List<Position>>> GetPathSplitByAntimeridian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+
+        /// <summary>
         /// Calculates the pixel accurate heading from one position to another based on the Mercator map projection.
         /// </summary>
         /// <param name="origin"><see cref="Position"/> or <see cref="Point"/>. May be an <see cref="IJSObjectReference"/>.</param>
@@ -234,6 +269,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="units">The distance units.</param>
         /// <returns>A point with heading a specified distance along a path.</returns>
         ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath<T>(T path, double distance, DistanceUnits? units) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+
+        /// <summary>
+        /// Gets an array of evenly spaced points with headings along a path.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="numPoints">The number of points to get.</param>
+        /// <returns>An array of evenly spaced points with headings along a path.</returns>
+        ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath<T>(T path, double numPoints) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
 
         /// <summary>
         /// Gets the position of an object that is a position, point, point feature, or circle. If it is a circle, its center coordinate will be returned.
@@ -391,6 +435,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<List<Position>> RotatePositions<T, TOrigin>(T positions, TOrigin origin, double angle) 
             where T : IJSObjectReference, IEnumerable<Position>, IEnumerable<Point>
             where TOrigin : IJSObjectReference, IPosition, IPoint;
+
+        /// <summary>
+        /// Perform a Douglas-Peucker simplification on an array of positions.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="points">The positions to simplify. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="tolerance">A tolerance to use in the simplification.</param>
+        /// <returns></returns>
+        ValueTask<List<Position>> SimplifyPositions<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Position>;
+
+        /// <summary>
+        /// Perform a Douglas-Peucker simplification on an array of pixels.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="points">The pixels to simplify. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="tolerance">A tolerance to use in the simplification.</param>
+        /// <returns></returns>
+        ValueTask<List<Pixel>> SimplifyPixels<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Pixel>;
     }
 
     internal class AzMath(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsMath
@@ -467,6 +529,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, tension, nodeSize, close);
         }
 
+        public async ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry<TPoint, TGeom, P>(TPoint pt, TGeom geom, DistanceUnits? units, double? decimals)
+            where TPoint : IPosition, IPoint, IFeature<Point, P?>
+            where TGeom : IGeometry, IFeature<Geometry, P?>
+            where P : class
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<Feature<Point, DistanceProperties>>(GetJsInteropMethod(), pt, geom, units, decimals);
+        }
+
         public async ValueTask<Polygon> GetConvexHull<T, P>(T data)
             where T : IJSObjectReference, IEnumerable<Position>, IGeometry, IEnumerable<Geometry>, IFeature<Geometry, P>, IEnumerable<IFeature<Geometry, P>>, IFeatureCollection, IGeometryCollection
             where P : class
@@ -517,6 +588,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), path, units);
         }
 
+        public async ValueTask<List<Position>> GetPathDenormalizedAtAntimerian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path);
+        }
+
+        public async ValueTask<List<List<Position>>> GetPathSplitByAntimeridian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path);
+        }
+
         public async ValueTask<double> GetPixelHeading<T>(T origin, T destination) where T : IGeoJsonObject, IPosition, IPoint
         {
             var module = await moduleTask.Value;
@@ -527,6 +610,12 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Feature<Point, HeadingProperties>>(GetJsInteropMethod(), path, distance, units);
+        }
+
+        public async ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath<T>(T path, double distance) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Feature<Point, HeadingProperties>>>(GetJsInteropMethod(), path, distance);
         }
 
         public async ValueTask<Position> GetPosition<T, P>(T data) where T : IJSObjectReference, IPosition, IPoint, IFeature<Point, P?> where P : class
@@ -623,6 +712,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
+        }
+
+        public async ValueTask<List<Position>> SimplifyPositions<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Position>
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Position>>(GetJsInteropMethod("Simplify"), points, tolerance);
+        }
+
+        public async ValueTask<List<Pixel>> SimplifyPixels<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Pixel>
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod("Simplify"), points, tolerance);
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "")

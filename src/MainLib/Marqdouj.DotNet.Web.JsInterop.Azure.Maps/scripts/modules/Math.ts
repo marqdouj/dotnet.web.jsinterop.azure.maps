@@ -45,6 +45,10 @@ export class Math {
         return atlas.math.getCardinalSpline(positions, tension, nodeSize, close);
     }
 
+    public static getClosestPointOnGeometry(pt: atlas.data.Position | atlas.data.Point | atlas.data.Feature<atlas.data.Point, any> | atlas.Shape, geom: atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape, units?: string | atlas.math.DistanceUnits, decimals?: number): atlas.data.Feature<atlas.data.Point, { distance: number }> {
+        return atlas.math.getClosestPointOnGeometry(pt, geom, units, decimals);
+    }
+
     public static getConvexHull(data: atlas.data.Position[] | atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.data.FeatureCollection | atlas.data.GeometryCollection | atlas.data.Geometry[] | Array<atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape> | atlas.Shape): atlas.data.Polygon {
         return atlas.math.getConvexHull(data);
     }
@@ -77,12 +81,24 @@ export class Math {
         return atlas.math.getLengthOfPath(path, units);
     }
 
+    public static getPathDenormalizedAtAntimerian(path: atlas.data.LineString | atlas.data.Position[]): atlas.data.Position[] {
+        return atlas.math.getPathDenormalizedAtAntimerian(path);
+    }
+
+    public static getPathSplitByAntimeridian(path: atlas.data.LineString | atlas.data.Position[]): atlas.data.Position[][] {
+        return atlas.math.getPathSplitByAntimeridian(path);
+    }
+
     public static getPixelHeading(origin: atlas.data.Position | atlas.data.Point, destination: atlas.data.Position | atlas.data.Point): number {
         return atlas.math.getPixelHeading(origin, destination);
     }
 
     public static getPointWithHeadingAlongPath(path: atlas.data.LineString | atlas.data.Position[], distance: number, units?: string | atlas.math.DistanceUnits): atlas.data.Feature<atlas.data.Point, { heading: number }> {
         return atlas.math.getPointWithHeadingAlongPath(path, distance, units);
+    }
+
+    public static getPointsWithHeadingAlongPath(path: atlas.data.LineString | atlas.data.Position[], numPoints: number): atlas.data.Feature<atlas.data.Point, { heading: number }>[] {
+        return atlas.math.getPointsWithHeadingsAlongPath(path, numPoints);
     }
 
     public static getPosition(data: atlas.data.Position | atlas.data.Point | atlas.data.Feature<atlas.data.Point, any> | atlas.Shape): atlas.data.Position {
@@ -144,5 +160,9 @@ export class Math {
 
     public static rotatePositions(positions: atlas.data.Position[], origin: atlas.data.Position | atlas.data.Point, angle: number): atlas.data.Position[] {
         return atlas.math.rotatePositions(positions, origin, angle);
+    }
+
+    public static simplify(points: (atlas.data.Position | atlas.Pixel)[], tolerance: number): (atlas.data.Position | atlas.Pixel)[] {
+        return atlas.math.simplify(points, tolerance);
     }
 } 
