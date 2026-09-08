@@ -58,6 +58,14 @@
     private bool buttonsDisabled => mapNotReady | overlay;
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private List<MathTestRun> testRuns = [];
+    private readonly BoundingBox bbox = new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345);
+    private readonly Polygon poly = new Polygon(new List<Position> {
+                new Position(-122.35, 47.65),
+                new Position(-122.30, 47.65),
+                new Position(-122.30, 47.60),
+                new Position(-122.35, 47.60),
+                new Position(-122.35, 47.65)
+            });
 
     // protected override void OnInitialized()
     // {
@@ -100,9 +108,9 @@
             // tests.Add(await GetAccelerationFromFeaturesTest());
             // tests.Add(await GetAccelerationFromSpeedsTest());
             // tests.Add(await GetAffineTransformToSourceTest());
-            tests.Add(await GetAffineTransformToTargetTest());
+            // tests.Add(await GetAffineTransformToTargetTest());
             // tests.Add(await GetAreaTest());
-            // tests.Add(await GetCardinalSplineTest());
+            tests.Add(await GetCardinalSplineTest());
             // tests.Add(await GetClosestPointOnGeometryTest());
             // tests.Add(await GetConvexHullTest());
             // tests.Add(await GetDestinationTest());
@@ -154,7 +162,7 @@
 
         try
         {
-            var bboxes = new List<BoundingBox> { new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345) };
+            var bboxes = new List<BoundingBox> { bbox };
             var data = await maps!.Math.BoundingBoxToPolygon(bboxes);
             result.Status = data.Count == 1 ? MathTestRunStatus.Success : MathTestRunStatus.Failed;
         }
@@ -301,8 +309,8 @@
 
         try
         {
-            var origin = new Feature<Point, GeoJsonProperties?>(new Point(12.803766, 43.033716)) { Properties = new GeoJsonProperties { { "time", DateTime.Now.AddSeconds(-100) } } };
-            var destination = new Feature<Point, GeoJsonProperties?>(new Point(13.129083, 43.33345)) { Properties = new GeoJsonProperties { { "time", DateTime.Now } } };
+            var origin = new Feature<Point, GeoJsonProperties?>(new Point(bbox.Northeast!)) { Properties = new GeoJsonProperties { { "time", DateTime.Now.AddSeconds(-100) } } };
+            var destination = new Feature<Point, GeoJsonProperties?>(new Point(bbox.Southwest!)) { Properties = new GeoJsonProperties { { "time", DateTime.Now } } };
             var data = await maps!.Math.GetAccelerationFromFeatures(origin, destination, "time");
             result.Result = $"Acceleration = {data}";
             result.Status = MathTestRunStatus.Success;
@@ -415,7 +423,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetArea([poly], AreaUnits.SquareMiles, 6);
+            result.Result = $"Area = {data[0]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -434,7 +444,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetCardinalSpline(poly.Coordinates[0]);
+            result.Result = $"Spline Count = {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {

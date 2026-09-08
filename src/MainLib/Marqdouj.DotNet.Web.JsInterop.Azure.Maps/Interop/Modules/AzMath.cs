@@ -2,6 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
@@ -142,23 +143,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         ValueTask<double> GetAccelerationFromSpeeds(double initialSpeed, double finalSpeed, double timespan, SpeedUnits? speedUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
 
         /// <summary>
-        /// Calculates the approximate area of a geometry in the specified units.
+        /// Calculates the approximate area of geometries in the specified units.
         /// </summary>
-        /// <param name="data">The Feature{Geometry, P}, or an <see cref="IJSObjectReference"/> to a Feature{Geometry, P}, for which to calculate the area.</param>
+        /// <param name="data">IEnumerable of Geometry, Feature{Geometry, any}, or Shape. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="areaUnits">The units for the area. If not specified square meters are used.</param>
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
-        /// <returns>The calculated area.</returns>
-        ValueTask<double> GetArea<T, P>(T data, AreaUnits? areaUnits = null, int? decimals = null) where T: IJSObjectReference, IFeature<Geometry, P?> where P : class;
+        /// <returns>The calculated areas.</returns>
+        ValueTask<List<double>> GetArea(IEnumerable<object> data, AreaUnits? areaUnits = null, int? decimals = null);
 
         /// <summary>
-        /// Calculates an array of positions that form a cardinal spline between the specified array of positions.
+        /// Calculates an array of positions that form a cardinal spline between the specified positions.
         /// </summary>
-        /// <param name="positions">The positions to calculate the spline through. May be an <see cref="IJSObjectReference"/></param>
+        /// <param name="positions">IEnumerable{Position}. May be an <see cref="IJSObjectReference"/></param>
         /// <param name="tension">A number that indicates the tightness of the curve. Can be any number, although a value between 0 and 1 is usually used. Default: 0.5</param>
         /// <param name="nodeSize">Number of nodes to insert between each position. Default: 15</param>
         /// <param name="close">Whether to close the spline. Default: false</param>
         /// <returns></returns>
-        ValueTask<List<Position>> GetCardinalSpline<T>(T positions, double? tension = null, double? nodeSize = null, bool? close = null) where T: IJSObjectReference, IEnumerable<Position>;
+        ValueTask<List<Position>> GetCardinalSpline(object positions, double? tension = null, double? nodeSize = null, bool? close = null);
 
         /// <summary>
         /// Calculates the closest point on the edge of a geometry to a specified point or position.
@@ -545,15 +546,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double[][]>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
         }
 
-        public async ValueTask<double> GetArea<T, P>(T data, AreaUnits? areaUnits = null, int? decimals = null)
-            where T : IJSObjectReference, IFeature<Geometry, P?>
-            where P : class
+        public async ValueTask<List<double>> GetArea(IEnumerable<object> data, AreaUnits? areaUnits = null, int? decimals = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), data, areaUnits, decimals);
+            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), data, areaUnits, decimals);
         }
 
-        public async ValueTask<List<Position>> GetCardinalSpline<T>(T positions, double? tension = null, double? nodeSize = null, bool? close = null) where T : IJSObjectReference, IEnumerable<Position>
+        public async ValueTask<List<Position>> GetCardinalSpline(object positions, double? tension = null, double? nodeSize = null, bool? close = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, tension, nodeSize, close);

@@ -55,8 +55,11 @@ export class Math {
         return at.toTarget(sourcePoints, decimals);
     }
 
-    public static getArea(data: atlas.data.Geometry | atlas.data.Feature<atlas.data.Geometry, any> | atlas.Shape, areaUnits?: atlas.math.AreaUnits, decimals?: number): number {
-        return atlas.math.getArea(data, areaUnits, decimals);
+    public static getArea(data: any[], areaUnits?: atlas.math.AreaUnits, decimals?: number): number[] {
+        Logger.logMessage("Math.getArea", LogLevel.Trace, "", data, areaUnits, decimals);
+        const results = data.map((d) => atlas.math.getArea(d, areaUnits, decimals));
+        Logger.logMessage("Math.getArea", LogLevel.Trace, "results", results);
+        return results;
     }
 
     public static getCardinalSpline(positions: atlas.data.Position[], tension?: number, nodeSize?: number, close?: boolean): atlas.data.Position[] {
