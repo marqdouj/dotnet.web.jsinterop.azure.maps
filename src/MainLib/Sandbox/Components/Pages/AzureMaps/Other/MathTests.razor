@@ -1,0 +1,1057 @@
+﻿@page "/math-tests"
+@rendermode InteractiveServer
+@inject ILogger<MathTests> Logger
+@inject INotificationService ToastService
+@inject AzureMapsXmlDocReader DocReader
+@inject IMapDataService MapDataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="@TextTag.Paragraph">
+	        This page demonstrates the Math module.
+            <br />
+            Based on this <a href="@sourceUrl" target="_blank">article</a>
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
+        </Toolbar>
+
+        <FluentStack HorizontalGap="5px" Width="100%" Height="500px">
+            <MapContainer MapId="@mapId" Width="500px"/>
+
+            <div style="overflow:auto;height:100%">
+                <FluentDataGrid Items="@gridItems" GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+                    <PropertyColumn Property="@(p => p.Name)" />
+                    <PropertyColumn Property="@(p => p.Status)" />
+                    <PropertyColumn Property="@(p => p.Error)"/>
+                </FluentDataGrid>
+            </div>
+        </FluentStack>
+
+        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay>
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+@code {
+    private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest";
+    private const string name = "Math";
+    private string title => $"Atlas - {name}";
+    private string mapId = $"map{name}";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private List<MathTestRun> testRuns = [];
+    private IQueryable<MathTestRun> gridItems => testRuns.AsQueryable();
+
+    // protected override void OnInitialized()
+    // {
+    //     Type type = typeof(IAzureMapsMath);
+
+    //     // Retrieve all methods (public, non-public, instance, static, declared only in this class)
+    //     var methods = type.GetMethods(
+    //         System.Reflection.BindingFlags.Public |
+    //         System.Reflection.BindingFlags.NonPublic |
+    //         System.Reflection.BindingFlags.Instance |
+    //         System.Reflection.BindingFlags.Static |
+    //         System.Reflection.BindingFlags.DeclaredOnly
+    //     );
+
+    //     foreach (var method in methods.OrderBy(m => m.Name))
+    //     {
+    //         Console.WriteLine(method.Name);
+    //     }
+    // }
+
+    #region Math Tests
+
+    private async Task RunTests()
+    {
+        try
+        {
+            ShowOverlay(true);
+            testRuns = [];
+            StateHasChanged();
+
+            var tests = new List<MathTestRun>();
+
+            tests.Add(await BoundingBoxesToPolygonsTest());
+            tests.Add(await ConvertAccelerationTest());
+            tests.Add(await ConvertAreaTest());
+            tests.Add(await ConvertDistancesTest());
+            tests.Add(await ConvertSpeedTest());
+            tests.Add(await ConvertTimeSpanTest());
+            tests.Add(await GetAccelerationTest());
+            tests.Add(await GetAccelerationFromFeaturesTest());
+            tests.Add(await GetAccelerationFromSpeedsTest());
+            tests.Add(await GetAffineTransformToSourceTest());
+            tests.Add(await GetAffineTransformToTargetTest());
+            tests.Add(await GetAreaTest());
+            tests.Add(await GetCardinalSplineTest());
+            tests.Add(await GetClosestPointOnGeometryTest());
+            tests.Add(await GetConvexHullTest());
+            tests.Add(await GetDestinationTest());
+            tests.Add(await GetDistanceToTest());
+            tests.Add(await GetEarthRadiusTest());
+            tests.Add(await GetGeodesicPathTest());
+            tests.Add(await GetGeodesicPathsTest());
+            tests.Add(await GetHeadingTest());
+            tests.Add(await GetLengthOfPathTest());
+            tests.Add(await GetPathDenormalizedAtAntimerianTest());
+            tests.Add(await GetPathSplitByAntimeridianTest());
+            tests.Add(await GetPixelHeadingTest());
+            tests.Add(await GetPointsWithHeadingAlongPathTest());
+            tests.Add(await GetPointWithHeadingAlongPathTest());
+            tests.Add(await GetPositionTest());
+            tests.Add(await GetPositionAlongPathTest());
+            tests.Add(await GetPositionsTest());
+            tests.Add(await GetPositionsAlongPathTest());
+            tests.Add(await GetRegularPolygonPathTest());
+            tests.Add(await GetRegularPolygonPathsTest());
+            tests.Add(await GetSpeedTest());
+            tests.Add(await GetSpeedFromFeaturesTest());
+            tests.Add(await GetTravelDistanceTest());
+            tests.Add(await InterpolateTest());
+            tests.Add(await MercatorPixelsToPositionsTest());
+            tests.Add(await MercatorPositionsToPixelsTest());
+            tests.Add(await NormalizeLatitudeTest());
+            tests.Add(await NormalizeLongitudeTest());
+            tests.Add(await RotatePositionsTest());
+            tests.Add(await SimplifyPixelsTest());
+            tests.Add(await SimplifyPositionsTest());
+
+            testRuns = tests;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    private async Task<MathTestRun> BoundingBoxesToPolygonsTest()
+    {
+        var result = new MathTestRun(nameof(BoundingBoxesToPolygonsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> ConvertAccelerationTest()
+    {
+        var result = new MathTestRun(nameof(ConvertAccelerationTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> ConvertAreaTest()
+    {
+        var result = new MathTestRun(nameof(ConvertAreaTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> ConvertDistancesTest()
+    {
+        var result = new MathTestRun(nameof(ConvertDistancesTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> ConvertSpeedTest()
+    {
+        var result = new MathTestRun(nameof(ConvertSpeedTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> ConvertTimeSpanTest()
+    {
+        var result = new MathTestRun(nameof(ConvertTimeSpanTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAccelerationTest()
+    {
+        var result = new MathTestRun(nameof(GetAccelerationTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAccelerationFromFeaturesTest()
+    {
+        var result = new MathTestRun(nameof(GetAccelerationFromFeaturesTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAccelerationFromSpeedsTest()
+    {
+        var result = new MathTestRun(nameof(GetAccelerationFromSpeedsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAffineTransformToSourceTest()
+    {
+        var result = new MathTestRun(nameof(GetAffineTransformToSourceTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAffineTransformToTargetTest()
+    {
+        var result = new MathTestRun(nameof(GetAffineTransformToTargetTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetAreaTest()
+    {
+        var result = new MathTestRun(nameof(GetAreaTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetCardinalSplineTest()
+    {
+        var result = new MathTestRun(nameof(GetCardinalSplineTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetClosestPointOnGeometryTest()
+    {
+        var result = new MathTestRun(nameof(GetClosestPointOnGeometryTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetConvexHullTest()
+    {
+        var result = new MathTestRun(nameof(GetConvexHullTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetDestinationTest()
+    {
+        var result = new MathTestRun(nameof(GetDestinationTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetDistanceToTest()
+    {
+        var result = new MathTestRun(nameof(GetDistanceToTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetEarthRadiusTest()
+    {
+        var result = new MathTestRun(nameof(GetEarthRadiusTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetGeodesicPathTest()
+    {
+        var result = new MathTestRun(nameof(GetGeodesicPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetGeodesicPathsTest()
+    {
+        var result = new MathTestRun(nameof(GetGeodesicPathsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetHeadingTest()
+    {
+        var result = new MathTestRun(nameof(GetHeadingTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetLengthOfPathTest()
+    {
+        var result = new MathTestRun(nameof(GetLengthOfPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPathDenormalizedAtAntimerianTest()
+    {
+        var result = new MathTestRun(nameof(GetPathDenormalizedAtAntimerianTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPathSplitByAntimeridianTest()
+    {
+        var result = new MathTestRun(nameof(GetPathSplitByAntimeridianTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPixelHeadingTest()
+    {
+        var result = new MathTestRun(nameof(GetPixelHeadingTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPointsWithHeadingAlongPathTest()
+    {
+        var result = new MathTestRun(nameof(GetPointsWithHeadingAlongPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPointWithHeadingAlongPathTest()
+    {
+        var result = new MathTestRun(nameof(GetPointWithHeadingAlongPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPositionTest()
+    {
+        var result = new MathTestRun(nameof(GetPositionTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPositionAlongPathTest()
+    {
+        var result = new MathTestRun(nameof(GetPositionAlongPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPositionsTest()
+    {
+        var result = new MathTestRun(nameof(GetPositionsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetPositionsAlongPathTest()
+    {
+        var result = new MathTestRun(nameof(GetPositionsAlongPathTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetRegularPolygonPathTest()
+    {
+        var result = new MathTestRun(nameof(GetRegularPolygonPathsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetRegularPolygonPathsTest()
+    {
+        var result = new MathTestRun(nameof(GetRegularPolygonPathsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetSpeedTest()
+    {
+        var result = new MathTestRun(nameof(GetSpeedTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetSpeedFromFeaturesTest()
+    {
+        var result = new MathTestRun(nameof(GetSpeedFromFeaturesTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetTravelDistanceTest()
+    {
+        var result = new MathTestRun(nameof(GetTravelDistanceTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> InterpolateTest()
+    {
+        var result = new MathTestRun(nameof(InterpolateTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> MercatorPixelsToPositionsTest()
+    {
+        var result = new MathTestRun(nameof(MercatorPixelsToPositionsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> MercatorPositionsToPixelsTest()
+    {
+        var result = new MathTestRun(nameof(MercatorPositionsToPixelsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> NormalizeLatitudeTest()
+    {
+        var result = new MathTestRun(nameof(NormalizeLatitudeTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> NormalizeLongitudeTest()
+    {
+        var result = new MathTestRun(nameof(NormalizeLongitudeTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> RotatePositionsTest()
+    {
+        var result = new MathTestRun(nameof(RotatePositionsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> SimplifyPixelsTest()
+    {
+        var result = new MathTestRun(nameof(SimplifyPixelsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> SimplifyPositionsTest()
+    {
+        var result = new MathTestRun(nameof(SimplifyPositionsTest));
+
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private enum MathTestRunStatus
+    {
+        None,
+        Success,
+        Failed,
+    }
+
+    private class MathTestRun(string name)
+    {
+        public string Name { get; } = name.Replace("Test", "");
+        public MathTestRunStatus Status { get; set; }
+        public Exception? Exception { get; set; }
+        public string? Error => Exception?.Message;
+    }
+
+    #endregion
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        try
+        {
+            mapReady = !(await args.HasPayloadError(Logger, ToastService));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    #endregion
+}
