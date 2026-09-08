@@ -1,3 +1,5 @@
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Converters;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
@@ -5,7 +7,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
     /// <summary>
     /// Units of measurement for areas.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<AreaUnits>))]
+    //[JsonConverter(typeof(JsonStringEnumConverter<AreaUnits>))]
+    [JsonConverter(typeof(CamelCaseEnumConverter<AreaUnits>))]
     public enum AreaUnits
     {
         /// <summary>
@@ -54,7 +57,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
     /// <summary>
     /// Units of measurement for distances.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<DistanceUnits>))]
+    [JsonConverter(typeof(CamelCaseEnumConverter<DistanceUnits>))]
     public enum DistanceUnits
     {
         /// <summary>
@@ -97,7 +100,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
     /// <summary>
     /// Units of measurement for time.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<TimeUnits>))]
+    [JsonConverter(typeof(CamelCaseEnumConverter<TimeUnits>))]
     public enum TimeUnits
     {
         /// <summary>
@@ -134,7 +137,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
     /// <summary>
     /// Units of measurement for speed.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<SpeedUnits>))]
+    [JsonConverter(typeof(CamelCaseEnumConverter<SpeedUnits>))]
     public enum SpeedUnits
     {
         /// <summary>
@@ -177,7 +180,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
     /// <summary>
     /// Units of measurement for acceleration.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter<AccelerationUnits>))]
+    [JsonConverter(typeof(CamelCaseEnumConverter<AccelerationUnits>))]
     public enum AccelerationUnits
     {
         /// <summary>

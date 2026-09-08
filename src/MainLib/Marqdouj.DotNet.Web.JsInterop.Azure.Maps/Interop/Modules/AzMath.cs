@@ -2,34 +2,46 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {
     /// <summary>
     /// Interface for Azure Maps Math module.
-    /// For methods that accept an <see cref="IJSObjectReference"/> you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/> method.
+    /// For methods that accept an <see cref="IJSObjectReference"/> 
+    /// you can use <see cref="IAzureMapsSources.GetJSShapeById(string, string, string)"/> method,
+    /// or create you own custom library that returns an <see cref="IJSObjectReference"/> that you can use.
     /// </summary>
     public interface IAzureMapsMath
     {
         /// <summary>
         /// Takes a list of <see cref="BoundingBox"/> and converts them to polygons.
         /// </summary>
-        /// <param name="boundingBoxes">The List of BoundingBoxes to convert to Polygons. May be an <see cref="IJSObjectReference"/></param>
-        /// <returns></returns>
-        ValueTask<List<Polygon>> BoundingBoxesToPolygons<T>(T boundingBoxes) where T: IJSObjectReference, IEnumerable<BoundingBox>;
+        /// <param name="bboxes">The List of BoundingBoxes to convert to Polygons. May be an <see cref="IJSObjectReference"/></param>
+        /// <returns>BoundingBoxes converted to Polygons.</returns>
+        ValueTask<List<Polygon>> BoundingBoxToPolygon(object bboxes);
 
         /// <summary>
         /// Converts an acceleration from one acceleration units to another. 
         /// Supported units: <see cref="AccelerationUnits"/>
         /// </summary>
-        /// <param name="acceleration">The acceleration value to convert.</param>
+        /// <param name="accelerations">The acceleration values to convert.</param>
         /// <param name="fromUnits">The units to convert from.</param>
         /// <param name="toUnits">The units to convert to.</param>
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
-        /// <returns>An acceleration value convertered from one unit to another.</returns>
-        ValueTask<double> ConvertAcceleration(double acceleration, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null);
+        /// <returns>Acceleration values convertered from one unit to another.</returns>
+        ValueTask<List<double>> ConvertAcceleration(IEnumerable<double> accelerations, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null);
+
+        /// <summary>
+        /// Converts an area from one area units to another. 
+        /// Supported units: <see cref="AreaUnits"/>
+        /// </summary>
+        /// <param name="areas">The area values to convert.</param>
+        /// <param name="fromUnits">The units to convert from.</param>
+        /// <param name="toUnits">The units to convert to.</param>
+        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
+        /// <returns>Area values converted from one unit to another.</returns>
+        ValueTask<List<double>> ConvertArea(IEnumerable<double> areas, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Converts a list of distances from one distance units to another.
@@ -39,41 +51,30 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="fromUnits">The units to convert from</param>
         /// <param name="toUnits">The units to convert to</param>
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
-        /// <returns></returns>
-        ValueTask<List<double>> ConvertDistances(List<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null);
-
-        /// <summary>
-        /// Converts an area from one area units to another. 
-        /// Supported units: <see cref="AreaUnits"/>
-        /// </summary>
-        /// <param name="area">The area value to convert.</param>
-        /// <param name="fromUnits">The units to convert from.</param>
-        /// <param name="toUnits">The units to convert to.</param>
-        /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
-        /// <returns>An area value converted from one unit to another.</returns>
-        ValueTask<double> ConvertArea(double area, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null);
+        /// <returns>Distance values convertered from one unit to another.</returns>
+        ValueTask<List<double>> ConvertDistance(IEnumerable<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Converts a speed from one speed units to another. 
         /// Supported units: <see cref="SpeedUnits"/>
         /// </summary>
-        /// <param name="speed">The speed value to convert.</param>
+        /// <param name="speeds">The speed values to convert.</param>
         /// <param name="fromUnits">The speed units to convert from.</param>
         /// <param name="toUnits">The speed units to convert to.</param>
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
-        /// <returns>A speed value convertered from one unit to another.</returns>
-        ValueTask<double> ConvertSpeed(double speed, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null);
+        /// <returns>Speed values convertered from one unit to another.</returns>
+        ValueTask<List<double>> ConvertSpeed(IEnumerable<double> speeds, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Converts a timespan from one time units to another. 
         /// Supported units: <see cref="TimeUnits"/>
         /// </summary>
-        /// <param name="timespan">The timespan value to convert.</param>
+        /// <param name="timespans">The timespan values to convert.</param>
         /// <param name="fromUnits">The time units to convert from.</param>
         /// <param name="toUnits">The time units to convert to.</param>
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
         /// <returns>A timespan value converted from one unit to another.</returns>
-        ValueTask<double> ConvertTimeSpan(double timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null);
+        ValueTask<List<double>> ConvertTimespan(IEnumerable<double> timespans, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null);
 
         /// <summary>
         /// Calculates the acceleration based on an initial speed, distance, and timespan.
@@ -480,40 +481,40 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     {
         private readonly Lazy<Task<IJSObjectReference>> moduleTask = moduleTask;
 
-        public async ValueTask<List<Polygon>> BoundingBoxesToPolygons<T>(T boundingBoxes) where T : IJSObjectReference, IEnumerable<BoundingBox>
+        public async ValueTask<List<Polygon>> BoundingBoxToPolygon(object bboxes)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<List<Polygon>>(GetJsInteropMethod(), boundingBoxes);
+            return await module.InvokeAsync<List<Polygon>>(GetJsInteropMethod(), bboxes);
         }
 
-        public async ValueTask<List<double>> ConvertDistances(List<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null)
+        public async ValueTask<List<double>> ConvertAcceleration(IEnumerable<double> accelerations, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), accelerations, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<List<double>> ConvertArea(IEnumerable<double> areas, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null)
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), areas, fromUnits, toUnits, decimals);
+        }
+
+        public async ValueTask<List<double>> ConvertDistance(IEnumerable<double> distances, DistanceUnits fromUnits, DistanceUnits toUnits, int? decimals = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), distances, fromUnits, toUnits, decimals);
         }
 
-        public async ValueTask<double> ConvertAcceleration(double acceleration, AccelerationUnits fromUnits, AccelerationUnits toUnits, int? decimals = null)
+        public async ValueTask<List<double>> ConvertSpeed(IEnumerable<double> speeds, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), acceleration, fromUnits, toUnits, decimals);
+            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), speeds, fromUnits, toUnits, decimals);
         }
 
-        public async ValueTask<double> ConvertArea(double area, AreaUnits fromUnits, AreaUnits toUnits, int? decimals = null)
+        public async ValueTask<List<double>> ConvertTimespan(IEnumerable<double> timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), area, fromUnits, toUnits, decimals);
-        }
-
-        public async ValueTask<double> ConvertSpeed(double speed, SpeedUnits fromUnits, SpeedUnits toUnits, int? decimals = null)
-        {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), speed, fromUnits, toUnits, decimals);
-        }
-
-        public async ValueTask<double> ConvertTimeSpan(double timespan, TimeUnits fromUnits, TimeUnits toUnits, int? decimals = null)
-        {
-            var module = await moduleTask.Value;
-            return await module.InvokeAsync<double>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
+            return await module.InvokeAsync<List<double>>(GetJsInteropMethod(), timespan, fromUnits, toUnits, decimals);
         }
 
         public async ValueTask<double> GetAcceleration(double initialSpeed, double distance, double timespan, SpeedUnits? speedUnits = null, DistanceUnits? distanceUnits = null, TimeUnits? timeUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)

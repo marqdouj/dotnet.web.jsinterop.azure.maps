@@ -1,5 +1,6 @@
 ﻿@page "/math-tests"
 @rendermode InteractiveServer
+@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
 @inject ILogger<MathTests> Logger
 @inject INotificationService ToastService
 @inject AzureMapsXmlDocReader DocReader
@@ -24,17 +25,20 @@
             <MapContainer MapId="@mapId" Width="500px"/>
 
             <div style="overflow:auto;height:100%">
-                <FluentDataGrid Items="@gridItems" GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+                <FluentDataGrid Items="@testRuns.AsQueryable()"
+                                MultiLine="true"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky">
                     <PropertyColumn Property="@(p => p.Name)" />
                     <PropertyColumn Property="@(p => p.Status)" />
+                    <PropertyColumn Property="@(p => p.Result)" />
                     <PropertyColumn Property="@(p => p.Error)"/>
                 </FluentDataGrid>
             </div>
         </FluentStack>
 
-        <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+@*         <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
             <FluentSpinner />
-        </FluentOverlay>
+        </FluentOverlay> *@
     </ChildContent>
 </MapPage>
 
@@ -54,7 +58,6 @@
     private bool buttonsDisabled => mapNotReady | overlay;
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
     private List<MathTestRun> testRuns = [];
-    private IQueryable<MathTestRun> gridItems => testRuns.AsQueryable();
 
     // protected override void OnInitialized()
     // {
@@ -82,55 +85,55 @@
         try
         {
             ShowOverlay(true);
-            testRuns = [];
-            StateHasChanged();
+            // testRuns = [];
+            // StateHasChanged();
 
             var tests = new List<MathTestRun>();
 
-            tests.Add(await BoundingBoxesToPolygonsTest());
+            tests.Add(await BoundingBoxToPolygonTest());
             tests.Add(await ConvertAccelerationTest());
             tests.Add(await ConvertAreaTest());
             tests.Add(await ConvertDistancesTest());
             tests.Add(await ConvertSpeedTest());
             tests.Add(await ConvertTimeSpanTest());
-            tests.Add(await GetAccelerationTest());
-            tests.Add(await GetAccelerationFromFeaturesTest());
-            tests.Add(await GetAccelerationFromSpeedsTest());
-            tests.Add(await GetAffineTransformToSourceTest());
-            tests.Add(await GetAffineTransformToTargetTest());
-            tests.Add(await GetAreaTest());
-            tests.Add(await GetCardinalSplineTest());
-            tests.Add(await GetClosestPointOnGeometryTest());
-            tests.Add(await GetConvexHullTest());
-            tests.Add(await GetDestinationTest());
-            tests.Add(await GetDistanceToTest());
-            tests.Add(await GetEarthRadiusTest());
-            tests.Add(await GetGeodesicPathTest());
-            tests.Add(await GetGeodesicPathsTest());
-            tests.Add(await GetHeadingTest());
-            tests.Add(await GetLengthOfPathTest());
-            tests.Add(await GetPathDenormalizedAtAntimerianTest());
-            tests.Add(await GetPathSplitByAntimeridianTest());
-            tests.Add(await GetPixelHeadingTest());
-            tests.Add(await GetPointsWithHeadingAlongPathTest());
-            tests.Add(await GetPointWithHeadingAlongPathTest());
-            tests.Add(await GetPositionTest());
-            tests.Add(await GetPositionAlongPathTest());
-            tests.Add(await GetPositionsTest());
-            tests.Add(await GetPositionsAlongPathTest());
-            tests.Add(await GetRegularPolygonPathTest());
-            tests.Add(await GetRegularPolygonPathsTest());
-            tests.Add(await GetSpeedTest());
-            tests.Add(await GetSpeedFromFeaturesTest());
-            tests.Add(await GetTravelDistanceTest());
-            tests.Add(await InterpolateTest());
-            tests.Add(await MercatorPixelsToPositionsTest());
-            tests.Add(await MercatorPositionsToPixelsTest());
-            tests.Add(await NormalizeLatitudeTest());
-            tests.Add(await NormalizeLongitudeTest());
-            tests.Add(await RotatePositionsTest());
-            tests.Add(await SimplifyPixelsTest());
-            tests.Add(await SimplifyPositionsTest());
+            // tests.Add(await GetAccelerationTest());
+            // tests.Add(await GetAccelerationFromFeaturesTest());
+            // tests.Add(await GetAccelerationFromSpeedsTest());
+            // tests.Add(await GetAffineTransformToSourceTest());
+            // tests.Add(await GetAffineTransformToTargetTest());
+            // tests.Add(await GetAreaTest());
+            // tests.Add(await GetCardinalSplineTest());
+            // tests.Add(await GetClosestPointOnGeometryTest());
+            // tests.Add(await GetConvexHullTest());
+            // tests.Add(await GetDestinationTest());
+            // tests.Add(await GetDistanceToTest());
+            // tests.Add(await GetEarthRadiusTest());
+            // tests.Add(await GetGeodesicPathTest());
+            // tests.Add(await GetGeodesicPathsTest());
+            // tests.Add(await GetHeadingTest());
+            // tests.Add(await GetLengthOfPathTest());
+            // tests.Add(await GetPathDenormalizedAtAntimerianTest());
+            // tests.Add(await GetPathSplitByAntimeridianTest());
+            // tests.Add(await GetPixelHeadingTest());
+            // tests.Add(await GetPointsWithHeadingAlongPathTest());
+            // tests.Add(await GetPointWithHeadingAlongPathTest());
+            // tests.Add(await GetPositionTest());
+            // tests.Add(await GetPositionAlongPathTest());
+            // tests.Add(await GetPositionsTest());
+            // tests.Add(await GetPositionsAlongPathTest());
+            // tests.Add(await GetRegularPolygonPathTest());
+            // tests.Add(await GetRegularPolygonPathsTest());
+            // tests.Add(await GetSpeedTest());
+            // tests.Add(await GetSpeedFromFeaturesTest());
+            // tests.Add(await GetTravelDistanceTest());
+            // tests.Add(await InterpolateTest());
+            // tests.Add(await MercatorPixelsToPositionsTest());
+            // tests.Add(await MercatorPositionsToPixelsTest());
+            // tests.Add(await NormalizeLatitudeTest());
+            // tests.Add(await NormalizeLongitudeTest());
+            // tests.Add(await RotatePositionsTest());
+            // tests.Add(await SimplifyPixelsTest());
+            // tests.Add(await SimplifyPositionsTest());
 
             testRuns = tests;
         }
@@ -145,13 +148,15 @@
         }
     }
 
-    private async Task<MathTestRun> BoundingBoxesToPolygonsTest()
+    private async Task<MathTestRun> BoundingBoxToPolygonTest()
     {
-        var result = new MathTestRun(nameof(BoundingBoxesToPolygonsTest));
+        var result = new MathTestRun(nameof(BoundingBoxToPolygonTest));
 
         try
         {
-
+            var bboxes = new List<BoundingBox> { new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345) };
+            var data = await maps!.Math.BoundingBoxToPolygon(bboxes);
+            result.Status = data.Count == 1 ? MathTestRunStatus.Success : MathTestRunStatus.Failed;
         }
         catch (Exception ex)
         {
@@ -170,7 +175,9 @@
 
         try
         {
-
+            var data = await maps!.Math.ConvertAcceleration([1.0, 2.0], AccelerationUnits.MilesPerHourSecond, AccelerationUnits.KilometersPerHourSecond, 6);
+            result.Result = $"1.0 = {data[0]}, 2.0 = {data[1]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -189,7 +196,9 @@
 
         try
         {
-
+            var data = await maps!.Math.ConvertArea([1.0, 2.0], AreaUnits.Acres, AreaUnits.Hectares, 6);
+            result.Result = $"1.0 = {data[0]}, 2.0 = {data[1]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -208,7 +217,9 @@
 
         try
         {
-
+            var data = await maps!.Math.ConvertDistance([1.0, 2.0], DistanceUnits.Miles, DistanceUnits.Kilometers, 6);
+            result.Result = $"1.0 = {data[0]}, 2.0 = {data[1]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -227,7 +238,9 @@
 
         try
         {
-
+            var data = await maps!.Math.ConvertSpeed([1.0, 2.0], SpeedUnits.MilesPerHour, SpeedUnits.KilometersPerHour, 6);
+            result.Result = $"1.0 = {data[0]}, 2.0 = {data[1]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -246,7 +259,9 @@
 
         try
         {
-
+            var data = await maps!.Math.ConvertTimespan([1.0, 2.0], TimeUnits.Hours, TimeUnits.Seconds, 6);
+            result.Result = $"1.0 = {data[0]}, 2.0 = {data[1]}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -992,6 +1007,7 @@
     {
         public string Name { get; } = name.Replace("Test", "");
         public MathTestRunStatus Status { get; set; }
+        public string? Result { get; set; }
         public Exception? Exception { get; set; }
         public string? Error => Exception?.Message;
     }
