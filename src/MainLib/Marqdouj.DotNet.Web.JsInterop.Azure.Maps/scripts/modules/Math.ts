@@ -3,36 +3,37 @@ import { Logger, LogLevel } from "./common/";
 
 export class Math {
     public static boundingBoxToPolygon(bboxes: atlas.data.BoundingBox[]): atlas.data.Polygon[] {
-        Logger.logMessage("Math.boundingBoxToPolygon", LogLevel.Trace, "", bboxes);
+        //Logger.logMessage("Math.boundingBoxToPolygon", LogLevel.Trace, "", bboxes);
         return bboxes.map((d) => atlas.math.boundingBoxToPolygon(d));
     }
 
     public static convertAcceleration(accelerations: number[], fromUnits: string, toUnits: string, decimals?: number): number[] {
-        Logger.logMessage("Math.convertAcceleration", LogLevel.Trace, "", accelerations, fromUnits, toUnits, decimals);
+        //Logger.logMessage("Math.convertAcceleration", LogLevel.Trace, "", accelerations, fromUnits, toUnits, decimals);
         return accelerations.map((a) => atlas.math.convertAcceleration(a, fromUnits, toUnits, decimals));
     }
 
     public static convertArea(areas: number[], fromUnits: string, toUnits: string, decimals?: number): number[] {
-        Logger.logMessage("Math.convertArea", LogLevel.Trace, "", areas, fromUnits, toUnits, decimals);
+        //Logger.logMessage("Math.convertArea", LogLevel.Trace, "", areas, fromUnits, toUnits, decimals);
         return areas.map((a) => atlas.math.convertArea(a, fromUnits, toUnits, decimals));
     }
 
     public static convertDistance(distances: number[], fromUnits: string, toUnits: string, decimals?: number): number[] {
-        Logger.logMessage("Math.convertDistance", LogLevel.Trace, "", distances, fromUnits, toUnits, decimals);
+        //Logger.logMessage("Math.convertDistance", LogLevel.Trace, "", distances, fromUnits, toUnits, decimals);
         return distances.map((d) => atlas.math.convertDistance(d, fromUnits, toUnits, decimals));
     }
 
     public static convertSpeed(speeds: number[], fromUnits: string, toUnits: string, decimals?: number): number[] {
-        Logger.logMessage("Math.convertSpeed", LogLevel.Trace, "", speeds, fromUnits, toUnits, decimals);
+        //Logger.logMessage("Math.convertSpeed", LogLevel.Trace, "", speeds, fromUnits, toUnits, decimals);
         return speeds.map((speed) => atlas.math.convertSpeed(speed, fromUnits, toUnits, decimals));
     }
 
     public static convertTimespan(timespans: number[], fromUnits: string, toUnits: string, decimals?: number): number[] {
-        Logger.logMessage("Math.convertTimespan", LogLevel.Trace, "", timespans, fromUnits, toUnits, decimals);
+        //Logger.logMessage("Math.convertTimespan", LogLevel.Trace, "", timespans, fromUnits, toUnits, decimals);
         return timespans.map((t) => atlas.math.convertTimespan(t, fromUnits, toUnits, decimals));
     }
 
     public static getAcceleration(initialSpeed: number, distance: number, timespan: number, speedUnits?: string, distanceUnits?: string, timeUnits?: string, accelerationUnits?: string, decimals?: number): number {
+        //Logger.logMessage("Math.getAcceleration", LogLevel.Trace, "", initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
         return atlas.math.getAcceleration(initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
     }
 

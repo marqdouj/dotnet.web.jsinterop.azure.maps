@@ -90,17 +90,17 @@
 
             var tests = new List<MathTestRun>();
 
-            tests.Add(await BoundingBoxToPolygonTest());
-            tests.Add(await ConvertAccelerationTest());
-            tests.Add(await ConvertAreaTest());
-            tests.Add(await ConvertDistancesTest());
-            tests.Add(await ConvertSpeedTest());
-            tests.Add(await ConvertTimeSpanTest());
+            // tests.Add(await BoundingBoxToPolygonTest());
+            // tests.Add(await ConvertAccelerationTest());
+            // tests.Add(await ConvertAreaTest());
+            // tests.Add(await ConvertDistanceTest());
+            // tests.Add(await ConvertSpeedTest());
+            // tests.Add(await ConvertTimeSpanTest());
             // tests.Add(await GetAccelerationTest());
             // tests.Add(await GetAccelerationFromFeaturesTest());
             // tests.Add(await GetAccelerationFromSpeedsTest());
             // tests.Add(await GetAffineTransformToSourceTest());
-            // tests.Add(await GetAffineTransformToTargetTest());
+            tests.Add(await GetAffineTransformToTargetTest());
             // tests.Add(await GetAreaTest());
             // tests.Add(await GetCardinalSplineTest());
             // tests.Add(await GetClosestPointOnGeometryTest());
@@ -211,9 +211,9 @@
         return result;
     }
 
-    private async Task<MathTestRun> ConvertDistancesTest()
+    private async Task<MathTestRun> ConvertDistanceTest()
     {
-        var result = new MathTestRun(nameof(ConvertDistancesTest));
+        var result = new MathTestRun(nameof(ConvertDistanceTest));
 
         try
         {
@@ -280,7 +280,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetAcceleration(1, 1, 1, SpeedUnits.MilesPerHour, DistanceUnits.Kilometers, TimeUnits.Minutes, AccelerationUnits.FeetPerSecondSquared, 6);
+            result.Result = $"1,1,1 = {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -299,7 +301,11 @@
 
         try
         {
-
+            var origin = new Feature<Point, GeoJsonProperties?>(new Point(12.803766, 43.033716)) { Properties = new GeoJsonProperties { { "time", DateTime.Now.AddSeconds(-100) } } };
+            var destination = new Feature<Point, GeoJsonProperties?>(new Point(13.129083, 43.33345)) { Properties = new GeoJsonProperties { { "time", DateTime.Now } } };
+            var data = await maps!.Math.GetAccelerationFromFeatures(origin, destination, "time");
+            result.Result = $"Acceleration = {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -318,7 +324,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetAccelerationFromSpeeds(1, 5, 5.8);
+            result.Result = $"Acceleration = {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -337,7 +345,23 @@
 
         try
         {
+            double[][] sourcePoints = [
+                [0, 0],
+                [100, 0],
+                [0, 100]
+            ];
 
+            double[][] targetPoints = [
+                [10, 20],
+                [110, 20],
+                [10, 120]
+            ];
+
+            double[][] targetPoint = [[60, 70]];
+
+            var data = await maps!.Math.GetAffineTransformToSource(sourcePoints, targetPoints, targetPoint);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -356,7 +380,23 @@
 
         try
         {
+            double[][] sourcePoints = [
+                [0, 0],
+                [100, 0],
+                [0, 100]
+            ];
 
+            double[][] targetPoints = [
+                [10, 20],
+                [110, 20],
+                [10, 120]
+            ];
+
+            double[][] sourcePoint = [[50, 50]];
+
+            var data = await maps!.Math.GetAffineTransformToTarget(sourcePoints, targetPoints, sourcePoint);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {

@@ -106,9 +106,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="decimals">The number of decimal places to round the result to. If undefined, no rounding will occur.</param>
         /// <returns>An acceleration between two point features that have a timestamp property and optionally a speed property. 
         /// Returns NaN if unable to parse timestamp.</returns>
-        ValueTask<double> GetAccelerationFromFeatures<T, P>(T origin, T destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
-            where T : IJSObjectReference, IFeature<Point, P>
-            where P : class;
+        ValueTask<double> GetAccelerationFromFeatures(object origin, object destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null);
 
         /// <summary>
         /// Converts an array of points from the target reference system to the source reference system.
@@ -523,9 +521,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, distance, timespan, speedUnits, distanceUnits, timeUnits, accelerationUnits, decimals);
         }
 
-        public async ValueTask<double> GetAccelerationFromFeatures<T, P>(T origin, T destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
-            where T : IJSObjectReference, IFeature<Point, P>
-            where P : class
+        public async ValueTask<double> GetAccelerationFromFeatures(object origin, object destination, string timestampProperty, string? speedProperty = null, SpeedUnits? speedUnits = null, AccelerationUnits? accelerationUnits = null, int? decimals = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedProperty, speedUnits, accelerationUnits, decimals);
