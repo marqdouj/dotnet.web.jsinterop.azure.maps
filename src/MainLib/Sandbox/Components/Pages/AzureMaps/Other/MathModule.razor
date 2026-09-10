@@ -229,7 +229,7 @@
 
         try
         {
-            var test = await maps!.BoundingBox.FromData(poly);
+            var test = await maps!.Data.BoundingBox.FromData(poly);
 
             var bboxes = new List<BoundingBox> { bbox };
             var data = await maps!.Math.BoundingBoxToPolygon(bboxes);

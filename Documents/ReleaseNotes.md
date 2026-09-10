@@ -2,10 +2,13 @@
 
 ### [<- Go Back](../README.md)
 - `11.0.0-Preview-3.0`:
- - `IAzureMapsInterop.BoundingBox`. New interop module based on the azure maps
-   [BoundingBox Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest).
+  - `IAzureMapsInterop.Data`. New interop module for 
+     [atlas.data](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data?view=azure-maps-typescript-latest)
+     interactions.
+    - `IAzureMapsInterop.Data.BoundingBox`. New interop module based on the azure maps
+     [BoundingBox Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest).
   - `IAzureMapsInterop.Math`. New interop module based on the azure maps
-   [Math Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest).
+     [Math Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest).
   - `IAzureMapsSources`
 	- `GetJSShapeById`. New method to get an IJSObjectReference for a shape in the source.
 	- `GetJSShapesById`. New method to get a list of IJSObjectReferences for the shapes in a source by shape id.

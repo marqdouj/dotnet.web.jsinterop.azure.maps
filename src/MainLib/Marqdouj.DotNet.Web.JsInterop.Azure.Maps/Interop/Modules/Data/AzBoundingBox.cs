@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules.Data
 {
     /// <summary>
-    /// Interface for Azure Maps bounding box interactions.
+    /// Interface for atlas.data.BoundingBox interactions. <see href="https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest"/>
     /// </summary>
     public interface IAzureMapsBoundingBox
     {
