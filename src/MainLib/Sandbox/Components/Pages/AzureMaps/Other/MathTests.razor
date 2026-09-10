@@ -93,55 +93,53 @@
         try
         {
             ShowOverlay(true);
-            // testRuns = [];
-            // StateHasChanged();
 
             var tests = new List<MathTestRun>();
 
-            // tests.Add(await BoundingBoxToPolygonTest());
-            // tests.Add(await ConvertAccelerationTest());
-            // tests.Add(await ConvertAreaTest());
-            // tests.Add(await ConvertDistanceTest());
-            // tests.Add(await ConvertSpeedTest());
-            // tests.Add(await ConvertTimeSpanTest());
-            // tests.Add(await GetAccelerationTest());
-            // tests.Add(await GetAccelerationFromFeaturesTest());
-            // tests.Add(await GetAccelerationFromSpeedsTest());
-            // tests.Add(await GetAffineTransformToSourceTest());
-            // tests.Add(await GetAffineTransformToTargetTest());
-            // tests.Add(await GetAreaTest());
-            // tests.Add(await GetCardinalSplineTest());
-            // tests.Add(await GetClosestPointOnGeometryTest());
-            // tests.Add(await GetConvexHullTest());
-            // tests.Add(await GetDestinationTest());
-            // tests.Add(await GetDistanceToTest());
-            // tests.Add(await GetEarthRadiusTest());
-            // tests.Add(await GetGeodesicPathTest());
-            // tests.Add(await GetGeodesicPathsTest());
-            // tests.Add(await GetHeadingTest());
-            // tests.Add(await GetLengthOfPathTest());
-            // tests.Add(await GetPathDenormalizedAtAntimerianTest());
-            // tests.Add(await GetPathSplitByAntimeridianTest());
-            // tests.Add(await GetPixelHeadingTest());
-            // tests.Add(await GetPointsWithHeadingAlongPathTest());
-            // tests.Add(await GetPointWithHeadingAlongPathTest());
-            // tests.Add(await GetPositionTest());
-            // tests.Add(await GetPositionAlongPathTest());
-            // tests.Add(await GetPositionsTest());
-            // tests.Add(await GetPositionsAlongPathTest());
-            // tests.Add(await GetRegularPolygonPathTest());
-            // tests.Add(await GetRegularPolygonPathsTest());
-            // tests.Add(await GetSpeedTest());
-            // tests.Add(await GetSpeedFromFeaturesTest());
-            // tests.Add(await GetTravelDistanceTest());
+            tests.Add(await BoundingBoxToPolygonTest());
+            tests.Add(await ConvertAccelerationTest());
+            tests.Add(await ConvertAreaTest());
+            tests.Add(await ConvertDistanceTest());
+            tests.Add(await ConvertSpeedTest());
+            tests.Add(await ConvertTimeSpanTest());
+            tests.Add(await GetAccelerationTest());
+            tests.Add(await GetAccelerationFromFeaturesTest());
+            tests.Add(await GetAccelerationFromSpeedsTest());
+            tests.Add(await GetAffineTransformToSourceTest());
+            tests.Add(await GetAffineTransformToTargetTest());
+            tests.Add(await GetAreaTest());
+            tests.Add(await GetCardinalSplineTest());
+            tests.Add(await GetClosestPointOnGeometryTest());
+            tests.Add(await GetConvexHullTest());
+            tests.Add(await GetDestinationTest());
+            tests.Add(await GetDistanceToTest());
+            tests.Add(await GetEarthRadiusTest());
+            tests.Add(await GetGeodesicPathTest());
+            tests.Add(await GetGeodesicPathsTest());
+            tests.Add(await GetHeadingTest());
+            tests.Add(await GetLengthOfPathTest());
+            tests.Add(await GetPathDenormalizedAtAntimerianTest());
+            tests.Add(await GetPathSplitByAntimeridianTest());
+            tests.Add(await GetPixelHeadingTest());
+            tests.Add(await GetPointsWithHeadingAlongPathTest());
+            tests.Add(await GetPointWithHeadingAlongPathTest());
+            tests.Add(await GetPositionTest());
+            tests.Add(await GetPositionAlongPathTest());
+            tests.Add(await GetPositionsTest());
+            tests.Add(await GetPositionsAlongPathTest());
+            tests.Add(await GetRegularPolygonPathTest());
+            tests.Add(await GetRegularPolygonPathsTest());
+            tests.Add(await GetSpeedTest());
+            tests.Add(await GetSpeedFromFeaturesTest());
+            tests.Add(await GetTravelDistanceTest());
             tests.Add(await InterpolateTest());
-            // tests.Add(await MercatorPixelsToPositionsTest());
-            // tests.Add(await MercatorPositionsToPixelsTest());
-            // tests.Add(await NormalizeLatitudeTest());
-            // tests.Add(await NormalizeLongitudeTest());
-            // tests.Add(await RotatePositionsTest());
-            // tests.Add(await SimplifyPixelsTest());
-            // tests.Add(await SimplifyPositionsTest());
+            tests.Add(await MercatorPixelsToPositionsTest());
+            tests.Add(await MercatorPositionsToPixelsTest());
+            tests.Add(await NormalizeLatitudeTest());
+            tests.Add(await NormalizeLongitudeTest());
+            tests.Add(await RotatePositionsTest());
+            tests.Add(await SimplifyPixelsTest());
+            tests.Add(await SimplifyPositionsTest());
 
             testRuns = tests;
         }
@@ -973,7 +971,9 @@
 
         try
         {
-
+            var data = await maps!.Math.MercatorPixelsToPositions(new List<Pixel> { new Pixel(1, 1), new Pixel(10, 10) }, 15);
+            result.Result = $"Positions: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -992,7 +992,9 @@
 
         try
         {
-
+            var data = await maps!.Math.MercatorPositionsToPixels(poly.Coordinates[0], 15);
+            result.Result = $"Pixels: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -1011,7 +1013,9 @@
 
         try
         {
-
+            var data = await maps!.Math.NormalizeLatitude(bbox.Southwest!.Latitude);
+            result.Result = $"Origin: {bbox.Southwest!.Latitude} Normalized: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -1030,7 +1034,9 @@
 
         try
         {
-
+            var data = await maps!.Math.NormalizeLongitude(bbox.Southwest!.Longitude);
+            result.Result = $"Origin: {bbox.Southwest!.Longitude} Normalized: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -1049,7 +1055,9 @@
 
         try
         {
-
+            var data = await maps!.Math.RotatePositions(poly.Coordinates[0], poly.Coordinates[0][0], 15);
+            result.Result = $"Positions: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -1068,7 +1076,9 @@
 
         try
         {
-
+            var data = await maps!.Math.SimplifyPixels(new List<Pixel> { new Pixel(1, 1), new Pixel(10, 10) }, 0.25);
+            result.Result = $"Pixels: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -1087,7 +1097,9 @@
 
         try
         {
-
+            var data = await maps!.Math.SimplifyPositions(poly.Coordinates[0], 0.25);
+            result.Result = $"Positiions: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {

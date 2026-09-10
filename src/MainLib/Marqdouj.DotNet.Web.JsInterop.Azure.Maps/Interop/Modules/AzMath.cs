@@ -395,18 +395,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// Converts an array of global Mercator pixel coordinates into an array of geospatial positions at a specified zoom level.
         /// Global pixel coordinates are relative to the top left corner of the map [-180, 90].
         /// </summary>
-        /// <param name="pixels">The list of pixels to convert. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="pixels">The IEnumerable of <see cref="Pixel"/> to convert. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="zoom">The zoom level.</param>
         /// <returns>The list of converted positions.</returns>
-        ValueTask<List<Position>> MercatorPixelsToPositions<T>(T pixels, double zoom) where T : IJSObjectReference, IEnumerable<Pixel>;
+        ValueTask<List<Position>> MercatorPixelsToPositions(object pixels, double zoom);
 
         /// <summary>
         /// Converts an array of positions into an array of global Mercator pixel coordinates at a specified zoom level.
         /// </summary>
-        /// <param name="positions">The list of <see cref="Position"/> to convert. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="positions">The IEnumerable of <see cref="Position"/> to convert. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="zoom">The zoom level.</param>
         /// <returns>The list of converted global Mercator pixels.</returns>
-        ValueTask<List<Pixel>> MercatorPositionsToPixels<T>(T positions, double zoom) where T : IJSObjectReference, IEnumerable<Position>;
+        ValueTask<List<Pixel>> MercatorPositionsToPixels(object positions, double zoom);
 
         /// <summary>
         /// Normalizes a latitude value to be within the range of -90 to 90 degrees.
@@ -425,31 +425,27 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <summary>
         /// Rotates a list of positions around a specified origin by a given angle in degrees.
         /// </summary>
-        /// <param name="positions">The list of <see cref="Position"/> or <see cref="Point"/> to rotate. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="positions">The IEnumerable of <see cref="Position"/> or <see cref="Point"/> to rotate. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="origin">The <see cref="Position"/> or <see cref="Point"/> around which to rotate. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="angle">The amount to rotate in degrees clockwise.</param>
         /// <returns>The list of rotated positions.</returns>
-        ValueTask<List<Position>> RotatePositions<T, TOrigin>(T positions, TOrigin origin, double angle) 
-            where T : IJSObjectReference, IEnumerable<Position>, IEnumerable<Point>
-            where TOrigin : IJSObjectReference, IPosition, IPoint;
+        ValueTask<List<Position>> RotatePositions(object positions, object origin, double angle);
 
         /// <summary>
         /// Perform a Douglas-Peucker simplification on an array of positions.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="points">The positions to simplify. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="points">IEnumerable <see cref="Position"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="tolerance">A tolerance to use in the simplification.</param>
         /// <returns></returns>
-        ValueTask<List<Position>> SimplifyPositions<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Position>;
+        ValueTask<List<Position>> SimplifyPositions(object points, double tolerance);
 
         /// <summary>
         /// Perform a Douglas-Peucker simplification on an array of pixels.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="points">The pixels to simplify. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="points">IEnumerable <see cref="Pixel"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="tolerance">A tolerance to use in the simplification.</param>
         /// <returns></returns>
-        ValueTask<List<Pixel>> SimplifyPixels<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Pixel>;
+        ValueTask<List<Pixel>> SimplifyPixels(object points, double tolerance);
     }
 
     internal class AzMath(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsMath
@@ -678,13 +674,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, destination, fraction);
         }
 
-        public async ValueTask<List<Position>> MercatorPixelsToPositions<T>(T pixels, double zoom) where T : IJSObjectReference, IEnumerable<Pixel>
+        public async ValueTask<List<Position>> MercatorPixelsToPositions(object pixels, double zoom)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), pixels, zoom);
         }
 
-        public async ValueTask<List<Pixel>> MercatorPositionsToPixels<T>(T positions, double zoom) where T : IJSObjectReference, IEnumerable<Position>
+        public async ValueTask<List<Pixel>> MercatorPositionsToPixels(object positions, double zoom)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod(), positions, zoom);
@@ -702,21 +698,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), lng);
         }
 
-        public async ValueTask<List<Position>> RotatePositions<T, TOrigin>(T positions, TOrigin origin, double angle)
-            where T : IJSObjectReference, IEnumerable<Position>, IEnumerable<Point>
-            where TOrigin : IJSObjectReference, IPosition, IPoint
+        public async ValueTask<List<Position>> RotatePositions(object positions, object origin, double angle)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, origin, angle);
         }
 
-        public async ValueTask<List<Position>> SimplifyPositions<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Position>
+        public async ValueTask<List<Position>> SimplifyPositions(object points, double tolerance)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod("Simplify"), points, tolerance);
         }
 
-        public async ValueTask<List<Pixel>> SimplifyPixels<T>(T points, double tolerance) where T : IJSObjectReference, IEnumerable<Pixel>
+        public async ValueTask<List<Pixel>> SimplifyPixels(object points, double tolerance)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Pixel>>(GetJsInteropMethod("Simplify"), points, tolerance);
