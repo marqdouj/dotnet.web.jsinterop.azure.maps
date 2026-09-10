@@ -110,14 +110,14 @@
             // tests.Add(await GetAffineTransformToSourceTest());
             // tests.Add(await GetAffineTransformToTargetTest());
             // tests.Add(await GetAreaTest());
-            tests.Add(await GetCardinalSplineTest());
+            // tests.Add(await GetCardinalSplineTest());
             // tests.Add(await GetClosestPointOnGeometryTest());
             // tests.Add(await GetConvexHullTest());
             // tests.Add(await GetDestinationTest());
             // tests.Add(await GetDistanceToTest());
             // tests.Add(await GetEarthRadiusTest());
             // tests.Add(await GetGeodesicPathTest());
-            // tests.Add(await GetGeodesicPathsTest());
+            tests.Add(await GetGeodesicPathsTest());
             // tests.Add(await GetHeadingTest());
             // tests.Add(await GetLengthOfPathTest());
             // tests.Add(await GetPathDenormalizedAtAntimerianTest());
@@ -465,7 +465,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetClosestPointOnGeometry(bbox.Southwest!, poly);
+            result.Result = $"Distance = {data.Properties!.distance}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -484,7 +486,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetConvexHull(poly);
+            result.Result = $"Origin: {poly.Coordinates[0].Count} Result = {data.Coordinates[0].Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -503,7 +507,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetDestination(bbox.Southwest!, 45, 100);
+            result.Result = $"Destination: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -522,7 +528,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetDistanceTo(bbox.Southwest!, bbox.Northeast!);
+            result.Result = $"Distance: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -541,7 +549,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetEarthRadius();
+            result.Result = $"Radius: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -560,7 +570,10 @@
 
         try
         {
-
+            var coords = poly.Coordinates[0];
+            var data = await maps!.Math.GetGeodesicPath(coords);
+            result.Result = $"Origin: {coords.Count} Path: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -579,7 +592,10 @@
 
         try
         {
-
+            var coords = poly.Coordinates[0];
+            var data = await maps!.Math.GetGeodesicPaths(coords);
+            result.Result = $"Origin: {coords.Count} Path: {data[0].Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {

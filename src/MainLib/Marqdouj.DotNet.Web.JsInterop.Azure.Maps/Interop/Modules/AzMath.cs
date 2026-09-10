@@ -163,19 +163,14 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 
         /// <summary>
         /// Calculates the closest point on the edge of a geometry to a specified point or position.
+        /// , geom: Geometry | Feature{Geometry, any} | Shape
         /// </summary>
-        /// <typeparam name="TPoint"></typeparam>
-        /// <typeparam name="TGeom"></typeparam>
-        /// <typeparam name="P"></typeparam>
-        /// <param name="pt"><see cref="Position"/>, <see cref="Point"/>, Feature{Point, P?}. May be an <see cref="IJSObjectReference"/>.</param>
-        /// <param name="geom"><see cref="IGeometry"/> or Feature{Geometry, P?}. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="pt">Position | Point | Feature{Point, any} | Shape. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="geom">Geometry | Feature{Geometry, any} | Shape. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="units">Unit of distance measurement. Default is meters.</param>
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns></returns>
-        ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry<TPoint, TGeom, P>(TPoint pt, TGeom geom, DistanceUnits? units, double? decimals)
-            where TPoint : IPosition, IPoint, IFeature<Point, P?>
-            where TGeom : IGeometry, IFeature<Geometry, P?>
-            where P : class;
+        ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry(object pt, object geom, DistanceUnits? units = null, double? decimals = null);
 
         /// <summary>
         /// Calculates the convex hull of a set of positions or geometries. 
@@ -184,13 +179,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="data">
         /// The input data for which to calculate the convex hull.
         /// Formats supported include:
-        /// Position[] | Geometry | Feature{Geometry, any} | FeatureCollection | GeometryCollection | Geometry[] | Feature{Geometry, any}[],
-        /// or an <see cref="IJSObjectReference"/> including Shape[] | Shape.
+        /// Position[] | Geometry | Feature{Geometry, any} | FeatureCollection | GeometryCollection | Geometry[] | Feature{Geometry, any}[], Shape[] | Shape.
+        /// May be an <see cref="IJSObjectReference"/>.
         /// </param>
         /// <returns>The convex hull as a polygon.</returns>
-        ValueTask<Polygon> GetConvexHull<T, P>(T data)
-            where T : IJSObjectReference, IEnumerable<Position>, IGeometry, IEnumerable<Geometry>, IFeature<Geometry, P>, IEnumerable<IFeature<Geometry, P>>, IFeatureCollection, IGeometryCollection
-            where P : class;
+        ValueTask<Polygon> GetConvexHull(object data);
 
         /// <summary>
         /// Calculates a destination position based on a starting position, a heading, a distance, and a distance unit type.
@@ -200,7 +193,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="distance">Distance that destination is away.</param>
         /// <param name="units">Unit of distance measurement. Default is meters.</param>
         /// <returns>A position that is the specified distance away from the origin.</returns>
-        ValueTask<Position> GetDestination<T>(T origin, double heading, double distance, DistanceUnits? units = null) where T: IJSObjectReference, IPoint, IPosition;
+        ValueTask<Position> GetDestination(object origin, double heading, double distance, DistanceUnits? units = null);
 
         /// <summary>
         /// Calculates the distance between two position/point objects on the surface of the earth using the Haversine formula.
@@ -209,7 +202,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="destination"><see cref="Position"/> or <see cref="Point"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="units">The unit of distance measurement. Default is meters.</param>
         /// <returns>The distance between the two positions.</returns>
-        ValueTask<double> GetDistanceTo<T>(T origin, T destination, DistanceUnits? units = null) where T: IJSObjectReference, IPoint, IPosition;
+        ValueTask<double> GetDistanceTo(object origin, object destination, DistanceUnits? units = null);
 
         /// <summary>
         /// Retrieves the radius of the earth in a specific distance unit for WGS84.
@@ -225,7 +218,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="nodeSize">Number of nodes to insert between each position. Default: 15.</param>
         /// <returns>The interpolated geodesic path. A geodesic path crossing antimeridian will contain longitude outside of -180 to 180 range. 
         /// See <see cref="IAzureMapsMath.GetGeodesicPaths{T}(T, double?)"/> when this is undesired.</returns>
-        ValueTask<List<Position>> GetGeodesicPath<T>(T path, double? nodeSize = null) where T: IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<Position>> GetGeodesicPath(object path, double? nodeSize = null);
 
         /// <summary>
         /// Takes an array of positions objects and fills in the space between them with accurately positioned positions
@@ -235,7 +228,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="nodeSize">Number of nodes to insert between each position. Default: 15.</param>
         /// <returns>An list of paths that form geodesic paths, Comparing to <see cref="IAzureMapsMath.GetGeodesicPath{T}(T, double?)"/>, 
         /// sub-paths will always contain longitude in -180 to 180 range</returns>
-        ValueTask<List<List<Position>>> GetGeodesicPaths<T>(T path, double? nodeSize = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<List<Position>>> GetGeodesicPaths(object path, double? nodeSize = null);
 
         /// <summary>
         /// Calculates the heading from an origin position to a destination position. 
@@ -558,30 +551,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), positions, tension, nodeSize, close);
         }
 
-        public async ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry<TPoint, TGeom, P>(TPoint pt, TGeom geom, DistanceUnits? units, double? decimals)
-            where TPoint : IPosition, IPoint, IFeature<Point, P?>
-            where TGeom : IGeometry, IFeature<Geometry, P?>
-            where P : class
+        public async ValueTask<Feature<Point, DistanceProperties>> GetClosestPointOnGeometry(object pt, object geom, DistanceUnits? units = null, double? decimals = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Feature<Point, DistanceProperties>>(GetJsInteropMethod(), pt, geom, units, decimals);
         }
 
-        public async ValueTask<Polygon> GetConvexHull<T, P>(T data)
-            where T : IJSObjectReference, IEnumerable<Position>, IGeometry, IEnumerable<Geometry>, IFeature<Geometry, P>, IEnumerable<IFeature<Geometry, P>>, IFeatureCollection, IGeometryCollection
-            where P : class
+        public async ValueTask<Polygon> GetConvexHull(object data)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Polygon>(GetJsInteropMethod(), data);
         }
         
-        public async ValueTask<Position> GetDestination<T>(T origin, double heading, double distance, DistanceUnits? units = null) where T : IJSObjectReference, IPoint, IPosition
+        public async ValueTask<Position> GetDestination(object origin, double heading, double distance, DistanceUnits? units = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, heading, distance, units);
         }
 
-        public async ValueTask<double> GetDistanceTo<T>(T origin, T destination, DistanceUnits? units = null) where T : IJSObjectReference, IPoint, IPosition
+        public async ValueTask<double> GetDistanceTo(object origin, object destination, DistanceUnits? units = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, units);
@@ -593,13 +581,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), units);
         }
 
-        public async ValueTask<List<Position>> GetGeodesicPath<T>(T path, double? nodeSize = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<Position>> GetGeodesicPath(object path, double? nodeSize = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path, nodeSize);
         }
 
-        public async ValueTask<List<List<Position>>> GetGeodesicPaths<T>(T path, double? nodeSize = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<List<Position>>> GetGeodesicPaths(object path, double? nodeSize = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path, nodeSize);

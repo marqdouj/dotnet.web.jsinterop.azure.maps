@@ -4,7 +4,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
 {
     /// <summary>
     /// The properties object returned by
-    /// <see cref="IAzureMapsMath.GetClosestPointOnGeometry{TPoint, TGeom, P}(TPoint, TGeom, DistanceUnits?, double?)"/>
+    /// <see cref="IAzureMapsMath.GetClosestPointOnGeometry(object, object, DistanceUnits?, double?)"/>
     /// </summary>
     public class DistanceProperties
     {
