@@ -1,5 +1,6 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules.Data;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;
@@ -39,6 +40,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         /// <inheritdoc cref="IAzureMapsAtlas"/>
         /// </summary>
         IAzureMapsAtlas Atlas { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAzureMapsBoundingBox"/>
+        /// </summary>
+        IAzureMapsBoundingBox BoundingBox { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsCommon"/>
@@ -163,6 +169,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
 
             Animations = new AzAnimations(moduleTask);
             Atlas = new AzAtlas(moduleTask);
+            BoundingBox = new AzBoundingBox(moduleTask);
             Common = new AzCommon(moduleTask);
             Controls = new AzControls(moduleTask);
             Configuration = new AzConfiguration(moduleTask);
@@ -182,6 +189,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         public IAzureMapsAnimations Animations { get; }
 
         public IAzureMapsAtlas Atlas { get; }
+
+        public IAzureMapsBoundingBox BoundingBox { get; }
 
         public IAzureMapsCommon Common { get; }
 

@@ -2,9 +2,7 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
 using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
-using System.Runtime;
 using System.Runtime.CompilerServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {

@@ -4,6 +4,7 @@ export { Atlas } from "./modules/Atlas";
 export { Common } from "./modules/Common"
 export { Configuration } from "./modules/Configuration"
 export { Controls } from "./modules/Controls"
+export { BoundingBox } from "./modules/data/BoundingBox"
 export { Events } from "./modules/Events";
 export { Factory } from "./modules/Factory"
 export { Features } from "./modules/Features";

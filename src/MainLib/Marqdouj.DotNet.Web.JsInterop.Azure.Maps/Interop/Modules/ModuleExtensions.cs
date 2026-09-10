@@ -6,6 +6,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     {
         Animations,
         Atlas,
+        BoundingBox,
         Common,
         Configuration,
         Controls,

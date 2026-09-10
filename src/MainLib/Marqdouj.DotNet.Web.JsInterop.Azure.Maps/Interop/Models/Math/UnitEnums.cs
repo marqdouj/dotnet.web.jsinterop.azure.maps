@@ -1,5 +1,4 @@
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Converters;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math

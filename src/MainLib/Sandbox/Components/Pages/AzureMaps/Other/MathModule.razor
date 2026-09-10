@@ -18,21 +18,20 @@
         <Toolbar>
             <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
             <FluentSpacer Width="10px" />
-            <FluentSelect Items="@mathTests" TOption="MathTest?" TValue="MathTest?" ValueChanged="@OnTestChanged" Placeholder="Select a test..." />
+            <FluentSelect Items="@mathTests" TOption="MathTest?" TValue="MathTest?" @bind-Value:get="@selectedTest" @bind-Value:set="@OnTestChanged" Placeholder="Select a test..." />
         </Toolbar>
 
+        <FluentDataGrid Items="@testRuns.AsQueryable()"
+                        MultiLine="true"
+                        GridTemplateColumns="auto, auto, 2fr, 2fr"
+                        GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+            <PropertyColumn Property="@(p => p.Name)" />
+            <PropertyColumn Property="@(p => p.Status)" />
+            <PropertyColumn Property="@(p => p.Result)" />
+            <PropertyColumn Property="@(p => p.Error)" />
+        </FluentDataGrid>
         <FluentStack Orientation="Orientation.Vertical" Height="100%">
             <MapContainer MapId="@mapId"/>
-
-            <FluentDataGrid Items="@testRuns.AsQueryable()"
-                            MultiLine="true"
-                            GridTemplateColumns="auto, auto, 2fr, 2fr"
-                            GenerateHeader="DataGridGeneratedHeaderType.Sticky">
-                <PropertyColumn Property="@(p => p.Name)" />
-                <PropertyColumn Property="@(p => p.Status)" />
-                <PropertyColumn Property="@(p => p.Result)" />
-                <PropertyColumn Property="@(p => p.Error)" />
-            </FluentDataGrid>
         </FluentStack>
 
         @* FluentOverlay does not work properly in this page; investigating. *@
@@ -57,8 +56,9 @@
     private bool overlay;
     private bool buttonsDisabled => mapNotReady | overlay;
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private PolygonLayer polygonLayer = (PolygonLayer)LayerType.Polygon.GetDefaultLayer();
     private readonly List<MathTest?> mathTests = new(Enum.GetValues<MathTest>().Cast<MathTest?>());
-    private readonly MathTest? selectedTest;
+    private MathTest? selectedTest;
     private List<MathTestRun> testRuns = [];
     private readonly BoundingBox bbox = new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345);
     private readonly Polygon poly = new Polygon(new List<Position> {
@@ -66,7 +66,7 @@
                 new Position(-122.30, 47.65),
                 new Position(-122.30, 47.60),
                 new Position(-122.35, 47.60),
-                new Position(-122.35, 47.65)
+                new Position(-122.35, 47.65) // Close the polygon
             });
 
     // protected override void OnInitialized()
@@ -90,11 +90,12 @@
 
     #region Math Tests
 
-    private async Task OnTestChanged(MathTest? value)
+    private async Task OnTestChanged(MathTest? test)
     {
         try
         {
-            await RunTest(value);
+            selectedTest = test;
+            await RunTest(test);
         }
         catch (Exception ex)
         {
@@ -108,6 +109,7 @@
         try
         {
             ShowOverlay(true);
+
 
             var tests = new List<MathTestRun>();
             //TODOL: Clear layers.
@@ -227,6 +229,8 @@
 
         try
         {
+            var test = await maps!.BoundingBox.FromData(poly);
+
             var bboxes = new List<BoundingBox> { bbox };
             var data = await maps!.Math.BoundingBoxToPolygon(bboxes);
             result.Result = $"BBox Points: 4 Poly Points: {data[0].Coordinates[0].Count}";
@@ -1322,7 +1326,22 @@
     {
         if (mapReady)
         {
+            await ClearLayers();
+            selectedTest = null;
             await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    private async Task ClearLayers()
+    {
+        try
+        {
+            await maps!.Sources.ClearById(mapId, [polygonLayer.Source.Id]);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
         }
     }
 
