@@ -1,8 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules.Data;
 using Microsoft.JSInterop;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {

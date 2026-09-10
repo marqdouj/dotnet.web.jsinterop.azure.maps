@@ -1,6 +1,5 @@
 ﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules.Data;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Events;

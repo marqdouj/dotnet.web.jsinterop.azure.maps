@@ -229,8 +229,6 @@
 
         try
         {
-            var test = await maps!.Data.BoundingBox.FromData(poly);
-
             var bboxes = new List<BoundingBox> { bbox };
             var data = await maps!.Math.BoundingBoxToPolygon(bboxes);
             result.Result = $"BBox Points: 4 Poly Points: {data[0].Coordinates[0].Count}";
