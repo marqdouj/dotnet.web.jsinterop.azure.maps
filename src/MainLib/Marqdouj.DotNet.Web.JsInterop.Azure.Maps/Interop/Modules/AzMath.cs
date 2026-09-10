@@ -217,7 +217,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="nodeSize">Number of nodes to insert between each position. Default: 15.</param>
         /// <returns>The interpolated geodesic path. A geodesic path crossing antimeridian will contain longitude outside of -180 to 180 range. 
-        /// See <see cref="IAzureMapsMath.GetGeodesicPaths{T}(T, double?)"/> when this is undesired.</returns>
+        /// See <see cref="IAzureMapsMath.GetGeodesicPaths(object, double?)"/> when this is undesired.</returns>
         ValueTask<List<Position>> GetGeodesicPath(object path, double? nodeSize = null);
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// </summary>
         /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="nodeSize">Number of nodes to insert between each position. Default: 15.</param>
-        /// <returns>An list of paths that form geodesic paths, Comparing to <see cref="IAzureMapsMath.GetGeodesicPath{T}(T, double?)"/>, 
+        /// <returns>An list of paths that form geodesic paths, Comparing to <see cref="IAzureMapsMath.GetGeodesicPath(object, double?)"/>, 
         /// sub-paths will always contain longitude in -180 to 180 range</returns>
         ValueTask<List<List<Position>>> GetGeodesicPaths(object path, double? nodeSize = null);
 
@@ -234,9 +234,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// Calculates the heading from an origin position to a destination position. 
         /// </summary>
         /// <param name="origin"><see cref="Point"/> or <see cref="Position"/>. May be an <see cref="IJSObjectReference"/>.</param>
-        /// <param name="destination">The destination position.</param>
+        /// <param name="destination"><see cref="Point"/> or <see cref="Position"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns>A heading in degrees between 0 and 360. 0 degrees points due North.</returns>
-        ValueTask<double> GetHeading<T>(T origin, T destination) where T: IJSObjectReference, IPoint, IPosition;
+        ValueTask<double> GetHeading(object origin, object destination);
 
         /// <summary>
         /// Calculates the length of a path.
@@ -245,26 +245,24 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="units">Unit of distance measurement. Default: meters</param>
         /// <returns>The distance between all positions in between all position objects in an array 
         /// on the surface of a earth in the specified units.</returns>
-        ValueTask<double> GetLengthOfPath<T>(T path, DistanceUnits? units = null) where T: IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<double> GetLengthOfPath(object path, DistanceUnits? units = null);
 
         /// <summary>
         /// Denormalizes path on antimeridian, this makes lines with coordinates on the opposite side of the antimeridian to always cross it.
         /// Note that the path crossing antimeridian will contain longitude outside of -180 to 180 range.
-        /// See <see cref="IAzureMapsMath.GetPathSplitByAntimeridian{T}(T)"/> when this is not desired.
+        /// See <see cref="IAzureMapsMath.GetPathSplitByAntimeridian(object)"/> when this is not desired.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="path">List of position objects or linestring to denormalize. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns>A denormalized list of position objects, path crossing antimeridian will contain longitude outside of -180 to 180 range.</returns>
-        ValueTask<List<Position>> GetPathDenormalizedAtAntimerian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<Position>> GetPathDenormalizedAtAntimerian(object path);
 
         /// <summary>
         /// Split path on antimeridian into multiple paths.
-        /// See <see cref="IAzureMapsMath.GetPathDenormalizedAtAntimerian{T}(T)"/> when this is not desired.
+        /// See <see cref="IAzureMapsMath.GetPathDenormalizedAtAntimerian(object)"/> when this is not desired.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="path">>List of position objects or linestring to split. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="path">>List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns>A path split into multiple paths by antimeridian.</returns>
-        ValueTask<List<List<Position>>> GetPathSplitByAntimeridian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<List<Position>>> GetPathSplitByAntimeridian(object path);
 
         /// <summary>
         /// Calculates the pixel accurate heading from one position to another based on the Mercator map projection.
@@ -272,35 +270,31 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="origin"><see cref="Position"/> or <see cref="Point"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="destination"><see cref="Position"/> or <see cref="Point"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns></returns>
-        ValueTask<double> GetPixelHeading<T>(T origin, T destination) where T : IGeoJsonObject, IPosition, IPoint;
+        ValueTask<double> GetPixelHeading(object origin, object destination);
 
         /// <summary>
         /// Gets a point with heading a specified distance along a path.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="distance">The distance along the path to get the point at.</param>
         /// <param name="units">The distance units.</param>
         /// <returns>A point with heading a specified distance along a path.</returns>
-        ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath<T>(T path, double distance, DistanceUnits? units) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath(object path, double distance, DistanceUnits? units = null);
 
         /// <summary>
         /// Gets an array of evenly spaced points with headings along a path.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="numPoints">The number of points to get.</param>
         /// <returns>An array of evenly spaced points with headings along a path.</returns>
-        ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath<T>(T path, double numPoints) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath(object path, double numPoints);
 
         /// <summary>
         /// Gets the position of an object that is a position, point, point feature, or circle. If it is a circle, its center coordinate will be returned.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="P"></typeparam>
         /// <param name="data">Position, point, point feature, or circle. May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns></returns>
-        ValueTask<Position> GetPosition<T, P>(T data) where T : IJSObjectReference, IPosition, IPoint, IFeature<Point,  P?> where P : class;
+        ValueTask<Position> GetPosition(object data);
 
         /// <summary>
         /// Calculates a position along a path.
@@ -309,28 +303,23 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="distance">The distance from the start of the path.</param>
         /// <param name="units">Unit of distance measurement. Default: meters</param>
         /// <returns>The position along the path at the specified distance.</returns>
-        ValueTask<Position> GetPositionAlongPath<T>(T path, double distance, DistanceUnits? units = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<Position> GetPositionAlongPath(object path, double distance, DistanceUnits? units = null);
 
         /// <summary>
         /// Retrieves a list of all positions in the provided geometry, feature or array of geometries/features or shapes/shape.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="P"></typeparam>
         /// <param name="data">Position[], IGeometry, IFeature{Geometry, P?}, IFeatureCollection, IGeometryCollection, Geometry[], or Shape[]/Shape.
         /// May be an <see cref="IJSObjectReference"/>.</param>
         /// <returns>A list of positions.</returns>
-        ValueTask<List<Position>> GetPositions<T, P>(T data) 
-            where T : IJSObjectReference, IEnumerable<Position>, IGeometry, IFeature<Geometry, P?>, IFeatureCollection, IGeometryCollection, IEnumerable<Geometry>
-            where P: class;
+        ValueTask<List<Position>> GetPositions(object data);
 
         /// <summary>
         /// Gets an array of evenly spaced positions along a path.
         /// </summary>
-        /// <typeparam name="T">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</typeparam>
-        /// <param name="path">The path to get the positions from.</param>
+        /// <param name="path">List of <see cref="Position"/> or a <see cref="LineString"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="numPositions">The number of positions to get.</param>
         /// <returns></returns>
-        ValueTask<List<Position>> GetPositionsAlongPath<T>(T path, long numPositions) where T : IJSObjectReference, IEnumerable<Position>, ILineString;
+        ValueTask<List<Position>> GetPositionsAlongPath(object path, double numPositions);
 
         /// <summary>
         /// Calculates a list of positions that form a regular polygon around a specified origin position.
@@ -341,8 +330,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="units">Unit of distance measurement. Default: meters</param>
         /// <param name="offset">The offset for the polygon. When 0 the first position will align with North. Default: 0</param>
         /// <returns>A list of positions that form the regular polygon.</returns>
-        ValueTask<List<Position>> GetRegularPolygonPath<T>(T origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
-            where T: IJSObjectReference, IPosition, IPoint;
+        ValueTask<List<Position>> GetRegularPolygonPath(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null);
 
         /// <summary>
         /// Calculates a list of positions that form a regular polygon around a specified origin position.
@@ -353,9 +341,8 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="units">Unit of distance measurement. Default: meters</param>
         /// <param name="offset">The offset for the polygon. When 0 the first position will align with North. Default: 0</param>
         /// <returns>A list of lists of positions that form the regular polygon. 
-        /// Comparing to <see cref="IAzureMapsMath.GetRegularPolygonPaths{T}(T, double, int, DistanceUnits?, double?)"/>, sub-paths will always contain longitude in -180 to 180 range</returns>
-        ValueTask<List<List<Position>>> GetRegularPolygonPaths<T>(T origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
-            where T : IJSObjectReference, IPosition, IPoint;
+        /// Comparing to <see cref="IAzureMapsMath.GetRegularPolygonPath(object, double, int, DistanceUnits?, double?)"/>, sub-paths will always contain longitude in -180 to 180 range</returns>
+        ValueTask<List<List<Position>>> GetRegularPolygonPaths(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null);
 
         /// <summary>
         /// Calculates the average speed of travel between two points based on the provided amount of time.
@@ -367,22 +354,18 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns>The average speed of travel between the two points.</returns>
-        ValueTask<double> GetSpeed<T, P>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null) 
-            where T : IJSObjectReference, IPosition, IPoint, IFeature<Point, P?>
-            where P : class;
+        ValueTask<double> GetSpeed(object origin, object destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null);
 
         /// <summary>
         /// Calculates the average speed of travel between two features based on the timestamp property of each feature.
         /// </summary>
-        /// <typeparam name="T"> Feature{Point, P?}. May be an <see cref="IJSObjectReference"/>.</typeparam>
-        /// <typeparam name="P">Feature{Point, P?}.  May be an <see cref="IJSObjectReference"/>.</typeparam>
-        /// <param name="origin">The initial point in which the speed is calculated from.</param>
-        /// <param name="destination">The final point in which the speed is calculated to.</param>
+        /// <param name="origin">Feature{Point, P?}. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="destination">Feature{Point, P?}. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="timestampProperty">The property name for the timestamp values.</param>
         /// <param name="speedUnits">The units for the speed. Default: meters/second</param>
         /// <param name="decimals">The number of decimal places to round the result to.</param>
         /// <returns>The speed in the specified units or NaN if valid timestamps are not found.</returns>
-        ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null) where T : IJSObjectReference, IFeature<Point, P?>;
+        ValueTask<double> GetSpeedFromFeatures(object origin, object destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null);
 
         /// <summary>
         /// Calculates the distance traveled based on a given time span, speed, and optional acceleration.
@@ -406,7 +389,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <param name="destination">The destination <see cref="Position"/>. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="fraction">The fraction of the distance between the two positions. Default 0.5.</param>
         /// <returns>The interpolated position.</returns>
-        ValueTask<Position> Interpolate<T>(T origin, T destination, double? fraction = null) where T : IJSObjectReference, IPosition;
+        ValueTask<Position> Interpolate(object origin, object destination, double? fraction = null);
 
         /// <summary>
         /// Converts an array of global Mercator pixel coordinates into an array of geospatial positions at a specified zoom level.
@@ -593,95 +576,91 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path, nodeSize);
         }
 
-        public async ValueTask<double> GetHeading<T>(T origin, T destination) where T : IJSObjectReference, IPoint, IPosition
+        public async ValueTask<double> GetHeading(object origin, object destination)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
         }
 
-        public async ValueTask<double> GetLengthOfPath<T>(T path, DistanceUnits? units = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<double> GetLengthOfPath(object path, DistanceUnits? units = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), path, units);
         }
 
-        public async ValueTask<List<Position>> GetPathDenormalizedAtAntimerian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<Position>> GetPathDenormalizedAtAntimerian(object path)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path);
         }
 
-        public async ValueTask<List<List<Position>>> GetPathSplitByAntimeridian<T>(T path) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<List<Position>>> GetPathSplitByAntimeridian(object path)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), path);
         }
 
-        public async ValueTask<double> GetPixelHeading<T>(T origin, T destination) where T : IGeoJsonObject, IPosition, IPoint
+        public async ValueTask<double> GetPixelHeading(object origin, object destination)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination);
         }
 
-        public async ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath<T>(T path, double distance, DistanceUnits? units) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<Feature<Point, HeadingProperties>> GetPointWithHeadingAlongPath(object path, double distance, DistanceUnits? units = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Feature<Point, HeadingProperties>>(GetJsInteropMethod(), path, distance, units);
         }
 
-        public async ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath<T>(T path, double distance) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<Feature<Point, HeadingProperties>>> GetPointsWithHeadingAlongPath(object path, double distance)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Feature<Point, HeadingProperties>>>(GetJsInteropMethod(), path, distance);
         }
 
-        public async ValueTask<Position> GetPosition<T, P>(T data) where T : IJSObjectReference, IPosition, IPoint, IFeature<Point, P?> where P : class
+        public async ValueTask<Position> GetPosition(object data)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Position>(GetJsInteropMethod(), data);
         }
 
-        public async ValueTask<Position> GetPositionAlongPath<T>(T path, double distance, DistanceUnits? units = null) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<Position> GetPositionAlongPath(object path, double distance, DistanceUnits? units = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Position>(GetJsInteropMethod(), path, distance, units);
         }
 
-        public async ValueTask<List<Position>> GetPositions<T, P>(T data)
-        where T : IJSObjectReference, IEnumerable<Position>, IGeometry, IFeature<Geometry, P?>, IFeatureCollection, IGeometryCollection, IEnumerable<Geometry>
-        where P : class
+        public async ValueTask<List<Position>> GetPositions(object data)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), data);
         }
 
-        public async ValueTask<List<Position>> GetPositionsAlongPath<T>(T path, long numPositions) where T : IJSObjectReference, IEnumerable<Position>, ILineString
+        public async ValueTask<List<Position>> GetPositionsAlongPath(object path, double numPositions)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), path, numPositions);
         }
 
-        public async ValueTask<List<Position>> GetRegularPolygonPath<T>(T origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null) where T : IJSObjectReference, IPosition, IPoint
+        public async ValueTask<List<Position>> GetRegularPolygonPath(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<Position>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
         }
 
-        public async ValueTask<List<List<Position>>> GetRegularPolygonPaths<T>(T origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null) where T : IJSObjectReference, IPosition, IPoint
+        public async ValueTask<List<List<Position>>> GetRegularPolygonPaths(object origin, double radius, int numberOfPositions, DistanceUnits? units = null, double? offset = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<List<List<Position>>>(GetJsInteropMethod(), origin, radius, numberOfPositions, units, offset);
         }
 
-        public async ValueTask<double> GetSpeed<T, P>(T origin, T destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null)
-            where T : IJSObjectReference, IPosition, IPoint, IFeature<Point, P?>
-            where P : class
+        public async ValueTask<double> GetSpeed(object origin, object destination, double timespan, TimeUnits? timeUnits = null, SpeedUnits? speedUnits = null, int? decimals = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timespan, timeUnits, speedUnits, decimals);
         }
 
-        public async ValueTask<double> GetSpeedFromFeatures<T, P>(T origin, T destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null) where T : IJSObjectReference, IFeature<Point, P?>
+        public async ValueTask<double> GetSpeedFromFeatures(object origin, object destination, string timestampProperty, SpeedUnits? speedUnits = null, int? decimals = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<double>(GetJsInteropMethod(), origin, destination, timestampProperty, speedUnits, decimals);
@@ -693,7 +672,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), distanceUnits, timespan, speed, acceleration, timeUnits, speedUnits, accelerationUnits, decimals);
         }
 
-        public async ValueTask<Position> Interpolate<T>(T origin, T destination, double? fraction = null) where T : IJSObjectReference, IPosition
+        public async ValueTask<Position> Interpolate(object origin, object destination, double? fraction = null)
         {
             var module = await moduleTask.Value;
             return await module.InvokeAsync<Position>(GetJsInteropMethod(), origin, destination, fraction);

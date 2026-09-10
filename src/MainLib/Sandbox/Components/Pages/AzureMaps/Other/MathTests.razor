@@ -117,7 +117,7 @@
             // tests.Add(await GetDistanceToTest());
             // tests.Add(await GetEarthRadiusTest());
             // tests.Add(await GetGeodesicPathTest());
-            tests.Add(await GetGeodesicPathsTest());
+            // tests.Add(await GetGeodesicPathsTest());
             // tests.Add(await GetHeadingTest());
             // tests.Add(await GetLengthOfPathTest());
             // tests.Add(await GetPathDenormalizedAtAntimerianTest());
@@ -134,7 +134,7 @@
             // tests.Add(await GetSpeedTest());
             // tests.Add(await GetSpeedFromFeaturesTest());
             // tests.Add(await GetTravelDistanceTest());
-            // tests.Add(await InterpolateTest());
+            tests.Add(await InterpolateTest());
             // tests.Add(await MercatorPixelsToPositionsTest());
             // tests.Add(await MercatorPositionsToPixelsTest());
             // tests.Add(await NormalizeLatitudeTest());
@@ -614,7 +614,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetHeading(bbox.Southwest!, bbox.Northeast!);
+            result.Result = $"Heading: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -633,7 +635,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetLengthOfPath(poly.Coordinates[0]);
+            result.Result = $"Length: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -652,7 +656,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPathDenormalizedAtAntimerian(poly.Coordinates[0]);
+            result.Result = $"Origin: {poly.Coordinates[0].Count} Path: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -671,7 +677,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPathSplitByAntimeridian(poly.Coordinates[0]);
+            result.Result = $"Origin: {poly.Coordinates[0].Count} Path: {data[0].Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -690,7 +698,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPixelHeading(bbox.Southwest!, bbox.Northeast!);
+            result.Result = $"Heading: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -709,7 +719,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPointsWithHeadingAlongPath(poly.Coordinates[0], 20);
+            result.Result = $"Points: {data[0].Geometry!.Coordinates.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -728,7 +740,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPointWithHeadingAlongPath(poly.Coordinates[0], 20);
+            result.Result = $"Point: {JsonSerializer.Serialize(data.Geometry!.Coordinates)} Heading: {data.Properties!.Heading}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -747,7 +761,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPosition(bbox.Southwest!);
+            result.Result = $"Position: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -766,7 +782,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPositionAlongPath(poly.Coordinates[0], 20);
+            result.Result = $"Position: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -785,7 +803,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPositions(poly.Coordinates[0]);
+            result.Result = $"Positions: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -804,7 +824,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetPositionsAlongPath(poly.Coordinates[0], 20);
+            result.Result = $"Positions: {data.Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -819,11 +841,13 @@
 
     private async Task<MathTestRun> GetRegularPolygonPathTest()
     {
-        var result = new MathTestRun(nameof(GetRegularPolygonPathsTest));
+        var result = new MathTestRun(nameof(GetRegularPolygonPathTest));
 
         try
         {
-
+            var data = await maps!.Math.GetRegularPolygonPath(bbox.Southwest!, 2.5, 5);
+            result.Result = $"Positions: {data[0].Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -842,7 +866,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetRegularPolygonPaths(bbox.Southwest!, 2.5, 5);
+            result.Result = $"Positions: {data[0].Count}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -861,7 +887,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetSpeed(bbox.Southwest!, bbox.Northeast!, 1.5);
+            result.Result = $"Speed: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -880,7 +908,11 @@
 
         try
         {
-
+            var origin = new Feature<Point, GeoJsonProperties?>(new Point(bbox.Northeast!)) { Properties = new GeoJsonProperties { { "time", DateTime.Now.AddSeconds(-100) } } };
+            var destination = new Feature<Point, GeoJsonProperties?>(new Point(bbox.Southwest!)) { Properties = new GeoJsonProperties { { "time", DateTime.Now } } };
+            var data = await maps!.Math.GetSpeedFromFeatures(origin, destination, "time");
+            result.Result = $"Speed = {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -899,7 +931,9 @@
 
         try
         {
-
+            var data = await maps!.Math.GetTravelDistance(1.5, 1.5);
+            result.Result = $"Distance: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {
@@ -918,7 +952,9 @@
 
         try
         {
-
+            var data = await maps!.Math.Interpolate(bbox.Southwest!, bbox.Northeast!);
+            result.Result = $"Position: {data}";
+            result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
         {

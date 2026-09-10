@@ -4,7 +4,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
 {
     /// <summary>
     /// The properties object returned by
-    /// <see cref="IAzureMapsMath.GetPointWithHeadingAlongPath{T}(T, double, DistanceUnits?)"/>
+    /// <see cref="IAzureMapsMath.GetPointWithHeadingAlongPath(object, double, DistanceUnits?)"/>
     /// </summary>
     public class HeadingProperties
     {
