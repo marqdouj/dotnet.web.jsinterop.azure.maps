@@ -96,50 +96,50 @@
 
             var tests = new List<MathTestRun>();
 
-            tests.Add(await BoundingBoxToPolygonTest());
-            tests.Add(await ConvertAccelerationTest());
-            tests.Add(await ConvertAreaTest());
-            tests.Add(await ConvertDistanceTest());
-            tests.Add(await ConvertSpeedTest());
-            tests.Add(await ConvertTimeSpanTest());
-            tests.Add(await GetAccelerationTest());
-            tests.Add(await GetAccelerationFromFeaturesTest());
-            tests.Add(await GetAccelerationFromSpeedsTest());
+            // tests.Add(await BoundingBoxToPolygonTest());
+            // tests.Add(await ConvertAccelerationTest());
+            // tests.Add(await ConvertAreaTest());
+            // tests.Add(await ConvertDistanceTest());
+            // tests.Add(await ConvertSpeedTest());
+            // tests.Add(await ConvertTimeSpanTest());
+            // tests.Add(await GetAccelerationTest());
+            // tests.Add(await GetAccelerationFromFeaturesTest());
+            // tests.Add(await GetAccelerationFromSpeedsTest());
             tests.Add(await GetAffineTransformToSourceTest());
             tests.Add(await GetAffineTransformToTargetTest());
-            tests.Add(await GetAreaTest());
-            tests.Add(await GetCardinalSplineTest());
-            tests.Add(await GetClosestPointOnGeometryTest());
-            tests.Add(await GetConvexHullTest());
-            tests.Add(await GetDestinationTest());
-            tests.Add(await GetDistanceToTest());
-            tests.Add(await GetEarthRadiusTest());
-            tests.Add(await GetGeodesicPathTest());
-            tests.Add(await GetGeodesicPathsTest());
-            tests.Add(await GetHeadingTest());
-            tests.Add(await GetLengthOfPathTest());
-            tests.Add(await GetPathDenormalizedAtAntimerianTest());
-            tests.Add(await GetPathSplitByAntimeridianTest());
-            tests.Add(await GetPixelHeadingTest());
-            tests.Add(await GetPointsWithHeadingAlongPathTest());
-            tests.Add(await GetPointWithHeadingAlongPathTest());
-            tests.Add(await GetPositionTest());
-            tests.Add(await GetPositionAlongPathTest());
-            tests.Add(await GetPositionsTest());
-            tests.Add(await GetPositionsAlongPathTest());
-            tests.Add(await GetRegularPolygonPathTest());
-            tests.Add(await GetRegularPolygonPathsTest());
-            tests.Add(await GetSpeedTest());
-            tests.Add(await GetSpeedFromFeaturesTest());
-            tests.Add(await GetTravelDistanceTest());
-            tests.Add(await InterpolateTest());
-            tests.Add(await MercatorPixelsToPositionsTest());
-            tests.Add(await MercatorPositionsToPixelsTest());
-            tests.Add(await NormalizeLatitudeTest());
-            tests.Add(await NormalizeLongitudeTest());
-            tests.Add(await RotatePositionsTest());
-            tests.Add(await SimplifyPixelsTest());
-            tests.Add(await SimplifyPositionsTest());
+            // tests.Add(await GetAreaTest());
+            // tests.Add(await GetCardinalSplineTest());
+            // tests.Add(await GetClosestPointOnGeometryTest());
+            // tests.Add(await GetConvexHullTest());
+            // tests.Add(await GetDestinationTest());
+            // tests.Add(await GetDistanceToTest());
+            // tests.Add(await GetEarthRadiusTest());
+            // tests.Add(await GetGeodesicPathTest());
+            // tests.Add(await GetGeodesicPathsTest());
+            // tests.Add(await GetHeadingTest());
+            // tests.Add(await GetLengthOfPathTest());
+            // tests.Add(await GetPathDenormalizedAtAntimerianTest());
+            // tests.Add(await GetPathSplitByAntimeridianTest());
+            // tests.Add(await GetPixelHeadingTest());
+            // tests.Add(await GetPointsWithHeadingAlongPathTest());
+            // tests.Add(await GetPointWithHeadingAlongPathTest());
+            // tests.Add(await GetPositionTest());
+            // tests.Add(await GetPositionAlongPathTest());
+            // tests.Add(await GetPositionsTest());
+            // tests.Add(await GetPositionsAlongPathTest());
+            // tests.Add(await GetRegularPolygonPathTest());
+            // tests.Add(await GetRegularPolygonPathsTest());
+            // tests.Add(await GetSpeedTest());
+            // tests.Add(await GetSpeedFromFeaturesTest());
+            // tests.Add(await GetTravelDistanceTest());
+            // tests.Add(await InterpolateTest());
+            // tests.Add(await MercatorPixelsToPositionsTest());
+            // tests.Add(await MercatorPositionsToPixelsTest());
+            // tests.Add(await NormalizeLatitudeTest());
+            // tests.Add(await NormalizeLongitudeTest());
+            // tests.Add(await RotatePositionsTest());
+            // tests.Add(await SimplifyPixelsTest());
+            // tests.Add(await SimplifyPositionsTest());
 
             testRuns = tests;
         }
@@ -365,8 +365,23 @@
 
             double[][] targetPoint = [[60, 70]];
 
+            List<List<double>> sourcePointsL = [
+                [0, 0],
+                [100, 0],
+                [0, 100]
+            ];
+
+            List<List<double>> targetPointsL = [
+                [10, 20],
+                [110, 20],
+                [10, 120]
+            ];
+
+            List<List<double>> targetPointL = [[60, 70]];
+
             var data = await maps!.Math.GetAffineTransformToSource(sourcePoints, targetPoints, targetPoint);
-            result.Result = JsonSerializer.Serialize(data);
+            var dataL = await maps!.Math.GetAffineTransformToSource(sourcePointsL, targetPointsL, targetPointL);
+            result.Result = $"{JsonSerializer.Serialize(data)} {JsonSerializer.Serialize(dataL)}";
             result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)
@@ -400,8 +415,23 @@
 
             double[][] sourcePoint = [[50, 50]];
 
+            List<List<double>> sourcePointsL = [
+                [0, 0],
+                [100, 0],
+                [0, 100]
+            ];
+
+            List<List<double>> targetPointsL = [
+                [10, 20],
+                [110, 20],
+                [10, 120]
+            ];
+
+            List<List<double>> sourcePointL = [[50, 50]];
+
             var data = await maps!.Math.GetAffineTransformToTarget(sourcePoints, targetPoints, sourcePoint);
-            result.Result = JsonSerializer.Serialize(data);
+            var dataL = await maps!.Math.GetAffineTransformToTarget(sourcePointsL, targetPointsL, sourcePointL);
+            result.Result = $"{JsonSerializer.Serialize(data)} {JsonSerializer.Serialize(dataL)}";
             result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)

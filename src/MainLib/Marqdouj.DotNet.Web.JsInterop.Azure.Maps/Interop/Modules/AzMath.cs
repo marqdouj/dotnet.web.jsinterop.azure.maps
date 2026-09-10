@@ -4,6 +4,7 @@ using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using Microsoft.JSInterop;
 using System.Runtime;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {
@@ -112,22 +113,22 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
         /// <summary>
         /// Converts an array of points from the target reference system to the source reference system.
         /// </summary>
-        /// <param name="source">A set of reference points from the source reference system to transform from.</param>
-        /// <param name="target">A set of reference points from the target reference system to transform to.</param>
-        /// <param name="targetPoints">An array of points from the target reference system to transform.</param>
+        /// <param name="source">A set of reference points (List{List{double}} or double[][]) from the source reference system to transform from. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="target">A set of reference points (List{List{double}} or double[][]) from the target reference system to transform to. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="targetPoints">An array of points ((List{List{double}} or double[][])) from the target reference system to transform.</param>
         /// <param name="decimals">Number of decimal places to round the results off to.</param>
         /// <returns>An array of points that have been transformed to the source reference system.</returns>
-        ValueTask<double[][]> GetAffineTransformToSource(double[][] source, double[][] target, double[][] targetPoints, int? decimals = null);
+        ValueTask<List<List<double>>> GetAffineTransformToSource(object source, object target, object targetPoints, int? decimals = null);
 
         /// <summary>
         /// Converts an array of points from the source reference system to the target reference system.
         /// </summary>
-        /// <param name="source">A set of reference points from the source reference system to transform from.</param>
-        /// <param name="target">A set of reference points from the target reference system to transform to.</param>
-        /// <param name="sourcePoints">An array of points from the source reference system to transform.</param>
+        /// <param name="source">A set of reference points (List{List{double}} or double[][]) from the source reference system to transform from. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="target">A set of reference points (List{List{double}} or double[][]) from the target reference system to transform to. May be an <see cref="IJSObjectReference"/>.</param>
+        /// <param name="sourcePoints">An array of points ((List{List{double}} or double[][])) from the source reference system to transform. May be an <see cref="IJSObjectReference"/>.</param>
         /// <param name="decimals">Number of decimal places to round the results off to.</param>
         /// <returns>An array of points that have been transformed to the target reference system.</returns>
-        ValueTask<double[][]> GetAffineTransformToTarget(double[][] source, double[][] target, double[][] sourcePoints, int? decimals = null);
+        ValueTask<List<List<double>>> GetAffineTransformToTarget(object source, object target, object sourcePoints, int? decimals = null);
 
         /// <summary>
         /// Calculates the acceleration based on an initial speed, final speed, and timespan.
@@ -506,16 +507,16 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
             return await module.InvokeAsync<double>(GetJsInteropMethod(), initialSpeed, finalSpeed, timespan, speedUnits, timeUnits, accelerationUnits, decimals);
         }
 
-        public async ValueTask<double[][]> GetAffineTransformToSource(double[][] source, double[][] target, double[][] targetPoints, int? decimals = null)
+        public async ValueTask<List<List<double>>> GetAffineTransformToSource(object source, object target, object targetPoints, int? decimals = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<double[][]>(GetJsInteropMethod(), source, target, targetPoints, decimals);
+            return await module.InvokeAsync<List<List<double>>>(GetJsInteropMethod(), source, target, targetPoints, decimals);
         }
 
-        public async ValueTask<double[][]> GetAffineTransformToTarget(double[][] source, double[][] target, double[][] sourcePoints, int? decimals = null)
+        public async ValueTask<List<List<double>>> GetAffineTransformToTarget(object source, object target, object sourcePoints, int? decimals = null)
         {
             var module = await moduleTask.Value;
-            return await module.InvokeAsync<double[][]>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
+            return await module.InvokeAsync<List<List<double>>>(GetJsInteropMethod(), source, target, sourcePoints, decimals);
         }
 
         public async ValueTask<List<double>> GetArea(IEnumerable<object> data, AreaUnits? areaUnits = null, int? decimals = null)
