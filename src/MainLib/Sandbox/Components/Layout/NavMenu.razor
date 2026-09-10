@@ -3,12 +3,10 @@
 
 <FluentNav Id="main-menu" UseSingleExpanded="true" Width="265px">
  
-    @if (AppConfig.IsDevelopment)
+@*     @if (AppConfig.IsDevelopment)
     {
-        @* <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem> *@
-        <FluentNavItem Href="math-tests" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Math Tests</FluentNavItem>
-    } 
-
+        <FluentNavItem Href="design" IconRest="@((new Icons.Regular.Size20.DesignIdeas()))">Design</FluentNavItem>
+    }  *@
 
     <FluentNavItem Href="/" IconRest="@((new Icons.Regular.Size20.Home()))">Home</FluentNavItem>
 
@@ -64,6 +62,7 @@
     </FluentNavCategory>
 
     <FluentNavCategory Title="Other" IconRest="@((new Icons.Regular.Size20.NotePin()))" IconActive="@((new Icons.Filled.Size20.NotePin()))">
+        <FluentNavItem Href="math-module" IconRest="@(new Icons.Regular.Size20.MathFormula())">Math Module</FluentNavItem>
         <FluentNavItem Href="map-other-pizza-delivery" IconRest="@(new Icons.Regular.Size20.FoodPizza())">Pizza Delivery</FluentNavItem>
         <FluentNavItem Href="map-other-geolocation" IconRest="@(new Icons.Regular.Size20.GlobeLocation())">User Location</FluentNavItem>
     </FluentNavCategory>
