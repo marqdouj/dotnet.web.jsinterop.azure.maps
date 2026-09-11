@@ -1,5 +1,4 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
-using Marqdouj.DotNet.Web.JsInterop.GeoJson;
+﻿using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.ComponentModel.DataAnnotations;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration

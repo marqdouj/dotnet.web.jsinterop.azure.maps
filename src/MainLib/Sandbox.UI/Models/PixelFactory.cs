@@ -1,5 +1,5 @@
 ﻿using Marqdouj.DotNet.General;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.Reflection;
 
 namespace Sandbox.UI.Models
