@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-4.0`:
+  - `TBD`.
 - `11.0.0-Preview-3.0`:
   - `IAzureMapsInterop.Data`. New interop module for 
      [atlas.data](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data?view=azure-maps-typescript-latest)
