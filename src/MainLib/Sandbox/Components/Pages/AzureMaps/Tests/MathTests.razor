@@ -1,7 +1,6 @@
-﻿@page "/math-module"
+﻿@page "/math-tests"
 @rendermode InteractiveServer
-@using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models.Math
-@inject ILogger<MathModule> Logger
+@inject ILogger<MathTests> Logger
 @inject INotificationService ToastService
 @inject AzureMapsXmlDocReader DocReader
 @inject IMapDataService MapDataService
@@ -9,7 +8,7 @@
 <MapPage Title="@title">
     <SummaryContent>
         <FluentText As="@TextTag.Paragraph">
-	        This page demonstrates the Math module.
+	        This page demonstrates the @name module.
             <br />
             Based on this <a href="@sourceUrl" target="_blank">article</a>
         </FluentText>
@@ -18,23 +17,24 @@
         <Toolbar>
             <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
             <FluentSpacer Width="10px" />
-            <FluentSelect Items="@mathTests" TOption="MathTest?" TValue="MathTest?" @bind-Value:get="@selectedTest" @bind-Value:set="@OnTestChanged" Placeholder="Select a test..." />
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
         </Toolbar>
 
-        <FluentDataGrid Items="@testRuns.AsQueryable()"
-                        MultiLine="true"
-                        GridTemplateColumns="auto, auto, 2fr, 2fr"
-                        GenerateHeader="DataGridGeneratedHeaderType.Sticky">
-            <PropertyColumn Property="@(p => p.Name)" />
-            <PropertyColumn Property="@(p => p.Status)" />
-            <PropertyColumn Property="@(p => p.Result)" />
-            <PropertyColumn Property="@(p => p.Error)" />
-        </FluentDataGrid>
-        <FluentStack Orientation="Orientation.Vertical" Height="100%">
-            <MapContainer MapId="@mapId"/>
+        <FluentStack HorizontalGap="5px" Width="100%" Height="500px">
+            <MapContainer MapId="@mapId" Width="500px" Class="myMap"/>
+
+            <div style="overflow:auto;height:100%">
+                <FluentDataGrid Items="@testRuns.AsQueryable()"
+                                MultiLine="true"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+                    <PropertyColumn Property="@(p => p.Name)" />
+                    <PropertyColumn Property="@(p => p.Status)" />
+                    <PropertyColumn Property="@(p => p.Result)" />
+                    <PropertyColumn Property="@(p => p.Error)"/>
+                </FluentDataGrid>
+            </div>
         </FluentStack>
 
-        @* FluentOverlay does not work properly in this page; investigating. *@
 @*         <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
             <FluentSpinner />
         </FluentOverlay> *@
@@ -45,20 +45,23 @@
              OnMapEventError="@OnMapEventError"
              OnMapEventReady="@OnMapEventReady" />
 
+<style>
+.myMap {
+    display: none;
+}
+</style>
+
 @code {
     private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest";
     private const string name = "Math";
     private string title => $"Atlas - {name}";
-    private string mapId = $"map{name}";
+    private string mapId = $"mapMath";
     private IAzureMapsInterop? maps;
     private bool mapReady;
     private bool mapNotReady => !mapReady;
     private bool overlay;
     private bool buttonsDisabled => mapNotReady | overlay;
     private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
-    private PolygonLayer polygonLayer = (PolygonLayer)LayerType.Polygon.GetDefaultLayer();
-    private readonly List<MathTest?> mathTests = new(Enum.GetValues<MathTest>().Cast<MathTest?>());
-    private MathTest? selectedTest;
     private List<MathTestRun> testRuns = [];
     private readonly BoundingBox bbox = new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345);
     private readonly Polygon poly = new Polygon(new List<Position> {
@@ -66,7 +69,7 @@
                 new Position(-122.30, 47.65),
                 new Position(-122.30, 47.60),
                 new Position(-122.35, 47.60),
-                new Position(-122.35, 47.65) // Close the polygon
+                new Position(-122.35, 47.65)
             });
 
     // protected override void OnInitialized()
@@ -84,131 +87,64 @@
 
     //     foreach (var method in methods.OrderBy(m => m.Name))
     //     {
-    //         Console.WriteLine($"case MathTest.{method.Name}:");
+    //         Console.WriteLine(method.Name);
     //     }
     // }
 
     #region Math Tests
 
-    private async Task OnTestChanged(MathTest? test)
-    {
-        try
-        {
-            selectedTest = test;
-            await RunTest(test);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, null);
-            await ToastService.ShowError(ex.Message);
-        }
-    }
-
-    private async Task RunTest(MathTest? test)
+    private async Task RunTests()
     {
         try
         {
             ShowOverlay(true);
 
-
             var tests = new List<MathTestRun>();
-            //TODOL: Clear layers.
 
-            switch (test)
-            {
-                case MathTest.BoundingBoxToPolygon:
-                    tests.Add(await BoundingBoxToPolygonTest());
-                    break;
-                case MathTest.ConvertAcceleration:
-                case MathTest.ConvertArea:
-                case MathTest.ConvertDistance:
-                case MathTest.ConvertSpeed:
-                case MathTest.ConvertTimespan:
-                case MathTest.GetAcceleration:
-                case MathTest.GetAccelerationFromFeatures:
-                case MathTest.GetAccelerationFromSpeeds:
-                case MathTest.GetAffineTransformToSource:
-                case MathTest.GetAffineTransformToTarget:
-                case MathTest.GetArea:
-                case MathTest.GetCardinalSpline:
-                case MathTest.GetClosestPointOnGeometry:
-                case MathTest.GetConvexHull:
-                case MathTest.GetDestination:
-                case MathTest.GetDistanceTo:
-                case MathTest.GetEarthRadius:
-                case MathTest.GetGeodesicPath:
-                case MathTest.GetGeodesicPaths:
-                case MathTest.GetHeading:
-                case MathTest.GetLengthOfPath:
-                case MathTest.GetPathDenormalizedAtAntimerian:
-                case MathTest.GetPathSplitByAntimeridian:
-                case MathTest.GetPixelHeading:
-                case MathTest.GetPointsWithHeadingAlongPath:
-                case MathTest.GetPointWithHeadingAlongPath:
-                case MathTest.GetPosition:
-                case MathTest.GetPositionAlongPath:
-                case MathTest.GetPositions:
-                case MathTest.GetPositionsAlongPath:
-                case MathTest.GetRegularPolygonPath:
-                case MathTest.GetRegularPolygonPaths:
-                case MathTest.GetSpeed:
-                case MathTest.GetSpeedFromFeatures:
-                case MathTest.GetTravelDistance:
-                case MathTest.Interpolate:
-                case MathTest.MercatorPixelsToPositions:
-                case MathTest.MercatorPositionsToPixels:
-                case MathTest.NormalizeLatitude:
-                case MathTest.NormalizeLongitude:
-                case MathTest.RotatePositions:
-                case MathTest.SimplifyPixels:
-                case MathTest.SimplifyPositions:
-                default:
-                    break;
-            }
-            // 
-            // tests.Add(await ConvertAccelerationTest());
-            // tests.Add(await ConvertAreaTest());
-            // tests.Add(await ConvertDistanceTest());
-            // tests.Add(await ConvertSpeedTest());
-            // tests.Add(await ConvertTimespanTest());
-            // tests.Add(await GetAccelerationTest());
-            // tests.Add(await GetAccelerationFromFeaturesTest());
-            // tests.Add(await GetAccelerationFromSpeedsTest());
-            // tests.Add(await GetAffineTransformToSourceTest());
-            // tests.Add(await GetAffineTransformToTargetTest());
-            // tests.Add(await GetAreaTest());
-            // tests.Add(await GetCardinalSplineTest());
-            // tests.Add(await GetClosestPointOnGeometryTest());
-            // tests.Add(await GetConvexHullTest());
-            // tests.Add(await GetDestinationTest());
-            // tests.Add(await GetDistanceToTest());
-            // tests.Add(await GetEarthRadiusTest());
-            // tests.Add(await GetGeodesicPathTest());
-            // tests.Add(await GetGeodesicPathsTest());
-            // tests.Add(await GetHeadingTest());
-            // tests.Add(await GetLengthOfPathTest());
-            // tests.Add(await GetPathDenormalizedAtAntimerianTest());
-            // tests.Add(await GetPathSplitByAntimeridianTest());
-            // tests.Add(await GetPixelHeadingTest());
-            // tests.Add(await GetPointsWithHeadingAlongPathTest());
-            // tests.Add(await GetPointWithHeadingAlongPathTest());
-            // tests.Add(await GetPositionTest());
-            // tests.Add(await GetPositionAlongPathTest());
-            // tests.Add(await GetPositionsTest());
-            // tests.Add(await GetPositionsAlongPathTest());
-            // tests.Add(await GetRegularPolygonPathTest());
-            // tests.Add(await GetRegularPolygonPathsTest());
-            // tests.Add(await GetSpeedTest());
-            // tests.Add(await GetSpeedFromFeaturesTest());
-            // tests.Add(await GetTravelDistanceTest());
-            // tests.Add(await InterpolateTest());
-            // tests.Add(await MercatorPixelsToPositionsTest());
-            // tests.Add(await MercatorPositionsToPixelsTest());
-            // tests.Add(await NormalizeLatitudeTest());
-            // tests.Add(await NormalizeLongitudeTest());
-            // tests.Add(await RotatePositionsTest());
-            // tests.Add(await SimplifyPixelsTest());
-            // tests.Add(await SimplifyPositionsTest());
+            tests.Add(await BoundingBoxToPolygonTest());
+            tests.Add(await ConvertAccelerationTest());
+            tests.Add(await ConvertAreaTest());
+            tests.Add(await ConvertDistanceTest());
+            tests.Add(await ConvertSpeedTest());
+            tests.Add(await ConvertTimeSpanTest());
+            tests.Add(await GetAccelerationTest());
+            tests.Add(await GetAccelerationFromFeaturesTest());
+            tests.Add(await GetAccelerationFromSpeedsTest());
+            tests.Add(await GetAffineTransformToSourceTest());
+            tests.Add(await GetAffineTransformToTargetTest());
+            tests.Add(await GetAreaTest());
+            tests.Add(await GetCardinalSplineTest());
+            tests.Add(await GetClosestPointOnGeometryTest());
+            tests.Add(await GetConvexHullTest());
+            tests.Add(await GetDestinationTest());
+            tests.Add(await GetDistanceToTest());
+            tests.Add(await GetEarthRadiusTest());
+            tests.Add(await GetGeodesicPathTest());
+            tests.Add(await GetGeodesicPathsTest());
+            tests.Add(await GetHeadingTest());
+            tests.Add(await GetLengthOfPathTest());
+            tests.Add(await GetPathDenormalizedAtAntimerianTest());
+            tests.Add(await GetPathSplitByAntimeridianTest());
+            tests.Add(await GetPixelHeadingTest());
+            tests.Add(await GetPointsWithHeadingAlongPathTest());
+            tests.Add(await GetPointWithHeadingAlongPathTest());
+            tests.Add(await GetPositionTest());
+            tests.Add(await GetPositionAlongPathTest());
+            tests.Add(await GetPositionsTest());
+            tests.Add(await GetPositionsAlongPathTest());
+            tests.Add(await GetRegularPolygonPathTest());
+            tests.Add(await GetRegularPolygonPathsTest());
+            tests.Add(await GetSpeedTest());
+            tests.Add(await GetSpeedFromFeaturesTest());
+            tests.Add(await GetTravelDistanceTest());
+            tests.Add(await InterpolateTest());
+            tests.Add(await MercatorPixelsToPositionsTest());
+            tests.Add(await MercatorPositionsToPixelsTest());
+            tests.Add(await NormalizeLatitudeTest());
+            tests.Add(await NormalizeLongitudeTest());
+            tests.Add(await RotatePositionsTest());
+            tests.Add(await SimplifyPixelsTest());
+            tests.Add(await SimplifyPositionsTest());
 
             testRuns = tests;
         }
@@ -225,13 +161,12 @@
 
     private async Task<MathTestRun> BoundingBoxToPolygonTest()
     {
-        var result = new MathTestRun(MathTest.BoundingBoxToPolygon);
+        var result = new MathTestRun(nameof(BoundingBoxToPolygonTest));
 
         try
         {
             var bboxes = new List<BoundingBox> { bbox };
             var data = await maps!.Math.BoundingBoxToPolygon(bboxes);
-            result.Result = $"BBox Points: 4 Poly Points: {data[0].Coordinates[0].Count}";
             result.Status = data.Count == 1 ? MathTestRunStatus.Success : MathTestRunStatus.Failed;
         }
         catch (Exception ex)
@@ -247,7 +182,7 @@
 
     private async Task<MathTestRun> ConvertAccelerationTest()
     {
-        var result = new MathTestRun(MathTest.ConvertAcceleration);
+        var result = new MathTestRun(nameof(ConvertAccelerationTest));
 
         try
         {
@@ -268,7 +203,7 @@
 
     private async Task<MathTestRun> ConvertAreaTest()
     {
-        var result = new MathTestRun(MathTest.ConvertArea);
+        var result = new MathTestRun(nameof(ConvertAreaTest));
 
         try
         {
@@ -289,7 +224,7 @@
 
     private async Task<MathTestRun> ConvertDistanceTest()
     {
-        var result = new MathTestRun(MathTest.ConvertDistance);
+        var result = new MathTestRun(nameof(ConvertDistanceTest));
 
         try
         {
@@ -310,7 +245,7 @@
 
     private async Task<MathTestRun> ConvertSpeedTest()
     {
-        var result = new MathTestRun(MathTest.ConvertSpeed);
+        var result = new MathTestRun(nameof(ConvertSpeedTest));
 
         try
         {
@@ -329,9 +264,9 @@
         return result;
     }
 
-    private async Task<MathTestRun> ConvertTimespanTest()
+    private async Task<MathTestRun> ConvertTimeSpanTest()
     {
-        var result = new MathTestRun(MathTest.ConvertTimespan);
+        var result = new MathTestRun(nameof(ConvertTimeSpanTest));
 
         try
         {
@@ -352,7 +287,7 @@
 
     private async Task<MathTestRun> GetAccelerationTest()
     {
-        var result = new MathTestRun(MathTest.GetAcceleration);
+        var result = new MathTestRun(nameof(GetAccelerationTest));
 
         try
         {
@@ -373,7 +308,7 @@
 
     private async Task<MathTestRun> GetAccelerationFromFeaturesTest()
     {
-        var result = new MathTestRun(MathTest.GetAccelerationFromFeatures);
+        var result = new MathTestRun(nameof(GetAccelerationFromFeaturesTest));
 
         try
         {
@@ -396,7 +331,7 @@
 
     private async Task<MathTestRun> GetAccelerationFromSpeedsTest()
     {
-        var result = new MathTestRun(MathTest.GetAccelerationFromSpeeds);
+        var result = new MathTestRun(nameof(GetAccelerationFromSpeedsTest));
 
         try
         {
@@ -417,7 +352,7 @@
 
     private async Task<MathTestRun> GetAffineTransformToSourceTest()
     {
-        var result = new MathTestRun(MathTest.GetAffineTransformToSource);
+        var result = new MathTestRun(nameof(GetAffineTransformToSourceTest));
 
         try
         {
@@ -467,7 +402,7 @@
 
     private async Task<MathTestRun> GetAffineTransformToTargetTest()
     {
-        var result = new MathTestRun(MathTest.GetAffineTransformToTarget);
+        var result = new MathTestRun(nameof(GetAffineTransformToTargetTest));
 
         try
         {
@@ -517,7 +452,7 @@
 
     private async Task<MathTestRun> GetAreaTest()
     {
-        var result = new MathTestRun(MathTest.GetArea);
+        var result = new MathTestRun(nameof(GetAreaTest));
 
         try
         {
@@ -538,7 +473,7 @@
 
     private async Task<MathTestRun> GetCardinalSplineTest()
     {
-        var result = new MathTestRun(MathTest.GetCardinalSpline);
+        var result = new MathTestRun(nameof(GetCardinalSplineTest));
 
         try
         {
@@ -559,7 +494,7 @@
 
     private async Task<MathTestRun> GetClosestPointOnGeometryTest()
     {
-        var result = new MathTestRun(MathTest.GetClosestPointOnGeometry);
+        var result = new MathTestRun(nameof(GetClosestPointOnGeometryTest));
 
         try
         {
@@ -580,7 +515,7 @@
 
     private async Task<MathTestRun> GetConvexHullTest()
     {
-        var result = new MathTestRun(MathTest.GetConvexHull);
+        var result = new MathTestRun(nameof(GetConvexHullTest));
 
         try
         {
@@ -601,7 +536,7 @@
 
     private async Task<MathTestRun> GetDestinationTest()
     {
-        var result = new MathTestRun(MathTest.GetDestination);
+        var result = new MathTestRun(nameof(GetDestinationTest));
 
         try
         {
@@ -622,7 +557,7 @@
 
     private async Task<MathTestRun> GetDistanceToTest()
     {
-        var result = new MathTestRun(MathTest.GetDistanceTo);
+        var result = new MathTestRun(nameof(GetDistanceToTest));
 
         try
         {
@@ -643,7 +578,7 @@
 
     private async Task<MathTestRun> GetEarthRadiusTest()
     {
-        var result = new MathTestRun(MathTest.GetEarthRadius);
+        var result = new MathTestRun(nameof(GetEarthRadiusTest));
 
         try
         {
@@ -664,7 +599,7 @@
 
     private async Task<MathTestRun> GetGeodesicPathTest()
     {
-        var result = new MathTestRun(MathTest.GetGeodesicPath);
+        var result = new MathTestRun(nameof(GetGeodesicPathTest));
 
         try
         {
@@ -686,7 +621,7 @@
 
     private async Task<MathTestRun> GetGeodesicPathsTest()
     {
-        var result = new MathTestRun(MathTest.GetGeodesicPaths);
+        var result = new MathTestRun(nameof(GetGeodesicPathsTest));
 
         try
         {
@@ -708,7 +643,7 @@
 
     private async Task<MathTestRun> GetHeadingTest()
     {
-        var result = new MathTestRun(MathTest.GetHeading);
+        var result = new MathTestRun(nameof(GetHeadingTest));
 
         try
         {
@@ -729,7 +664,7 @@
 
     private async Task<MathTestRun> GetLengthOfPathTest()
     {
-        var result = new MathTestRun(MathTest.GetLengthOfPath);
+        var result = new MathTestRun(nameof(GetLengthOfPathTest));
 
         try
         {
@@ -750,7 +685,7 @@
 
     private async Task<MathTestRun> GetPathDenormalizedAtAntimerianTest()
     {
-        var result = new MathTestRun(MathTest.GetPathDenormalizedAtAntimerian);
+        var result = new MathTestRun(nameof(GetPathDenormalizedAtAntimerianTest));
 
         try
         {
@@ -771,7 +706,7 @@
 
     private async Task<MathTestRun> GetPathSplitByAntimeridianTest()
     {
-        var result = new MathTestRun(MathTest.GetPathSplitByAntimeridian);
+        var result = new MathTestRun(nameof(GetPathSplitByAntimeridianTest));
 
         try
         {
@@ -792,7 +727,7 @@
 
     private async Task<MathTestRun> GetPixelHeadingTest()
     {
-        var result = new MathTestRun(MathTest.GetPixelHeading);
+        var result = new MathTestRun(nameof(GetPixelHeadingTest));
 
         try
         {
@@ -813,7 +748,7 @@
 
     private async Task<MathTestRun> GetPointsWithHeadingAlongPathTest()
     {
-        var result = new MathTestRun(MathTest.GetPointsWithHeadingAlongPath);
+        var result = new MathTestRun(nameof(GetPointsWithHeadingAlongPathTest));
 
         try
         {
@@ -834,7 +769,7 @@
 
     private async Task<MathTestRun> GetPointWithHeadingAlongPathTest()
     {
-        var result = new MathTestRun(MathTest.GetPointWithHeadingAlongPath);
+        var result = new MathTestRun(nameof(GetPointWithHeadingAlongPathTest));
 
         try
         {
@@ -855,7 +790,7 @@
 
     private async Task<MathTestRun> GetPositionTest()
     {
-        var result = new MathTestRun(MathTest.GetPosition);
+        var result = new MathTestRun(nameof(GetPositionTest));
 
         try
         {
@@ -876,7 +811,7 @@
 
     private async Task<MathTestRun> GetPositionAlongPathTest()
     {
-        var result = new MathTestRun(MathTest.GetPositionAlongPath);
+        var result = new MathTestRun(nameof(GetPositionAlongPathTest));
 
         try
         {
@@ -897,7 +832,7 @@
 
     private async Task<MathTestRun> GetPositionsTest()
     {
-        var result = new MathTestRun(MathTest.GetPositions);
+        var result = new MathTestRun(nameof(GetPositionsTest));
 
         try
         {
@@ -918,7 +853,7 @@
 
     private async Task<MathTestRun> GetPositionsAlongPathTest()
     {
-        var result = new MathTestRun(MathTest.GetPositionsAlongPath);
+        var result = new MathTestRun(nameof(GetPositionsAlongPathTest));
 
         try
         {
@@ -939,7 +874,7 @@
 
     private async Task<MathTestRun> GetRegularPolygonPathTest()
     {
-        var result = new MathTestRun(MathTest.GetRegularPolygonPath);
+        var result = new MathTestRun(nameof(GetRegularPolygonPathTest));
 
         try
         {
@@ -960,7 +895,7 @@
 
     private async Task<MathTestRun> GetRegularPolygonPathsTest()
     {
-        var result = new MathTestRun(MathTest.GetRegularPolygonPaths);
+        var result = new MathTestRun(nameof(GetRegularPolygonPathsTest));
 
         try
         {
@@ -981,7 +916,7 @@
 
     private async Task<MathTestRun> GetSpeedTest()
     {
-        var result = new MathTestRun(MathTest.GetSpeed);
+        var result = new MathTestRun(nameof(GetSpeedTest));
 
         try
         {
@@ -1002,7 +937,7 @@
 
     private async Task<MathTestRun> GetSpeedFromFeaturesTest()
     {
-        var result = new MathTestRun(MathTest.GetSpeedFromFeatures);
+        var result = new MathTestRun(nameof(GetSpeedFromFeaturesTest));
 
         try
         {
@@ -1025,7 +960,7 @@
 
     private async Task<MathTestRun> GetTravelDistanceTest()
     {
-        var result = new MathTestRun(MathTest.GetTravelDistance);
+        var result = new MathTestRun(nameof(GetTravelDistanceTest));
 
         try
         {
@@ -1046,7 +981,7 @@
 
     private async Task<MathTestRun> InterpolateTest()
     {
-        var result = new MathTestRun(MathTest.Interpolate);
+        var result = new MathTestRun(nameof(InterpolateTest));
 
         try
         {
@@ -1067,7 +1002,7 @@
 
     private async Task<MathTestRun> MercatorPixelsToPositionsTest()
     {
-        var result = new MathTestRun(MathTest.MercatorPixelsToPositions);
+        var result = new MathTestRun(nameof(MercatorPixelsToPositionsTest));
 
         try
         {
@@ -1088,7 +1023,7 @@
 
     private async Task<MathTestRun> MercatorPositionsToPixelsTest()
     {
-        var result = new MathTestRun(MathTest.MercatorPositionsToPixels);
+        var result = new MathTestRun(nameof(MercatorPositionsToPixelsTest));
 
         try
         {
@@ -1109,7 +1044,7 @@
 
     private async Task<MathTestRun> NormalizeLatitudeTest()
     {
-        var result = new MathTestRun(MathTest.NormalizeLatitude);
+        var result = new MathTestRun(nameof(NormalizeLatitudeTest));
 
         try
         {
@@ -1130,7 +1065,7 @@
 
     private async Task<MathTestRun> NormalizeLongitudeTest()
     {
-        var result = new MathTestRun(MathTest.NormalizeLongitude);
+        var result = new MathTestRun(nameof(NormalizeLongitudeTest));
 
         try
         {
@@ -1151,7 +1086,7 @@
 
     private async Task<MathTestRun> RotatePositionsTest()
     {
-        var result = new MathTestRun(MathTest.RotatePositions);
+        var result = new MathTestRun(nameof(RotatePositionsTest));
 
         try
         {
@@ -1172,7 +1107,7 @@
 
     private async Task<MathTestRun> SimplifyPixelsTest()
     {
-        var result = new MathTestRun(MathTest.SimplifyPixels);
+        var result = new MathTestRun(nameof(SimplifyPixelsTest));
 
         try
         {
@@ -1193,7 +1128,7 @@
 
     private async Task<MathTestRun> SimplifyPositionsTest()
     {
-        var result = new MathTestRun(MathTest.SimplifyPositions);
+        var result = new MathTestRun(nameof(SimplifyPositionsTest));
 
         try
         {
@@ -1212,16 +1147,6 @@
         return result;
     }
 
-    private class MathTestRun(MathTest test)
-    {
-        public MathTest MathTest { get; } = test;
-        public string Name => MathTest.ToString();
-        public MathTestRunStatus Status { get; set; }
-        public string? Result { get; set; }
-        public Exception? Exception { get; set; }
-        public string? Error => Exception?.Message;
-    }
-
     private enum MathTestRunStatus
     {
         None,
@@ -1229,52 +1154,13 @@
         Failed,
     }
 
-    private enum MathTest
+    private class MathTestRun(string name)
     {
-        BoundingBoxToPolygon,
-        ConvertAcceleration,
-        ConvertArea,
-        ConvertDistance,
-        ConvertSpeed,
-        ConvertTimespan,
-        GetAcceleration,
-        GetAccelerationFromFeatures,
-        GetAccelerationFromSpeeds,
-        GetAffineTransformToSource,
-        GetAffineTransformToTarget,
-        GetArea,
-        GetCardinalSpline,
-        GetClosestPointOnGeometry,
-        GetConvexHull,
-        GetDestination,
-        GetDistanceTo,
-        GetEarthRadius,
-        GetGeodesicPath,
-        GetGeodesicPaths,
-        GetHeading,
-        GetLengthOfPath,
-        GetPathDenormalizedAtAntimerian,
-        GetPathSplitByAntimeridian,
-        GetPixelHeading,
-        GetPointsWithHeadingAlongPath,
-        GetPointWithHeadingAlongPath,
-        GetPosition,
-        GetPositionAlongPath,
-        GetPositions,
-        GetPositionsAlongPath,
-        GetRegularPolygonPath,
-        GetRegularPolygonPaths,
-        GetSpeed,
-        GetSpeedFromFeatures,
-        GetTravelDistance,
-        Interpolate,
-        MercatorPixelsToPositions,
-        MercatorPositionsToPixels,
-        NormalizeLatitude,
-        NormalizeLongitude,
-        RotatePositions,
-        SimplifyPixels,
-        SimplifyPositions,
+        public string Name { get; } = name.Replace("Test", "");
+        public MathTestRunStatus Status { get; set; }
+        public string? Result { get; set; }
+        public Exception? Exception { get; set; }
+        public string? Error => Exception?.Message;
     }
 
     #endregion
@@ -1324,22 +1210,7 @@
     {
         if (mapReady)
         {
-            await ClearLayers();
-            selectedTest = null;
             await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
-        }
-    }
-
-    private async Task ClearLayers()
-    {
-        try
-        {
-            await maps!.Sources.ClearById(mapId, [polygonLayer.Source.Id]);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, null);
-            await ToastService.ShowError(ex.Message);
         }
     }
 
