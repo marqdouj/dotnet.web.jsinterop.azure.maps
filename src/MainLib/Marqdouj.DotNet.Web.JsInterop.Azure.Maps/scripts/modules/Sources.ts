@@ -187,6 +187,47 @@ export class Sources {
     }
     // #endregion
 
+    public static getJSShapeById(mapId: string, id: string, shapeId: string) : any {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const ds = SourceHelper.getSource(mapRef, id);
+        if (ds) {
+            return (ds as any).getShapeById(shapeId);
+        }
+    }
+
+    public static getJSShapesById(mapId: string, id: string, shapeIds: string[]): any {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const ds = SourceHelper.getSource(mapRef, id);
+        if (ds) {
+            var shapes = (ds as any).getShapes();
+            var results: any[] = [];
+            shapeIds.forEach((shapeId) => {
+                var shape = shapes.find((s: any) => s.getId() === shapeId);
+                if (shape) {
+                    results.push(shape);
+                }
+            });
+            return results;
+        }
+    }
+
+    public static getJSShapes(mapId: string, id: string): any {
+        const mapRef = Factory.getMapReference(mapId);
+        if (!mapRef)
+            return;
+
+        const ds = SourceHelper.getSource(mapRef, id);
+        if (ds) {
+            return (ds as any).getShapes();
+        }
+    }
+
     public static getShapes(mapId: string, id: string) {
         const mapRef = Factory.getMapReference(mapId);
         if (!mapRef)

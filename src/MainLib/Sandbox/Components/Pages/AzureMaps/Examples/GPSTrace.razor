@@ -8,7 +8,7 @@
 
 <MapPage Title="Example (GPS Trace)">
     <SummaryContent>
-        <FluentText>
+        <FluentText As="@TextTag.Paragraph">
             This sample shows how to smoothly animate a symbol along a route path taking into 
             consideration timestamps for each point in the route path.
             <br />
@@ -67,13 +67,21 @@
                         <b>Event details:</b>
                         <br />
                         <table>
-                            <tr><td>type</td><td>@panelInfo.Type</td></tr>
-                            <tr><td>progress</td><td>@panelInfo.Progress</td></tr>
-                            <tr><td>easingProgress</td><td>@panelInfo.EasingProgress</td></tr>
-                            <tr><td>heading</td><td>@panelInfo.Heading</td></tr>
-                            <tr><td>speed (m/s)</td><td>@panelInfo.Speed</td></tr>
-                            <tr><td>speed (km/hr)</td><td>@panelInfo.SpeedInKph</td></tr>
-                            <tr><td>position</td><td>@panelInfo.PositionDisplay</td></tr>
+                            <thead>
+                                <tr>
+                                    <th>Property</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>type</td><td>@panelInfo.Type</td></tr>
+                                <tr><td>progress</td><td>@panelInfo.Progress</td></tr>
+                                <tr><td>easingProgress</td><td>@panelInfo.EasingProgress</td></tr>
+                                <tr><td>heading</td><td>@panelInfo.Heading</td></tr>
+                                <tr><td>speed (m/s)</td><td>@panelInfo.Speed</td></tr>
+                                <tr><td>speed (km/hr)</td><td>@panelInfo.SpeedInKph</td></tr>
+                                <tr><td>position</td><td>@panelInfo.PositionDisplay</td></tr>
+                            </tbody>
                         </table>
                     }
                 </div>

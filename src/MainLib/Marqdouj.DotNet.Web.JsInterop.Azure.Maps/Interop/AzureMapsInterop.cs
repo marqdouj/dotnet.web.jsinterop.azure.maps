@@ -56,6 +56,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsConfiguration Configuration { get; }
 
         /// <summary>
+        /// <inheritdoc cref="IAzureMapsData"/>
+        /// </summary>
+        IAzureMapsData Data { get; }
+
+        /// <summary>
         /// <inheritdoc cref="IAzureMapsEvents"/>
         /// </summary>
         IAzureMapsEvents Events { get; }
@@ -69,6 +74,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         /// <inheritdoc cref="IAzureMapsGeolocations"/>
         /// </summary>
         IAzureMapsGeolocations Geolocations { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAzureMapsMath"/>
+        /// </summary>
+        IAzureMapsMath Math { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsSprites"/>
@@ -161,9 +171,11 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
             Common = new AzCommon(moduleTask);
             Controls = new AzControls(moduleTask);
             Configuration = new AzConfiguration(moduleTask);
+            Data = new AzData(moduleTask);
             Events = new AzEvents(moduleTask);
             Features = new AzFeatures(moduleTask);
             Geolocations = new AzGeolocations(moduleTask, dotNetRef);
+            Math = new AzMath(moduleTask);
             Sprites = new AzSprites(moduleTask);
             Layers = new AzLayers(moduleTask);
             Markers = new AzMarkers(moduleTask);
@@ -183,11 +195,15 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
 
         public IAzureMapsConfiguration Configuration { get; }
 
+        public IAzureMapsData Data { get; }
+
         public IAzureMapsEvents Events { get; }
 
         public IAzureMapsFeatures Features { get; }
 
         public IAzureMapsGeolocations Geolocations { get; }
+
+        public IAzureMapsMath Math { get; }
 
         public IAzureMapsSprites Sprites { get; }
 

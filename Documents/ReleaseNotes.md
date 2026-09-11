@@ -1,6 +1,19 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-3.0`:
+  - `IAzureMapsInterop.Data`. New interop module for 
+     [atlas.data](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data?view=azure-maps-typescript-latest)
+     interactions.
+    - `IAzureMapsInterop.Data.BoundingBox`. New interop module based on the azure maps
+     [BoundingBox Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest).
+  - `IAzureMapsInterop.Math`. New interop module based on the azure maps
+     [Math Class](https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.math?view=azure-maps-typescript-latest).
+  - `IAzureMapsSources`
+	- `GetJSShapeById`. New method to get an IJSObjectReference for a shape in the source.
+	- `GetJSShapesById`. New method to get a list of IJSObjectReferences for the shapes in a source by shape id.
+	- `GetJSShapes`. New method to get a list of IJSObjectReferences for the shapes in a source.
+  - `Sandbox`. Demo updates.
 - `11.0.0-Preview-2.3`:
   - `IAzureMapsAnimations`.
 	- `SetOptions`. New method to set animation options.

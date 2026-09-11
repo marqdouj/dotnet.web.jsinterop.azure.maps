@@ -1,0 +1,675 @@
+﻿@page "/bbox-tests"
+@rendermode InteractiveServer
+@inject ILogger<BBoxTests> Logger
+@inject INotificationService ToastService
+@inject AzureMapsXmlDocReader DocReader
+@inject IMapDataService MapDataService
+
+<MapPage Title="@title">
+    <SummaryContent>
+        <FluentText As="@TextTag.Paragraph">
+	        This page demonstrates the @name module.
+            <br />
+            Based on this <a href="@sourceUrl" target="_blank">article</a>
+        </FluentText>
+    </SummaryContent>
+    <ChildContent>
+        <Toolbar>
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.ArrowReset())" Title="Reset" OnClick="@Reset" />
+            <FluentSpacer Width="10px" />
+            <FluentButton Disabled="@buttonsDisabled" IconStart="@(new Icons.Regular.Size20.Run())" Title="Run Tests" OnClick="@RunTests" />
+        </Toolbar>
+
+        <FluentStack HorizontalGap="5px" Width="100%" Height="500px">
+            <MapContainer MapId="@mapId" Width="500px" Class="myMap"/>
+
+            <div style="overflow:auto;height:100%">
+                <FluentDataGrid Items="@testRuns.AsQueryable()"
+                                MultiLine="true"
+                                GenerateHeader="DataGridGeneratedHeaderType.Sticky">
+                    <PropertyColumn Property="@(p => p.Name)" />
+                    <PropertyColumn Property="@(p => p.Status)" />
+                    <PropertyColumn Property="@(p => p.Result)" />
+                    <PropertyColumn Property="@(p => p.Error)"/>
+                </FluentDataGrid>
+            </div>
+        </FluentStack>
+
+@*         <FluentOverlay @bind-Visible="@overlay" FullScreen="true">
+            <FluentSpinner />
+        </FluentOverlay> *@
+    </ChildContent>
+</MapPage>
+
+<MapProvider OnMapProviderInitialized="@OnMapProviderInitialized"
+             OnMapEventError="@OnMapEventError"
+             OnMapEventReady="@OnMapEventReady" />
+
+<style>
+.myMap {
+    display: none;
+}
+</style>
+
+@code {
+    private const string sourceUrl = "https://learn.microsoft.com/en-us/javascript/api/azure-maps-control/atlas.data.boundingbox?view=azure-maps-typescript-latest";
+    private const string name = "BBox";
+    private string title => $"Atlas.Data - {name}";
+    private string mapId = $"map{name}";
+    private IAzureMapsInterop? maps;
+    private bool mapReady;
+    private bool mapNotReady => !mapReady;
+    private bool overlay;
+    private bool buttonsDisabled => mapNotReady | overlay;
+    private MapOptions mapOptions = MapExtensions.GetDefaultMapOptions();
+    private List<MathTestRun> testRuns = [];
+    private readonly BoundingBox bbox = new BoundingBox(12.803766, 43.033716, 13.129083, 43.33345);
+    private readonly Polygon poly = new Polygon(new List<Position> {
+                new Position(-122.35, 47.65),
+                new Position(-122.30, 47.65),
+                new Position(-122.30, 47.60),
+                new Position(-122.35, 47.60),
+                new Position(-122.35, 47.65)
+            });
+
+    // protected override void OnInitialized()
+    // {
+    //     Type type = typeof(IAzureMapsBoundingBox);
+
+    //     // Retrieve all methods (public, non-public, instance, static, declared only in this class)
+    //     var methods = type.GetMethods(
+    //         System.Reflection.BindingFlags.Public |
+    //         System.Reflection.BindingFlags.NonPublic |
+    //         System.Reflection.BindingFlags.Instance |
+    //         System.Reflection.BindingFlags.Static |
+    //         System.Reflection.BindingFlags.DeclaredOnly
+    //     );
+
+    //     foreach (var method in methods.OrderBy(m => m.Name))
+    //     {
+    //         Console.WriteLine(method.Name);
+    //     }
+    // }
+
+    #region Math Tests
+
+    private async Task RunTests()
+    {
+        try
+        {
+            ShowOverlay(true);
+
+            var tests = new List<MathTestRun>();
+
+            tests.Add(await ContainsPositionTest());
+            tests.Add(await CrossesAntimeridianTest());
+            tests.Add(await FromBoundingBoxTest());
+            tests.Add(await FromDataTest());
+            tests.Add(await FromDimensionsTest());
+            tests.Add(await FromEdgesTest());
+            tests.Add(await FromLatLngsTest());
+            tests.Add(await FromPositionsTest());
+            tests.Add(await GetCenterTest());
+            tests.Add(await GetEastTest());
+            tests.Add(await GetHeightTest());
+            tests.Add(await GetNorthTest());
+            tests.Add(await GetNorthEastTest());
+            tests.Add(await GetNorthWestTest());
+            tests.Add(await GetSouthTest());
+            tests.Add(await GetSouthEastTest());
+            tests.Add(await GetSouthWestTest());
+            tests.Add(await GetWestTest());
+            tests.Add(await GetWidthTest());
+            tests.Add(await IntersectTest());
+            tests.Add(await MergeTest());
+            tests.Add(await SplitOnAntimeridianTest());
+
+
+            testRuns = tests;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            ShowOverlay(false);
+        }
+    }
+
+    private async Task<MathTestRun> ContainsPositionTest()
+    {
+        var result = new MathTestRun(nameof(ContainsPositionTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.ContainsPosition(bbox, bbox.Northeast!);
+            result.Status = data ? MathTestRunStatus.Success : MathTestRunStatus.Failed;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> CrossesAntimeridianTest()
+    {
+        var result = new MathTestRun(nameof(CrossesAntimeridianTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.CrossesAntimeridian(bbox);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromBoundingBoxTest()
+    {
+        var result = new MathTestRun(nameof(FromBoundingBoxTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromBoundingBox(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromDataTest()
+    {
+        var result = new MathTestRun(nameof(FromDataTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromData(poly);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromDimensionsTest()
+    {
+        var result = new MathTestRun(nameof(FromDimensionsTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromDimensions(bbox.Northeast!, 1, 1);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromEdgesTest()
+    {
+        var result = new MathTestRun(nameof(FromEdgesTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromEdges(1, 2, 3, 4);
+            result.Result = $"1, 2, 3, 4 = {JsonSerializer.Serialize(data)}";
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromLatLngsTest()
+    {
+        var result = new MathTestRun(nameof(FromLatLngsTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromLatLngs(poly.Coordinates[0]);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> FromPositionsTest()
+    {
+        var result = new MathTestRun(nameof(FromPositionsTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.FromPositions(poly.Coordinates[0]);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetCenterTest()
+    {
+        var result = new MathTestRun(nameof(GetCenterTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetCenter(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetEastTest()
+    {
+        var result = new MathTestRun(nameof(GetEastTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetEast(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetHeightTest()
+    {
+        var result = new MathTestRun(nameof(GetHeightTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetHeight(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetNorthTest()
+    {
+        var result = new MathTestRun(nameof(GetNorthTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetNorth(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetNorthEastTest()
+    {
+        var result = new MathTestRun(nameof(GetNorthEastTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetNorthEast(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetNorthWestTest()
+    {
+        var result = new MathTestRun(nameof(GetNorthWestTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetNorthWest(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetSouthTest()
+    {
+        var result = new MathTestRun(nameof(GetSouthTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetSouth(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetSouthEastTest()
+    {
+        var result = new MathTestRun(nameof(GetSouthEastTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetSouthEast(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetSouthWestTest()
+    {
+        var result = new MathTestRun(nameof(GetSouthWestTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetSouthWest(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetWestTest()
+    {
+        var result = new MathTestRun(nameof(GetWestTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetWest(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> GetWidthTest()
+    {
+        var result = new MathTestRun(nameof(GetWidthTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.GetWidth(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> IntersectTest()
+    {
+        var result = new MathTestRun(nameof(IntersectTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.Intersect(bbox, bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> MergeTest()
+    {
+        var result = new MathTestRun(nameof(MergeTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.Merge(bbox, bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private async Task<MathTestRun> SplitOnAntimeridianTest()
+    {
+        var result = new MathTestRun(nameof(SplitOnAntimeridianTest));
+
+        try
+        {
+            var data = await maps!.Data.BoundingBox.SplitOnAntimeridian(bbox);
+            result.Result = JsonSerializer.Serialize(data);
+            result.Status = MathTestRunStatus.Success;
+        }
+        catch (Exception ex)
+        {
+            result.Status = MathTestRunStatus.Failed;
+            result.Exception = ex;
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+
+        return result;
+    }
+
+    private enum MathTestRunStatus
+    {
+        None,
+        Success,
+        Failed,
+    }
+
+    private class MathTestRun(string name)
+    {
+        public string Name { get; } = name.Replace("Test", "");
+        public MathTestRunStatus Status { get; set; }
+        public string? Result { get; set; }
+        public Exception? Exception { get; set; }
+        public string? Error => Exception?.Message;
+    }
+
+    #endregion
+
+    #region Map Provider Handlers
+
+    private async Task OnMapProviderInitialized(MapProviderArgs args)
+    {
+        try
+        {
+            maps = await args.ProcessMapProviderInitialized(Logger, ToastService);
+            if (maps != null)
+            {
+                await maps.CreateDefaultMap(mapId, Logger, ToastService, mapOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "");
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    private async Task OnMapEventError(MapEventArgs args)
+    {
+        await args.ProcessMapEventError(Logger, ToastService);
+    }
+
+    private async Task OnMapEventReady(MapEventArgs args)
+    {
+        try
+        {
+            mapReady = !(await args.HasPayloadError(Logger, ToastService));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, null);
+            await ToastService.ShowError(ex.Message);
+        }
+    }
+
+    # endregion
+
+    #region MapsInterop
+
+    private async Task Reset()
+    {
+        if (mapReady)
+        {
+            await maps!.ResetMap(mapId, Logger, ToastService, mapOptions);
+        }
+    }
+
+    private void ShowOverlay(bool isVisible)
+    {
+        overlay = isVisible;
+        StateHasChanged();
+    }
+
+    #endregion
+}
