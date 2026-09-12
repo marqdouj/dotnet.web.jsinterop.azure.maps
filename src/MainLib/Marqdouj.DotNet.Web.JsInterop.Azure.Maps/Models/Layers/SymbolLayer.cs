@@ -1,6 +1,6 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Common;
-using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Converters;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Converters;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Layers.Images;
+using Marqdouj.DotNet.Web.JsInterop.GeoJson;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
