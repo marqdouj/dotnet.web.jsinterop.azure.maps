@@ -1,5 +1,5 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules.Data;
-using Microsoft.JSInterop;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
 
 namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
 {
@@ -9,13 +9,25 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules
     public interface IAzureMapsData
     {
         /// <summary>
-        /// <inheritdoc cref="IAzureMapsBoundingBox"/>
+        /// <inheritdoc cref="IAtlasBoundingBox"/>
         /// </summary>
-        IAzureMapsBoundingBox BoundingBox { get; }
+        IAtlasBoundingBox BoundingBox { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasMercatorPoint"/>
+        /// </summary>
+        IAtlasMercatorPoint MercatorPoint { get; }
+
+        /// <summary>
+        /// <inheritdoc cref="IAtlasPosition"/>
+        /// </summary>
+        IAtlasPosition Position { get; }
     }
 
-    internal class AzData(Lazy<Task<IJSObjectReference>> moduleTask) : IAzureMapsData
+    internal class AzData(IAtlasInterop atlasInterop) : IAzureMapsData
     {
-        public IAzureMapsBoundingBox BoundingBox { get; } = new AzBoundingBox(moduleTask);
+        public IAtlasBoundingBox BoundingBox => atlasInterop.Data.BoundingBox;
+        public IAtlasMercatorPoint MercatorPoint => atlasInterop.Data.MercatorPoint;
+        public IAtlasPosition Position => atlasInterop.Data.Position;
     }
 }
