@@ -28,4 +28,6 @@
 
 ## Release Notes (Current)
 - `11.0.0-Preview-4.0`:
-  - `TBD`.
+  - `BREAKING CHANGES`.
+	- `Models/Common/Pixel`. The Pixel class was moved to the [GeoJSON](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.GeoJson/) library.
+	  Any references must be updated to use the library version.
