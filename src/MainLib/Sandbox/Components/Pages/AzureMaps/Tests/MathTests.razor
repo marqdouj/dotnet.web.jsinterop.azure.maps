@@ -499,7 +499,7 @@
         try
         {
             var data = await maps!.Math.GetClosestPointOnGeometry(bbox.Southwest!, poly);
-            result.Result = $"Distance = {data.Properties!.distance}";
+            result.Result = $"Distance = {data.Properties!.Distance}";
             result.Status = MathTestRunStatus.Success;
         }
         catch (Exception ex)

@@ -1,4 +1,7 @@
-﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
+﻿using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Modules.Data;
+using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Models;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop.Modules;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Controls;
@@ -56,9 +59,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsConfiguration Configuration { get; }
 
         /// <summary>
-        /// <inheritdoc cref="IAzureMapsData"/>
+        /// <inheritdoc cref="IAtlasData"/>
         /// </summary>
-        IAzureMapsData Data { get; }
+        IAtlasData Data { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsEvents"/>
@@ -76,9 +79,9 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         IAzureMapsGeolocations Geolocations { get; }
 
         /// <summary>
-        /// <inheritdoc cref="IAzureMapsMath"/>
+        /// <inheritdoc cref="IAtlasMath"/>
         /// </summary>
-        IAzureMapsMath Math { get; }
+        IAtlasMath Math { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsSprites"/>
@@ -94,11 +97,6 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         /// <inheritdoc cref="IAzureMapsMarkers"/>
         /// </summary>
         IAzureMapsMarkers Markers { get; }
-
-        /// <summary>
-        /// <inheritdoc cref="IAzureMapsMercators"/>
-        /// </summary>
-        IAzureMapsMercators Mercators { get; }
 
         /// <summary>
         /// <inheritdoc cref="IAzureMapsPopups"/>
@@ -158,6 +156,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
         private readonly Lazy<Task<IJSObjectReference>> moduleTask;
         private readonly MapConfiguration mapConfiguration;
         private readonly DotNetObjectReference<ComponentBase> dotNetRef;
+        private readonly IAtlasInterop atlasInterop;
 
         public AzureMapsInterop(IJSRuntime jsRuntime, MapConfiguration mapConfiguration, ComponentBase component)
         {
@@ -165,21 +164,19 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
                 "import", "./_content/Marqdouj.DotNet.Web.JsInterop.Azure.Maps/azureMaps.js").AsTask());
             this.mapConfiguration = mapConfiguration;
             dotNetRef = DotNetObjectReference.Create(component);
+            atlasInterop = new AtlasInterop(jsRuntime);
 
             Animations = new AzAnimations(moduleTask);
             Atlas = new AzAtlas(moduleTask);
             Common = new AzCommon(moduleTask);
             Controls = new AzControls(moduleTask);
             Configuration = new AzConfiguration(moduleTask);
-            Data = new AzData(moduleTask);
             Events = new AzEvents(moduleTask);
             Features = new AzFeatures(moduleTask);
             Geolocations = new AzGeolocations(moduleTask, dotNetRef);
-            Math = new AzMath(moduleTask);
             Sprites = new AzSprites(moduleTask);
             Layers = new AzLayers(moduleTask);
             Markers = new AzMarkers(moduleTask);
-            Mercators = new AzMercators(moduleTask);
             Popups = new AzPopups(moduleTask);
             Sources = new AzSources(moduleTask);
             Spatial = new AzSpatial(moduleTask);
@@ -195,7 +192,7 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
 
         public IAzureMapsConfiguration Configuration { get; }
 
-        public IAzureMapsData Data { get; }
+        public IAtlasData Data => atlasInterop.Data;
 
         public IAzureMapsEvents Events { get; }
 
@@ -203,15 +200,13 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
 
         public IAzureMapsGeolocations Geolocations { get; }
 
-        public IAzureMapsMath Math { get; }
+        public IAtlasMath Math => atlasInterop.Math;
 
         public IAzureMapsSprites Sprites { get; }
 
         public IAzureMapsLayers Layers { get; }
 
         public IAzureMapsMarkers Markers { get; }
-
-        public IAzureMapsMercators Mercators { get; }
 
         public IAzureMapsPopups Popups { get; }
 
@@ -271,7 +266,10 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Interop
                 await module.DisposeAsync();
             }
 
-            ((IDisposable)dotNetRef)?.Dispose();
+            dotNetRef?.Dispose();
+
+            if (atlasInterop != null)
+                await atlasInterop.DisposeAsync();
         }
 
         private static string GetJsInteropMethod([CallerMemberName] string name = "") => JsModule.Factory.GetJsModuleMethod(name);

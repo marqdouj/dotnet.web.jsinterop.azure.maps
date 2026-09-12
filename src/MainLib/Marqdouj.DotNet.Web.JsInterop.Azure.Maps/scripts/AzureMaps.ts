@@ -4,7 +4,6 @@ export { Atlas } from "./modules/Atlas";
 export { Common } from "./modules/Common"
 export { Configuration } from "./modules/Configuration"
 export { Controls } from "./modules/Controls"
-export { BoundingBox } from "./modules/data/BoundingBox"
 export { Events } from "./modules/Events";
 export { Factory } from "./modules/Factory"
 export { Features } from "./modules/Features";
@@ -12,7 +11,6 @@ export { Geolocations } from "./modules/Geolocations";
 export { Sprites } from "./modules/Sprites";
 export { Layers } from "./modules/Layers"
 export { Markers } from "./modules/Markers";
-export { Math } from "./modules/Math";
 export { Mercators } from "./modules/Mercators";
 export { Popups } from "./modules/Popups";
 export { Sources } from "./modules/Sources"
