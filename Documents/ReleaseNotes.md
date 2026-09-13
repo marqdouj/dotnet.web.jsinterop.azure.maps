@@ -1,6 +1,9 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-5.1`:
+  - `MapComponent`. Deleted local version. Use `Atlas` component instead by adding using statement to _imports.razor:
+	- @using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Components
 - `11.0.0-Preview-5.0`:
   - `Azure.Maps.Atlas`. New [library](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/) in support of Azure Maps SDK interactions.
 	- Duplicate functionality in this library will be removed and replaced by using the new library instead.
