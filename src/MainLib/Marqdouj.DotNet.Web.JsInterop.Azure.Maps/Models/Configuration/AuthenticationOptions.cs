@@ -33,6 +33,46 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
     }
 
     /// <summary>
+    /// Contains information used to invoke the 'getToken' method for authentication.
+    /// </summary>
+    public class AuthenticationTokenInfo
+    {
+        /// <param name="id"><see cref="Id"/></param>
+        /// <param name="identifier"><see cref="Identifier"/></param>
+        /// <param name="authType"><see cref="AuthType"/></param>
+        public AuthenticationTokenInfo(string id, string identifier, AuthenticationType authType)
+        {
+            Id = id;
+            Identifier = identifier;
+            AuthType = authType;
+
+            switch (authType)
+            {
+                case AuthenticationType.anonymous:
+                case AuthenticationType.sas:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(authType));
+            }
+        }
+
+        /// <summary>
+        /// {PACKAGE ID/ASSEMBLY NAME}
+        /// </summary>
+        public string Id { get; }
+
+        /// <summary>
+        /// JSInvokable method name.
+        /// </summary>
+        public string Identifier { get; }
+
+        /// <summary>
+        /// Must be <see cref="AuthenticationType.anonymous"/> or <see cref="AuthenticationType.sas"/>.
+        /// </summary>
+        public AuthenticationType AuthType { get; }
+    }
+
+    /// <summary>
     /// Authentication configuration for the Azure map.
     /// </summary>
     public class AuthenticationOptions : OptionsBase
@@ -49,10 +89,21 @@ namespace Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration
         public string? SubscriptionKey { get; set; }
 
         /// <summary>
-        /// The URL for the Shared Access Signature (SAS) token for your Azure Maps Account.
-        /// If <see cref="AuthType"/> = sas and this value is set, it will override the getAuthTokenCallback configured in App.Razor.
+        /// Optionally provide an initial token for sas authentication.
+        /// </summary>
+        public string? SasToken { get; set; }
+
+        /// <summary>
+        /// Optionally provide a SAS token URL for your Azure Maps Account.
+        /// If <see cref="AuthType"/> = <see cref="AuthenticationType.sas"/> and this value is set, it will be handled internally
+        /// and any other sas options will be ignored.
         /// </summary>
         public string? SasTokenUrl { get; set; }
+
+        /// <summary>
+        /// When a TokenInfo is assigned, a callback will be created based on <inheritdoc cref="AuthenticationTokenInfo"/>.
+        /// </summary>
+        public AuthenticationTokenInfo? TokenInfo { get; set; }
 
         /// <summary>
         /// The Azure AD registered app ID. This is the app ID of an app registered in your Azure AD tenant.

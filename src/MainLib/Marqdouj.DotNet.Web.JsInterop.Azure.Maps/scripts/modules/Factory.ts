@@ -98,6 +98,7 @@ export class Factory {
         let options: TBuildMapOptions = {};
 
         const mapOptions = Helpers.nullToUndefined(config.mapOptions);
+        const authOptions = Helpers.nullToUndefined(config.authOptions);
 
         if (mapOptions) {
             //Camera and CameraBounds are mutually exclusive
@@ -120,22 +121,27 @@ export class Factory {
             }
         }
 
-        options.authOptions = config.authOptions;
-        const sasTokenUrl = (config.authOptions as any).sasTokenUrl;
+        const sasTokenUrl = (authOptions as any).sasTokenUrl;
+        const tokenInfo: TokenInfo = (authOptions as any).tokenInfo;
+
         if (Helpers.isNotEmptyOrNull(sasTokenUrl)) {
-            options.authOptions.getToken = function (resolve, reject, map) {
+            authOptions.getToken = function (resolve: any) {
                 fetch(sasTokenUrl).then(r => r.text()).then(token => resolve(token));
             }
         }
-        else {
-            if (globalThis.AzureMapsAuthTokenCallback && typeof globalThis.AzureMapsAuthTokenCallback === "function") {
-                //Logger.logMapMessage(mapId, LogLevel.Trace, "Setting global AzureMapsAuthTokenCallback function.", globalThis.AzureMapsAuthTokenCallback);
-                options.authOptions.getToken = globalThis.AzureMapsAuthTokenCallback;
-            }
+        else if (tokenInfo) {
+            authOptions.authType = tokenInfo.authType;
+            authOptions.getToken = (resolve: any) => {
+                DotNet.invokeMethodAsync(tokenInfo.id, tokenInfo.identifier)
+                    .then(function (response: any) {
+                        return response;
+                    }).then(function (token: any) {
+                        resolve(token);
+                    });
+            };
         }
 
-        //Logger.logMapMessage(mapId, LogLevel.Trace, "Factory.createMap:buildMapOptions", config, options);
-
+        options.authOptions = authOptions;
         return options;
     }
 
@@ -211,6 +217,12 @@ export class MapReference {
         this.#animations?.clear();
         this.#animations = undefined;
     }
+}
+
+interface TokenInfo {
+    id: string;
+    identifier: string;
+    authType: atlas.AuthenticationType;
 }
 
 enum MapEventCreate {

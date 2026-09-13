@@ -28,5 +28,8 @@
 - `11.0.0-Preview-5.1`:
   - `MapComponent`. Deleted local version. Use `Atlas` component instead by adding using statement to _imports.razor:
 	- @using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Components
+  - `Authentication`.
+	- `Token Callback`. Requirement for a token callback being configured in App.razor is no longer required/supported.
+	- `AuthenticationTokenInfo`. New class added to `AuthenticationOptions` that will be used to configure the callback internally.
 
 ## [Release Notes (All)](Documents/ReleaseNotes.md)
