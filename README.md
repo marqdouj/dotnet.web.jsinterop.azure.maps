@@ -24,18 +24,12 @@
 
 ## [Build Solution](Documents/BuildSolution.md)
 
-## [Release Notes (All)](Documents/ReleaseNotes.md)
-
 ## Release Notes (Current)
-- `11.0.0-Preview-5.0`:
-  - `Azure.Maps.Atlas`. New [library](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/) in support of Azure Maps SDK interactions.
-	- Duplicate functionality in this library will be removed and replaced by using the new library instead.
-	- NOTE: The new library also allows for creating standalone instances of `AtlasInterop` for it's interactions; no requirement for this library's `IAzureMapsInterop`.
-	- `Changes`. The following changes have been made in support of this new library:
-	  - `IAzureMapsInterop`
-		- `IAzureMapsInterop.Data`. Now implements `IAtlasData`.
-		  - `BoundingBox`.
-		  - `MercatorPoint`.
-		  - `Position`.
-		- `IAzureMapsInterop.Mercators` has been removed - use `IAzureMapsInterop.Data.MercatorPoint`.
-		- `IAzureMapsInterop.Math`. Now implements `IAtlasMath`.
+- `11.0.0-Preview-5.1`:
+  - `MapComponent`. Deleted local version. Use `Atlas` component instead by adding using statement to _imports.razor:
+	- @using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Components
+  - `Authentication`.
+	- `Token Callback`. Requirement for a token callback being configured in App.razor is no longer required/supported.
+	- `AuthenticationTokenInfo`. New class added to `AuthenticationOptions` that will be used to configure the callback internally.
+
+## [Release Notes (All)](Documents/ReleaseNotes.md)

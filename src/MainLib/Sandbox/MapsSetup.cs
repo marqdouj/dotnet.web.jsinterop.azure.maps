@@ -1,18 +1,17 @@
-﻿//using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 // For Azure Maps Anonymous authentication
-//using Microsoft.Identity.Client;
-
+using Microsoft.Identity.Client;
 using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Models.Configuration;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Sandbox
 {
-    internal static class MapsSetup
+    public static class MapsSetup
     {
         private static MapConfiguration? mapConfiguration;
-        //private static string clientSecret = "";
-        //private static readonly string authorityFormat = "https://login.microsoftonline.com/{0}/oauth2/v2.0";
-        //private static readonly string graphScope = "https://atlas.microsoft.com/.default";
-        //private static string? sasToken; //Used only for demo purposes; do not do this in production.
+        private static string clientSecret = "";
+        private static readonly string authorityFormat = "https://login.microsoftonline.com/{0}/oauth2/v2.0";
+        private static readonly string graphScope = "https://atlas.microsoft.com/.default";
 
         public static IServiceCollection ConfigureMarqdoujAzureMaps(this IServiceCollection services, IConfiguration configuration, bool isDevelopment)
         {
@@ -46,65 +45,72 @@ namespace Sandbox
                 config.JsLogLevel = LogLevel.Trace; //Set log level to Trace for development.
         }
 
-        //private static void ConfigureForSasToken(IConfiguration configuration, AzMapsConfiguration config)
-        //{
-        //    config.AuthOptions.AuthType = AuthenticationType.sas;
+        private static void ConfigureForSasToken(IConfiguration configuration, MapConfiguration config)
+        {
+            config.AuthOptions.AuthType = AuthenticationType.sas;
 
-        //    //If provided, do do not need to configure GetSasToken callback in App.Razor
-        //    //config.SasTokenUrl = "[YOUR SAS TOKEN URL]";
+            config.AuthOptions.SasTokenUrl = configuration["AzureMaps:SasTokenUrl"];
+            if (!string.IsNullOrWhiteSpace(config.AuthOptions.SasTokenUrl))
+                return;
 
-        //    //For demo only, do not do this in production.
-        //    sasToken = configuration["AzureMaps:SasToken"];
-        //}
+            config.AuthOptions.SasToken = configuration["AzureMaps:SasToken"];
+            if (!string.IsNullOrWhiteSpace(config.AuthOptions.SasToken))
+                return;
+
+            config.AuthOptions.TokenInfo = new(nameof(Sandbox), nameof(GetSasToken), AuthenticationType.sas);
+        }
 
         /// <summary>
         /// Only used for SasToken AuthOptions.
-        /// Requires token callback be configured in App.razor.
+        /// Requires AuthOptions.TokenInfo to be configured.
         /// </summary>
         /// <returns></returns>
-        //[JSInvokable]
-        //public static async Task<string?> GetSasToken()
-        //{
-        //    //TODO: Implement logic to generate SasToken.
-        //    // For the purpose of testing, I manually generate SasToken (via Azure Maps Account/Shared Access Signature)
-        //    // and add it to my User Secrets.
-        //    return sasToken;
-        //}
+        [JSInvokable("GetSasToken")]
+        public static async Task<string?> GetSasToken()
+        {
+            //TODO: Implement logic to generate SasToken.
+            //var sasToken = "[ADD LOGIC TO GET SAS TOKEN]";
 
-        //private static void ConfigureForAad(IConfiguration configuration, AzMapsConfiguration config)
-        //{
-        //    config.AuthOptions.AuthType = AuthenticationType.aad;
-        //    config.AuthOptions.AadAppId = configuration["AzureMaps:AadAppId"];
-        //    config.AuthOptions.AadTenant = configuration["AzureMaps:AadTenant"];
-        //    config.AuthOptions.ClientId = configuration["AzureMaps:ClientId"];
-        //}
+            // For the purpose of testing, I manually generate a SasToken (via Azure Maps Account/Shared Access Signature)
+            var sasToken = "[INSERT GENERATED TOKEN FOR TESTING]";
+            return sasToken;
+        }
 
-        //private static void ConfigureForAnonymous(IConfiguration configuration, AzMapsConfiguration config)
-        //{
-        //    //NOTE: See GetAccessToken().
-        //    config.AuthOptions.AuthType = AuthenticationType.anonymous;
-        //    config.AuthOptions.AadAppId = configuration["AzureMaps:AadAppId"];
-        //    config.AuthOptions.AadTenant = configuration["AzureMaps:AadTenant"];
-        //    config.AuthOptions.ClientId = configuration["AzureMaps:ClientId"];
-        //    clientSecret = configuration["AzureMaps:ClientSecret"] ?? "";
-        //}
+        private static void ConfigureForAad(IConfiguration configuration, MapConfiguration config)
+        {
+            config.AuthOptions.AuthType = AuthenticationType.aad;
+            config.AuthOptions.AadAppId = configuration["AzureMaps:AadAppId"];
+            config.AuthOptions.AadTenant = configuration["AzureMaps:AadTenant"];
+            config.AuthOptions.ClientId = configuration["AzureMaps:ClientId"];
+        }
+
+        private static void ConfigureForAnonymous(IConfiguration configuration, MapConfiguration config)
+        {
+            config.AuthOptions.AuthType = AuthenticationType.anonymous;
+            config.AuthOptions.AadAppId = configuration["AzureMaps:AadAppId"];
+            config.AuthOptions.AadTenant = configuration["AzureMaps:AadTenant"];
+            config.AuthOptions.ClientId = configuration["AzureMaps:ClientId"];
+            clientSecret = configuration["AzureMaps:ClientSecret"] ?? "";
+
+            config.AuthOptions.TokenInfo = new(nameof(Sandbox), nameof(GetAccessToken), AuthenticationType.anonymous);
+        }
 
         /// <summary>
         /// Only used for Anonymous AuthOptions.
-        /// Requires token callback be configured in App.razor.
+        /// Requires AuthOptions.TokenInfo to be configured.
         /// </summary>
         /// <returns></returns>
-        //[JSInvokable]
-        //public static async Task<string> GetAccessToken()
-        //{
-        //    IConfidentialClientApplication daemonClient;
-        //    daemonClient = ConfidentialClientApplicationBuilder.Create(mapConfiguration!.AuthOptions.AadAppId)
-        //        .WithAuthority(string.Format(authorityFormat, mapConfiguration.AuthOptions.AadTenant))
-        //        .WithClientSecret(clientSecret)
-        //        .Build();
-        //    AuthenticationResult authResult =
-        //    await daemonClient.AcquireTokenForClient([graphScope]).ExecuteAsync();
-        //    return authResult.AccessToken;
-        //}
+        [JSInvokable("GetAccessToken")]
+        public static async Task<string> GetAccessToken()
+        {
+            IConfidentialClientApplication daemonClient;
+            daemonClient = ConfidentialClientApplicationBuilder.Create(mapConfiguration!.AuthOptions.AadAppId)
+                .WithAuthority(string.Format(authorityFormat, mapConfiguration.AuthOptions.AadTenant))
+                .WithClientSecret(clientSecret)
+                .Build();
+            AuthenticationResult authResult =
+            await daemonClient.AcquireTokenForClient([graphScope]).ExecuteAsync();
+            return authResult.AccessToken;
+        }
     }
 }
