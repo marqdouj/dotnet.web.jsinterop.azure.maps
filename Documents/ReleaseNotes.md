@@ -1,6 +1,8 @@
 ## Release Notes
 
 ### [<- Go Back](../README.md)
+- `11.0.0-Preview-6.0`:
+  - `Azure Maps Control SDK`. Update to version 4.0.0-preview.2
 - `11.0.0-Preview-5.1`:
   - `MapComponent`. Deleted local version. Use `Atlas` component instead by adding using statement to _imports.razor:
 	- @using Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas.Components
