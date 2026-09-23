@@ -4,6 +4,15 @@
 
 ## NOTE: This library is in preview and is not yet production-ready.
 
+## IMPORTANT
+While I was in the 'depths' of creating this library I realized that the potential of this library with JSInterop and the Azure Maps SDK
+was limited by the design.
+<br>
+I have created a new library that is more open and flexible. I apologize, but I will be archiving this library.
+Not all of this library functionality has been transfered to the new library, but it will be done.
+<br>
+The new library is [here](https://www.nuget.org/packages/Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas/).
+
 ## Features
 - Provides a set of .NET classes and methods to interact with the Azure Maps SDK in interop scenarios, focused on Blazor applications.
 - Supports common Azure Maps functionalities such as map initialization, adding layers, and handling events.
