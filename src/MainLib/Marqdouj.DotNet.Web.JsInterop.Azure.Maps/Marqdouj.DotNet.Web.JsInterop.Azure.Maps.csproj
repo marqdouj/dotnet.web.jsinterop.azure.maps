@@ -53,8 +53,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas" Version="11.0.0-Preview-3.3" />
-    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.6.2" />
+    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.Azure.Maps.Atlas" Version="11.0.0-Preview-3.6" />
+    <PackageReference Include="Marqdouj.DotNet.Web.JsInterop.GeoJson" Version="10.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0-rc.1.26425.128" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
